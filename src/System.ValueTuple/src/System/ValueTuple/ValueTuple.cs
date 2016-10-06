@@ -7,6 +7,9 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Numerics.Hashing;
 using System.Runtime.InteropServices;
+#if HAS_CORLIB_CONTRACTS
+using Debug = System.Diagnostics.Contracts.Contract;
+#endif
 
 namespace System
 {
@@ -249,7 +252,7 @@ namespace System
             // Forward to helper class in Common for this
             // We keep the actual hashing logic there, so
             // other classes can use it for hashing
-            return HashHelpers.Combine(h1, h2);
+            return System.Numerics.Hashing.HashHelpers.Combine(h1, h2);
         }
 
         internal static int CombineHashCodes(int h1, int h2, int h3)
