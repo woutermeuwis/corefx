@@ -10,6 +10,7 @@ using System.Runtime.InteropServices;
 #if HAS_CORLIB_CONTRACTS
 using Debug = System.Diagnostics.Contracts.Contract;
 #endif
+using HashHelpers = System.Numerics.Hashing.HashHelpers;
 
 namespace System
 {
