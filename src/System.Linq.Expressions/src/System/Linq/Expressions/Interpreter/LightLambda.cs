@@ -16,7 +16,7 @@ using AstUtils = System.Linq.Expressions.Utils;
 
 namespace System.Linq.Expressions.Interpreter
 {
-    public partial class LightLambda
+    partial class LightLambda
     {
         private readonly IStrongBox[] _closure;
         private readonly Interpreter _interpreter;

@@ -7,7 +7,7 @@ using System.Reflection;
 
 namespace System.Linq.Expressions.Interpreter
 {
-    public partial class LightLambda
+    partial class LightLambda
     {
 #if NO_FEATURE_STATIC_DELEGATE
         internal const int MaxParameters = 16;
