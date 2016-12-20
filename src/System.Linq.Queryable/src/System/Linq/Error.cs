@@ -4,9 +4,11 @@
 
 namespace System.Linq
 {
-    internal static class Error
+    internal static partial class Error
     {
+#if !MONO
         internal static Exception ArgumentNull(string message) => new ArgumentNullException(message);
+#endif
 
         internal static Exception ArgumentNotIEnumerableGeneric(string message) =>
             new ArgumentException(Strings.ArgumentNotIEnumerableGeneric(message));
@@ -14,8 +16,10 @@ namespace System.Linq
         internal static Exception ArgumentNotValid(string message) =>
             new ArgumentException(Strings.ArgumentNotValid(message));
 
+#if !MONO
         internal static Exception ArgumentOutOfRange(string message) =>
             new ArgumentOutOfRangeException(message);
+#endif
 
         internal static Exception NoMethodOnType(string name, object type) =>
             new InvalidOperationException(Strings.NoMethodOnType(name, type));

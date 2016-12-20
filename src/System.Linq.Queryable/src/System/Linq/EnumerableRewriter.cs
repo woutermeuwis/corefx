@@ -19,7 +19,7 @@ namespace System.Linq
         // Finding equivalent types can be relatively expensive, and hitting with the same types repeatedly is quite likely.
         private Dictionary<Type, Type> _equivalentTypeCache;
 
-        protected override Expression VisitMethodCall(MethodCallExpression m)
+        protected internal override Expression VisitMethodCall(MethodCallExpression m)
         {
             Expression obj = Visit(m.Object);
             ReadOnlyCollection<Expression> args = Visit(m.Arguments);
@@ -111,7 +111,7 @@ namespace System.Linq
             return expression;
         }
 
-        protected override Expression VisitLambda<T>(Expression<T> node) => node;
+        protected internal override Expression VisitLambda<T>(Expression<T> node) => node;
 
         private static Type GetPublicType(Type t)
         {
@@ -195,7 +195,7 @@ namespace System.Linq
             return equiv;
         }
 
-        protected override Expression VisitConstant(ConstantExpression c)
+        protected internal override Expression VisitConstant(ConstantExpression c)
         {
             EnumerableQuery sq = c.Value as EnumerableQuery;
             if (sq != null)
@@ -305,7 +305,7 @@ namespace System.Linq
             return type;
         }
 
-        protected override Expression VisitConditional(ConditionalExpression c)
+        protected internal override Expression VisitConditional(ConditionalExpression c)
         {
             Type type = c.Type;
             if (!typeof(IQueryable).IsAssignableFrom(type))
@@ -322,7 +322,7 @@ namespace System.Linq
             return Expression.Condition(test, ifTrue, ifFalse, GetEquivalentType(type));
         }
 
-        protected override Expression VisitBlock(BlockExpression node)
+        protected internal override Expression VisitBlock(BlockExpression node)
         {
             Type type = node.Type;
             if (!typeof(IQueryable).IsAssignableFrom(type))
@@ -334,7 +334,7 @@ namespace System.Linq
             return Expression.Block(GetEquivalentType(type), variables, nodes);
         }
 
-        protected override Expression VisitGoto(GotoExpression node)
+        protected internal override Expression VisitGoto(GotoExpression node)
         {
             Type type = node.Value.Type;
             if (!typeof(IQueryable).IsAssignableFrom(type))
