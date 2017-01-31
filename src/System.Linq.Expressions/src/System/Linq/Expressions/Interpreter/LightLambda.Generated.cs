@@ -14,7 +14,7 @@ namespace System.Linq.Expressions.Interpreter
     {
 #if NO_FEATURE_STATIC_DELEGATE
         internal const int MaxParameters = 16;
-        [EnableInvokeTesting]
+
         internal TRet Run0<TRet>()
         {
             var frame = MakeFrame();
@@ -22,7 +22,6 @@ namespace System.Linq.Expressions.Interpreter
             try { _interpreter.Run(frame); } finally { frame.Leave(current); }
             return (TRet)frame.Pop();
         }
-        [EnableInvokeTesting]
         internal void RunVoid0()
         {
             var frame = MakeFrame();
@@ -40,7 +39,6 @@ namespace System.Linq.Expressions.Interpreter
             return new Action(lambda.RunVoid0);
         }
 #endif
-        [EnableInvokeTesting]
         internal TRet Run1<T0, TRet>(T0 arg0)
         {
             /*Console.WriteLine("Running method: {0}", arg0);
@@ -55,7 +53,6 @@ namespace System.Linq.Expressions.Interpreter
             try { _interpreter.Run(frame); } finally { frame.Leave(current); }
             return (TRet)frame.Pop();
         }
-        [EnableInvokeTesting]
         internal void RunVoid1<T0>(T0 arg0)
         {
             var frame = MakeFrame();
@@ -73,7 +70,6 @@ namespace System.Linq.Expressions.Interpreter
             return new Action<T0>(lambda.RunVoid1<T0>);
         }
 #endif
-        [EnableInvokeTesting]
         internal TRet Run2<T0, T1, TRet>(T0 arg0, T1 arg1)
         {
             var frame = MakeFrame();
@@ -83,7 +79,6 @@ namespace System.Linq.Expressions.Interpreter
             try { _interpreter.Run(frame); } finally { frame.Leave(current); }
             return (TRet)frame.Pop();
         }
-        [EnableInvokeTesting]
         internal void RunVoid2<T0, T1>(T0 arg0, T1 arg1)
         {
             var frame = MakeFrame();
@@ -102,7 +97,6 @@ namespace System.Linq.Expressions.Interpreter
             return new Action<T0, T1>(lambda.RunVoid2<T0, T1>);
         }
 #endif
-        [EnableInvokeTesting]
         internal TRet Run3<T0, T1, T2, TRet>(T0 arg0, T1 arg1, T2 arg2)
         {
             var frame = MakeFrame();
@@ -114,7 +108,6 @@ namespace System.Linq.Expressions.Interpreter
             return (TRet)frame.Pop();
         }
 
-        [EnableInvokeTesting]
         internal void RunVoid3<T0, T1, T2>(T0 arg0, T1 arg1, T2 arg2)
         {
             var frame = MakeFrame();
@@ -135,7 +128,6 @@ namespace System.Linq.Expressions.Interpreter
             return new Action<T0, T1, T2>(lambda.RunVoid3<T0, T1, T2>);
         }
 #endif
-        [EnableInvokeTesting]
         internal TRet Run4<T0, T1, T2, T3, TRet>(T0 arg0, T1 arg1, T2 arg2, T3 arg3)
         {
             var frame = MakeFrame();
@@ -147,7 +139,6 @@ namespace System.Linq.Expressions.Interpreter
             try { _interpreter.Run(frame); } finally { frame.Leave(current); }
             return (TRet)frame.Pop();
         }
-        [EnableInvokeTesting]
         internal void RunVoid4<T0, T1, T2, T3>(T0 arg0, T1 arg1, T2 arg2, T3 arg3)
         {
             var frame = MakeFrame();
@@ -168,7 +159,6 @@ namespace System.Linq.Expressions.Interpreter
             return new Action<T0, T1, T2, T3>(lambda.RunVoid4<T0, T1, T2, T3>);
         }
 #endif
-        [EnableInvokeTesting]
         internal TRet Run5<T0, T1, T2, T3, T4, TRet>(T0 arg0, T1 arg1, T2 arg2, T3 arg3, T4 arg4)
         {
             var frame = MakeFrame();
@@ -181,7 +171,6 @@ namespace System.Linq.Expressions.Interpreter
             try { _interpreter.Run(frame); } finally { frame.Leave(current); }
             return (TRet)frame.Pop();
         }
-        [EnableInvokeTesting]
         internal void RunVoid5<T0, T1, T2, T3, T4>(T0 arg0, T1 arg1, T2 arg2, T3 arg3, T4 arg4)
         {
             var frame = MakeFrame();
@@ -203,7 +192,6 @@ namespace System.Linq.Expressions.Interpreter
             return new Action<T0, T1, T2, T3, T4>(lambda.RunVoid5<T0, T1, T2, T3, T4>);
         }
 #endif
-        [EnableInvokeTesting]
         internal TRet Run6<T0, T1, T2, T3, T4, T5, TRet>(T0 arg0, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5)
         {
             var frame = MakeFrame();
@@ -218,7 +206,6 @@ namespace System.Linq.Expressions.Interpreter
             return (TRet)frame.Pop();
         }
 
-        [EnableInvokeTesting]
         internal void RunVoid6<T0, T1, T2, T3, T4, T5>(T0 arg0, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5)
         {
             var frame = MakeFrame();
@@ -241,7 +228,6 @@ namespace System.Linq.Expressions.Interpreter
             return new Action<T0, T1, T2, T3, T4, T5>(lambda.RunVoid6<T0, T1, T2, T3, T4, T5>);
         }
 #endif
-        [EnableInvokeTesting]
         internal TRet Run7<T0, T1, T2, T3, T4, T5, T6, TRet>(T0 arg0, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6)
         {
             var frame = MakeFrame();
@@ -257,7 +243,6 @@ namespace System.Linq.Expressions.Interpreter
             return (TRet)frame.Pop();
         }
 
-        [EnableInvokeTesting]
         internal void RunVoid7<T0, T1, T2, T3, T4, T5, T6>(T0 arg0, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6)
         {
             var frame = MakeFrame();
@@ -281,7 +266,6 @@ namespace System.Linq.Expressions.Interpreter
             return new Action<T0, T1, T2, T3, T4, T5, T6>(lambda.RunVoid7<T0, T1, T2, T3, T4, T5, T6>);
         }
 #endif
-        [EnableInvokeTesting]
         internal TRet Run8<T0, T1, T2, T3, T4, T5, T6, T7, TRet>(T0 arg0, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7)
         {
             var frame = MakeFrame();
@@ -297,7 +281,6 @@ namespace System.Linq.Expressions.Interpreter
             try { _interpreter.Run(frame); } finally { frame.Leave(current); }
             return (TRet)frame.Pop();
         }
-        [EnableInvokeTesting]
         internal void RunVoid8<T0, T1, T2, T3, T4, T5, T6, T7>(T0 arg0, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7)
         {
             var frame = MakeFrame();
@@ -322,7 +305,6 @@ namespace System.Linq.Expressions.Interpreter
             return new Action<T0, T1, T2, T3, T4, T5, T6, T7>(lambda.RunVoid8<T0, T1, T2, T3, T4, T5, T6, T7>);
         }
 #endif
-        [EnableInvokeTesting]
         internal TRet Run9<T0, T1, T2, T3, T4, T5, T6, T7, T8, TRet>(T0 arg0, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8)
         {
             var frame = MakeFrame();
@@ -339,7 +321,6 @@ namespace System.Linq.Expressions.Interpreter
             try { _interpreter.Run(frame); } finally { frame.Leave(current); }
             return (TRet)frame.Pop();
         }
-        [EnableInvokeTesting]
         internal void RunVoid9<T0, T1, T2, T3, T4, T5, T6, T7, T8>(T0 arg0, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8)
         {
             var frame = MakeFrame();
@@ -365,7 +346,6 @@ namespace System.Linq.Expressions.Interpreter
             return new Action<T0, T1, T2, T3, T4, T5, T6, T7, T8>(lambda.RunVoid9<T0, T1, T2, T3, T4, T5, T6, T7, T8>);
         }
 #endif
-        [EnableInvokeTesting]
         internal TRet Run10<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, TRet>(T0 arg0, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9)
         {
             var frame = MakeFrame();
@@ -383,7 +363,6 @@ namespace System.Linq.Expressions.Interpreter
             try { _interpreter.Run(frame); } finally { frame.Leave(current); }
             return (TRet)frame.Pop();
         }
-        [EnableInvokeTesting]
         internal void RunVoid10<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9>(T0 arg0, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9)
         {
             var frame = MakeFrame();
@@ -410,7 +389,6 @@ namespace System.Linq.Expressions.Interpreter
             return new Action<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9>(lambda.RunVoid10<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9>);
         }
 #endif
-        [EnableInvokeTesting]
         internal TRet Run11<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, TRet>(T0 arg0, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9, T10 arg10)
         {
             var frame = MakeFrame();
@@ -429,7 +407,6 @@ namespace System.Linq.Expressions.Interpreter
             try { _interpreter.Run(frame); } finally { frame.Leave(current); }
             return (TRet)frame.Pop();
         }
-        [EnableInvokeTesting]
         internal void RunVoid11<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>(T0 arg0, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9, T10 arg10)
         {
             var frame = MakeFrame();
@@ -457,7 +434,6 @@ namespace System.Linq.Expressions.Interpreter
             return new Action<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>(lambda.RunVoid11<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>);
         }
 #endif
-        [EnableInvokeTesting]
         internal TRet Run12<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, TRet>(T0 arg0, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9, T10 arg10, T11 arg11)
         {
             var frame = MakeFrame();
@@ -477,7 +453,6 @@ namespace System.Linq.Expressions.Interpreter
             try { _interpreter.Run(frame); } finally { frame.Leave(current); }
             return (TRet)frame.Pop();
         }
-        [EnableInvokeTesting]
         internal void RunVoid12<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>(T0 arg0, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9, T10 arg10, T11 arg11)
         {
             var frame = MakeFrame();
@@ -506,7 +481,6 @@ namespace System.Linq.Expressions.Interpreter
             return new Action<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>(lambda.RunVoid12<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>);
         }
 #endif
-        [EnableInvokeTesting]
         internal TRet Run13<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, TRet>(T0 arg0, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9, T10 arg10, T11 arg11, T12 arg12)
         {
             var frame = MakeFrame();
@@ -527,7 +501,6 @@ namespace System.Linq.Expressions.Interpreter
             try { _interpreter.Run(frame); } finally { frame.Leave(current); }
             return (TRet)frame.Pop();
         }
-        [EnableInvokeTesting]
         internal void RunVoid13<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>(T0 arg0, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9, T10 arg10, T11 arg11, T12 arg12)
         {
             var frame = MakeFrame();
@@ -557,7 +530,6 @@ namespace System.Linq.Expressions.Interpreter
             return new Action<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>(lambda.RunVoid13<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>);
         }
 #endif
-        [EnableInvokeTesting]
         internal TRet Run14<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, TRet>(T0 arg0, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9, T10 arg10, T11 arg11, T12 arg12, T13 arg13)
         {
             var frame = MakeFrame();
@@ -579,7 +551,6 @@ namespace System.Linq.Expressions.Interpreter
             try { _interpreter.Run(frame); } finally { frame.Leave(current); }
             return (TRet)frame.Pop();
         }
-        [EnableInvokeTesting]
         internal void RunVoid14<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>(T0 arg0, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9, T10 arg10, T11 arg11, T12 arg12, T13 arg13)
         {
             var frame = MakeFrame();
@@ -610,7 +581,6 @@ namespace System.Linq.Expressions.Interpreter
             return new Action<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>(lambda.RunVoid14<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>);
         }
 #endif
-        [EnableInvokeTesting]
         internal TRet Run15<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, TRet>(T0 arg0, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9, T10 arg10, T11 arg11, T12 arg12, T13 arg13, T14 arg14)
         {
             var frame = MakeFrame();
@@ -633,7 +603,6 @@ namespace System.Linq.Expressions.Interpreter
             try { _interpreter.Run(frame); } finally { frame.Leave(current); }
             return (TRet)frame.Pop();
         }
-        [EnableInvokeTesting]
         internal void RunVoid15<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>(T0 arg0, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9, T10 arg10, T11 arg11, T12 arg12, T13 arg13, T14 arg14)
         {
             var frame = MakeFrame();
