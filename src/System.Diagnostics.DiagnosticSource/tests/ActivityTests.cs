@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -143,9 +144,8 @@ namespace System.Diagnostics.Tests
             var child1 = new Activity("child1");
             var child2 = new Activity("child2");
             //start 2 children in different execution contexts
-            var t1 = Task.Run(() => child1.Start());
-            var t2 = Task.Run(() => child2.Start());
-            Task.WhenAll(t1, t2).Wait();
+            Task.Run(() => child1.Start()).Wait();
+            Task.Run(() => child2.Start()).Wait();
 #if DEBUG
             Assert.Equal($"{parent.Id}.{child1.OperationName}_1", child1.Id);
             Assert.Equal($"{parent.Id}.{child2.OperationName}_2", child2.Id);
@@ -221,7 +221,7 @@ namespace System.Diagnostics.Tests
         /// <summary>
         /// Tests Activity stack: creates a parent activity and child activity
         /// Verifies 
-        ///  - Activity.Parent and ParentId corectness
+        ///  - Activity.Parent and ParentId correctness
         ///  - Baggage propagated from parent
         ///  - Tags are not propagated
         /// Stops child and checks Activity,Current is set to parent
@@ -337,6 +337,62 @@ namespace System.Diagnostics.Tests
                     Assert.Equal(arguments, observer.EventObject);
                 } 
             }
+        }
+
+        /// <summary>
+        /// Tests that Activity.Current flows correctly within async methods
+        /// </summary>
+        [Fact]
+        public async Task ActivityCurrentFlowsWithAsyncSimple()
+        {
+            Activity activity = new Activity("activity").Start();
+            Assert.Same(activity, Activity.Current);
+
+            await Task.Run(() =>
+            {
+                Assert.Same(activity, Activity.Current);
+            });
+
+            Assert.Same(activity, Activity.Current);
+        }
+
+        /// <summary>
+        /// Tests that Activity.Current flows correctly within async methods
+        /// </summary>
+        [Fact]
+        public async Task ActivityCurrentFlowsWithAsyncComplex()
+        {
+            Activity originalActivity = Activity.Current;
+
+            // Start an activity which spawns a task, but don't await it.
+            // While that's running, start another, nested activity.
+            Activity activity1 = new Activity("activity1").Start();
+            Assert.Same(activity1, Activity.Current);
+
+            SemaphoreSlim semaphore = new SemaphoreSlim(initialCount: 1);
+            Task task = Task.Run(async () =>
+            {
+                // Wait until the semaphore is signaled.
+                await semaphore.WaitAsync();
+                Assert.Equal(activity1, Activity.Current);
+            });
+
+            Activity activity2 = new Activity("activity2").Start();
+            Assert.Same(activity2, Activity.Current);
+
+            // Let task1 complete.
+            semaphore.Release();
+            await task;
+
+            Assert.Same(activity2, Activity.Current);
+
+            activity2.Stop();
+
+            Assert.Same(activity1, Activity.Current);
+
+            activity1.Stop();
+
+            Assert.Same(originalActivity, Activity.Current);
         }
 
         private class TestObserver : IObserver<KeyValuePair<string, object>>
