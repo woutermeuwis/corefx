@@ -473,6 +473,14 @@ namespace System.Net.Sockets
 
         private readonly object _registerLock = new object();
 
+#if MONO
+        static SocketAsyncContext()
+        {
+            if (!Environment.IsRunningOnUnix)
+                throw new PlatformNotSupportedException();
+        }
+#endif
+
         public SocketAsyncContext(SafeCloseSocket socket)
         {
             _socket = socket;

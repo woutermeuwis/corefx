@@ -4,9 +4,11 @@
 
 using System;
 using System.Net;
-using System.Net.Internals;
 using System.Net.Sockets;
 using System.Runtime.InteropServices;
+#if !SYSTEM_NET_SOCKETS_DLL
+using SocketType = System.Net.Internals.SocketType;
+#endif
 
 internal static partial class Interop
 {

@@ -22,7 +22,11 @@ namespace System.Net.Sockets
         private bool _nonBlocking;
         private SocketAsyncContext _asyncContext;
 
+#if MONO
+        private SocketAsyncContext Unix_AsyncContext
+#else
         public SocketAsyncContext AsyncContext
+#endif
         {
             get
             {
@@ -36,7 +40,11 @@ namespace System.Net.Sockets
         }
 
 
+#if MONO
+        private bool Unix_IsNonBlocking
+#else
         public bool IsNonBlocking
+#endif
         {
             get
             {
@@ -59,7 +67,11 @@ namespace System.Net.Sockets
             }
         }
 
+#if MONO
+        private int Unix_ReceiveTimeout
+#else
         public int ReceiveTimeout
+#endif
         {
             get
             {
@@ -72,7 +84,11 @@ namespace System.Net.Sockets
             }
         }
 
+#if MONO
+        private int Unix_SendTimeout
+#else
         public int SendTimeout
+#endif
         {
             get
             {
@@ -85,26 +101,42 @@ namespace System.Net.Sockets
             }
         }
 
+#if MONO
+        private static unsafe SafeCloseSocket Unix_CreateSocket(IntPtr fileDescriptor)
+#else
         public static unsafe SafeCloseSocket CreateSocket(IntPtr fileDescriptor)
+#endif
         {
             return CreateSocket(InnerSafeCloseSocket.CreateSocket(fileDescriptor));
         }
 
+#if MONO
+        private static unsafe SocketError Unix_CreateSocket(AddressFamily addressFamily, SocketType socketType, ProtocolType protocolType, out SafeCloseSocket socket)
+#else
         public static unsafe SocketError CreateSocket(AddressFamily addressFamily, SocketType socketType, ProtocolType protocolType, out SafeCloseSocket socket)
+#endif
         {
             SocketError errorCode;
             socket = CreateSocket(InnerSafeCloseSocket.CreateSocket(addressFamily, socketType, protocolType, out errorCode));
             return errorCode;
         }
 
+#if MONO
+        private static unsafe SocketError Unix_Accept(SafeCloseSocket socketHandle, byte[] socketAddress, ref int socketAddressSize, out SafeCloseSocket socket)
+#else
         public static unsafe SocketError Accept(SafeCloseSocket socketHandle, byte[] socketAddress, ref int socketAddressSize, out SafeCloseSocket socket)
+#endif
         {
             SocketError errorCode;
             socket = CreateSocket(InnerSafeCloseSocket.Accept(socketHandle, socketAddress, ref socketAddressSize, out errorCode));
             return errorCode;
         }
 
+#if MONO
+        private void Unix_InnerReleaseHandle()
+#else
         private void InnerReleaseHandle()
+#endif
         {
             if (_asyncContext != null)
             {
@@ -114,7 +146,11 @@ namespace System.Net.Sockets
 
         internal sealed partial class InnerSafeCloseSocket : SafeHandleMinusOneIsInvalid
         {
+#if MONO
+            private unsafe SocketError Unix_InnerReleaseHandle()
+#else
             private unsafe SocketError InnerReleaseHandle()
+#endif
             {
                 int errorCode;
 
@@ -190,14 +226,22 @@ namespace System.Net.Sockets
                 return SocketPal.GetSocketErrorForErrorCode((Interop.Error)errorCode);
             }
 
+#if MONO
+            private static InnerSafeCloseSocket Unix_CreateSocket(IntPtr fileDescriptor)
+#else
             public static InnerSafeCloseSocket CreateSocket(IntPtr fileDescriptor)
+#endif
             {
                 var res = new InnerSafeCloseSocket();
                 res.SetHandle(fileDescriptor);
                 return res;
             }
 
+#if MONO
+            private static unsafe InnerSafeCloseSocket Unix_CreateSocket(AddressFamily addressFamily, SocketType socketType, ProtocolType protocolType, out SocketError errorCode)
+#else
             public static unsafe InnerSafeCloseSocket CreateSocket(AddressFamily addressFamily, SocketType socketType, ProtocolType protocolType, out SocketError errorCode)
+#endif
             {
                 IntPtr fd;
                 Interop.Error error = Interop.Sys.Socket(addressFamily, socketType, protocolType, &fd);
@@ -232,7 +276,11 @@ namespace System.Net.Sockets
                 return res;
             }
 
+#if MONO
+            private static unsafe InnerSafeCloseSocket Unix_Accept(SafeCloseSocket socketHandle, byte[] socketAddress, ref int socketAddressLen, out SocketError errorCode)
+#else
             public static unsafe InnerSafeCloseSocket Accept(SafeCloseSocket socketHandle, byte[] socketAddress, ref int socketAddressLen, out SocketError errorCode)
+#endif
             {
                 IntPtr acceptedFd;
                 if (!socketHandle.IsNonBlocking)

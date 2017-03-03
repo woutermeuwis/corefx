@@ -21,6 +21,14 @@ namespace System.Net.Sockets
             private readonly SocketAsyncEngine _engine;
             private readonly IntPtr _handle;
 
+#if MONO
+            static Token()
+            {
+                if (!Environment.IsRunningOnUnix)
+                    throw new PlatformNotSupportedException();
+            }
+#endif
+
             public Token(SocketAsyncContext context)
             {
                 AllocateToken(context, out _engine, out _handle);
@@ -119,6 +127,14 @@ namespace System.Net.Sockets
         // on the next handle allocation.
         //
         private bool IsFull { get { return _nextHandle == MaxHandles; } }
+
+#if MONO
+        static SocketAsyncEngine()
+        {
+            if (!Environment.IsRunningOnUnix)
+                throw new PlatformNotSupportedException();
+        }
+#endif
 
         //
         // Allocates a new {SocketAsyncEngine, handle} pair.

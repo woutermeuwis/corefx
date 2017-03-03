@@ -4,7 +4,11 @@
 
 internal static partial class Interop
 {
+#if MONO
+    internal static partial class Libraries
+#else
     private static partial class Libraries
+#endif
     {
         // Shims
         internal const string SystemNative = "System.Native";

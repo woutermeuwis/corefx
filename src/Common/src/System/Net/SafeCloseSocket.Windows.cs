@@ -20,7 +20,11 @@ namespace System.Net.Sockets
         private bool _skipCompletionPortOnSuccess;
         private object _iocpBindingLock = new object();
 
+#if MONO
+        private ThreadPoolBoundHandle Windows_IOCPBoundHandle
+#else
         public ThreadPoolBoundHandle IOCPBoundHandle
+#endif
         {
             get
             {
@@ -29,7 +33,11 @@ namespace System.Net.Sockets
         }
 
         // Binds the Socket Win32 Handle to the ThreadPool's CompletionPort.
+#if MONO
+        private ThreadPoolBoundHandle Windows_GetOrAllocateThreadPoolBoundHandle(bool trySkipCompletionPortOnSuccess)
+#else
         public ThreadPoolBoundHandle GetOrAllocateThreadPoolBoundHandle(bool trySkipCompletionPortOnSuccess)
+#endif
         {
             if (_released)
             {
@@ -79,7 +87,11 @@ namespace System.Net.Sockets
             return _iocpBoundHandle;
         }
 
+#if MONO
+        private bool Windows_SkipCompletionPortOnSuccess
+#else
         public bool SkipCompletionPortOnSuccess
+#endif
         {
             get
             {
@@ -88,25 +100,41 @@ namespace System.Net.Sockets
             }
         }
 
+#if MONO
+        private static unsafe SafeCloseSocket Windows_CreateWSASocket(byte* pinnedBuffer)
+#else
         internal static unsafe SafeCloseSocket CreateWSASocket(byte* pinnedBuffer)
+#endif
         {
             return CreateSocket(InnerSafeCloseSocket.CreateWSASocket(pinnedBuffer));
         }
 
+#if MONO
+        private static SafeCloseSocket Windows_CreateWSASocket(AddressFamily addressFamily, SocketType socketType, ProtocolType protocolType)
+#else
         internal static SafeCloseSocket CreateWSASocket(AddressFamily addressFamily, SocketType socketType, ProtocolType protocolType)
+#endif
         {
             return CreateSocket(InnerSafeCloseSocket.CreateWSASocket(addressFamily, socketType, protocolType));
         }
 
+#if MONO
+        private static SafeCloseSocket Windows_Accept(SafeCloseSocket socketHandle, byte[] socketAddress, ref int socketAddressSize)
+#else
         internal static SafeCloseSocket Accept(
             SafeCloseSocket socketHandle,
             byte[] socketAddress,
             ref int socketAddressSize)
+#endif
         {
             return CreateSocket(InnerSafeCloseSocket.Accept(socketHandle, socketAddress, ref socketAddressSize));
         }
 
+#if MONO
+        private void Windows_InnerReleaseHandle()
+#else
         private void InnerReleaseHandle()
+#endif
         {
             // Keep m_IocpBoundHandle around after disposing it to allow freeing NativeOverlapped.
             // ThreadPoolBoundHandle allows FreeNativeOverlapped even after it has been disposed.
@@ -118,7 +146,11 @@ namespace System.Net.Sockets
 
         internal sealed partial class InnerSafeCloseSocket : SafeHandleMinusOneIsInvalid
         {
+#if MONO
+            private SocketError Windows_InnerReleaseHandle()
+#else
             private SocketError InnerReleaseHandle()
+#endif
             {
                 SocketError errorCode;
 
@@ -227,7 +259,11 @@ namespace System.Net.Sockets
                 return errorCode;
             }
 
+#if MONO
+            private static unsafe InnerSafeCloseSocket Windows_CreateWSASocket(byte* pinnedBuffer)
+#else
             internal static unsafe InnerSafeCloseSocket CreateWSASocket(byte* pinnedBuffer)
+#endif
             {
                 // NOTE: -1 is the value for FROM_PROTOCOL_INFO.
                 InnerSafeCloseSocket result = Interop.Winsock.WSASocketW((AddressFamily)(-1), (SocketType)(-1), (ProtocolType)(-1), pinnedBuffer, 0, Interop.Winsock.SocketConstructorFlags.WSA_FLAG_OVERLAPPED);
@@ -238,7 +274,11 @@ namespace System.Net.Sockets
                 return result;
             }
 
+#if MONO
+            private static InnerSafeCloseSocket Windows_CreateWSASocket(AddressFamily addressFamily, SocketType socketType, ProtocolType protocolType)
+#else
             internal static InnerSafeCloseSocket CreateWSASocket(AddressFamily addressFamily, SocketType socketType, ProtocolType protocolType)
+#endif
             {
                 InnerSafeCloseSocket result = Interop.Winsock.WSASocketW(addressFamily, socketType, protocolType, IntPtr.Zero, 0, Interop.Winsock.SocketConstructorFlags.WSA_FLAG_OVERLAPPED);
                 if (result.IsInvalid)
@@ -248,7 +288,11 @@ namespace System.Net.Sockets
                 return result;
             }
 
+#if MONO
+            private static InnerSafeCloseSocket Windows_Accept(SafeCloseSocket socketHandle, byte[] socketAddress, ref int socketAddressSize)
+#else
             internal static InnerSafeCloseSocket Accept(SafeCloseSocket socketHandle, byte[] socketAddress, ref int socketAddressSize)
+#endif
             {
                 InnerSafeCloseSocket result = Interop.Winsock.accept(socketHandle.DangerousGetHandle(), socketAddress, ref socketAddressSize);
                 if (result.IsInvalid)
