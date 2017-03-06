@@ -12,6 +12,14 @@ namespace System.Net.Sockets
         private FileStream _fileStream;
         private bool _doDisconnect;
 
+#if MONO
+        static TransmitFileAsyncResult()
+        {
+            if (!Environment.IsRunningOnWindows)
+                throw new PlatformNotSupportedException();
+        }
+#endif
+
         internal TransmitFileAsyncResult(Socket socket, Object asyncState, AsyncCallback asyncCallback) :
             base(socket, asyncState, asyncCallback)
         {

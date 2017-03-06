@@ -13,11 +13,22 @@ namespace System.Net.Sockets
 {
     internal static partial class SocketPal
     {
+#if MONO
+    private static class Unix
+    {
+        static Unix()
+        {
+            if (!Environment.IsRunningOnUnix)
+                throw new PlatformNotSupportedException();
+        }
+#endif
+
         // The API that uses this information is not supported on *nix, and will throw
         // PlatformNotSupportedException instead.
         public const int ProtocolInformationSize = 0;
 
         public const bool SupportsMultipleConnectAttempts = false;
+
         private static readonly bool SupportsDualModeIPv4PacketInfo = GetPlatformSupportsDualModeIPv4PacketInfo();
 
         private static bool GetPlatformSupportsDualModeIPv4PacketInfo()
@@ -1480,5 +1491,8 @@ namespace System.Net.Sockets
         {
             throw new PlatformNotSupportedException(SR.net_sockets_disconnect_notsupported);
         }
+#if MONO
+    } // Unix
+#endif
     }
 }

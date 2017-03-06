@@ -12,6 +12,14 @@ namespace System.Net.Sockets
     {
         internal static SafeNativeOverlapped Zero { get; } = new SafeNativeOverlapped();
 
+#if MONO
+        static SafeNativeOverlapped()
+        {
+            if (!Environment.IsRunningOnWindows)
+                throw new PlatformNotSupportedException();
+        }
+#endif
+
         private SafeNativeOverlapped()
             : this(IntPtr.Zero)
         {

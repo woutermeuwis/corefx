@@ -6,12 +6,20 @@ namespace System.Net
 {
     partial class ContextAwareResult
     {
+#if MONO
+        private void Uap_SafeCaptureIdentity()
+#else
         private void SafeCaptureIdentity()
+#endif
         {
             // WindowsIdentity is not supported on UAP
         }
 
+#if MONO
+        private void Uap_CleanupInternal()
+#else
         private void CleanupInternal()
+#endif
         {
             // Nothing to cleanup
         }

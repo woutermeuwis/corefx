@@ -23,8 +23,12 @@ namespace System.Net.Sockets
         // The WinNT Completion Port callback.
         private static unsafe readonly IOCompletionCallback s_ioCallback = new IOCompletionCallback(CompletionPortCallback);
 
-        internal BaseOverlappedAsyncResult(Socket socket, Object asyncState, AsyncCallback asyncCallback)
+#if MONO
+        private void Windows_BaseOverlappedAsyncResult(Socket socket, Object asyncState, AsyncCallback asyncCallback)
+#else
+        public BaseOverlappedAsyncResult(Socket socket, Object asyncState, AsyncCallback asyncCallback)
             : base(socket, asyncState, asyncCallback)
+#endif
         {
             _cleanupCount = 1;
             if (NetEventSource.IsEnabled) NetEventSource.Info(this, socket);
@@ -38,7 +42,11 @@ namespace System.Net.Sockets
         // These calls are outside the runtime and are unmanaged code, so we need
         // to prepare specific structures and ints that lie in unmanaged memory
         // since the overlapped calls may complete asynchronously.
+#if MONO
+        private void Windows_SetUnmanagedStructures(object objectsToPin)
+#else
         internal void SetUnmanagedStructures(object objectsToPin)
+#endif
         {
             Socket s = (Socket)AsyncObject;
 
@@ -128,14 +136,22 @@ namespace System.Net.Sockets
                 }
 
                 // Set results and invoke callback
+#if MONO
+                asyncResult.Windows_CompletionCallback((int)numBytes, socketError);
+#else
                 asyncResult.CompletionCallback((int)numBytes, socketError);
+#endif
 #if DEBUG
             }
 #endif
         }
 
         // Called either synchronously from SocketPal async routines or asynchronously via CompletionPortCallback above. 
+#if MONO
+        private void Windows_CompletionCallback(int numBytes, SocketError socketError)
+#else
         private void CompletionCallback(int numBytes, SocketError socketError)
+#endif
         {
             ReleaseUnmanagedStructures();
 
@@ -145,7 +161,11 @@ namespace System.Net.Sockets
 
         // The following property returns the Win32 unsafe pointer to
         // whichever Overlapped structure we're using for IO.
+#if MONO
+        private SafeHandle Windows_OverlappedHandle
+#else
         internal SafeHandle OverlappedHandle
+#endif
         {
             get
             {
@@ -159,7 +179,11 @@ namespace System.Net.Sockets
         // Check the result of the overlapped operation.
         // Handle synchronous success by completing the asyncResult here.
         // Handle synchronous failure by cleaning up and returning a SocketError.
+#if MONO
+        private SocketError Windows_ProcessOverlappedResult(bool success, int bytesTransferred)
+#else
         internal SocketError ProcessOverlappedResult(bool success, int bytesTransferred)
+#endif
         {
             if (success)
             {
@@ -169,7 +193,11 @@ namespace System.Net.Sockets
                 {
                     // The socket handle is configured to skip completion on success, 
                     // so we can complete this asyncResult right now.
+#if MONO
+                    Windows_CompletionCallback(bytesTransferred, SocketError.Success);
+#else
                     CompletionCallback(bytesTransferred, SocketError.Success);
+#endif
                     return SocketError.Success;
                 }
 
@@ -195,7 +223,11 @@ namespace System.Net.Sockets
             return errorCode;
         }
 
+#if MONO
+        private void Windows_ReleaseUnmanagedStructures()
+#else
         internal void ReleaseUnmanagedStructures()
+#endif
         {
             if (Interlocked.Decrement(ref _cleanupCount) == 0)
             {
@@ -203,7 +235,11 @@ namespace System.Net.Sockets
             }
         }
 
+#if MONO
+        private void Windows_Cleanup()
+#else
         protected override void Cleanup()
+#endif
         {
             base.Cleanup();
 
@@ -217,7 +253,11 @@ namespace System.Net.Sockets
         // Utility cleanup routine. Frees the overlapped structure.
         // This should be overridden to free pinned and unmanaged memory in the subclass.
         // It needs to also be invoked from the subclass.
+#if MONO
+        private void Windows_ForceReleaseUnmanagedStructures()
+#else
         protected virtual void ForceReleaseUnmanagedStructures()
+#endif
         {
             // Free the unmanaged memory if allocated.
             if (NetEventSource.IsEnabled) NetEventSource.Enter(this);

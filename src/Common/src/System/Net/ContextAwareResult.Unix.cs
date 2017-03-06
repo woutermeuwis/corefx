@@ -6,12 +6,20 @@ namespace System.Net
 {
     partial class ContextAwareResult
     {
+#if MONO
+        private void Unix_SafeCaptureIdentity()
+#else
         private void SafeCaptureIdentity()
+#endif
         {
             // WindowsIdentity is not supported on Unix
         }
 
+#if MONO
+        private void Unix_CleanupInternal()
+#else
         private void CleanupInternal()
+#endif
         {
             // Nothing to cleanup
         }

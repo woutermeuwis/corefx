@@ -18,20 +18,37 @@ namespace System.Net.Sockets
     // from the BeginSend, BeginSendTo, BeginReceive, BeginReceiveFrom calls.
     internal partial class OverlappedAsyncResult : BaseOverlappedAsyncResult
     {
+#if MONO
+        internal WSABuffer _Windows_singleBuffer;
+        internal WSABuffer[] _Windows_wsaBuffers;
+#else
         internal WSABuffer _singleBuffer;
         internal WSABuffer[] _wsaBuffers;
+#endif
 
+#if MONO
+        private IntPtr Windows_GetSocketAddressPtr()
+#else
         internal IntPtr GetSocketAddressPtr()
+#endif
         {
             return Marshal.UnsafeAddrOfPinnedArrayElement(_socketAddress.Buffer, 0);
         }
 
+#if MONO
+        private IntPtr Windows_GetSocketAddressSizePtr()
+#else
         internal IntPtr GetSocketAddressSizePtr()
+#endif
         {
             return Marshal.UnsafeAddrOfPinnedArrayElement(_socketAddress.Buffer, _socketAddress.GetAddressSizeOffset());
         }
 
+#if MONO
+        private unsafe int Windows_GetSocketAddressSize()
+#else
         internal unsafe int GetSocketAddressSize()
+#endif
         {
             return *(int*)GetSocketAddressSizePtr();
         }
@@ -42,7 +59,11 @@ namespace System.Net.Sockets
         // These calls are outside the runtime and are unmanaged code, so we need
         // to prepare specific structures and ints that lie in unmanaged memory
         // since the overlapped calls may complete asynchronously.
+#if MONO
+        private void Windows_SetUnmanagedStructures(byte[] buffer, int offset, int size, Internals.SocketAddress socketAddress, bool pinSocketAddress)
+#else
         internal void SetUnmanagedStructures(byte[] buffer, int offset, int size, Internals.SocketAddress socketAddress, bool pinSocketAddress)
+#endif
         {
             // Fill in Buffer Array structure that will be used for our send/recv Buffer
             _socketAddress = socketAddress;
@@ -62,11 +83,20 @@ namespace System.Net.Sockets
                 base.SetUnmanagedStructures(buffer);
             }
 
+#if MONO
+            _Windows_singleBuffer.Length = size;
+            _Windows_singleBuffer.Pointer = Marshal.UnsafeAddrOfPinnedArrayElement(buffer, offset);
+#else
             _singleBuffer.Length = size;
             _singleBuffer.Pointer = Marshal.UnsafeAddrOfPinnedArrayElement(buffer, offset);
+#endif
         }
 
+#if MONO
+        private void Windows_SetUnmanagedStructures(IList<ArraySegment<byte>> buffers)
+#else
         internal void SetUnmanagedStructures(IList<ArraySegment<byte>> buffers)
+#endif
         {
             // Fill in Buffer Array structure that will be used for our send/recv Buffer.
             // Make sure we don't let the app mess up the buffer array enough to cause
@@ -80,7 +110,11 @@ namespace System.Net.Sockets
                 RangeValidationHelpers.ValidateSegment(buffersCopy[i]);
             }
 
+#if MONO
+            _Windows_wsaBuffers = new WSABuffer[count];
+#else
             _wsaBuffers = new WSABuffer[count];
+#endif
 
             object[] objectsToPin = new object[count];
             for (int i = 0; i < count; i++)
@@ -92,8 +126,13 @@ namespace System.Net.Sockets
 
             for (int i = 0; i < count; i++)
             {
+#if MONO
+                _Windows_wsaBuffers[i].Length = buffersCopy[i].Count;
+                _Windows_wsaBuffers[i].Pointer = Marshal.UnsafeAddrOfPinnedArrayElement(buffersCopy[i].Array, buffersCopy[i].Offset);
+#else
                 _wsaBuffers[i].Length = buffersCopy[i].Count;
                 _wsaBuffers[i].Pointer = Marshal.UnsafeAddrOfPinnedArrayElement(buffersCopy[i].Array, buffersCopy[i].Offset);
+#endif
             }
         }
 
@@ -102,7 +141,11 @@ namespace System.Net.Sockets
         // 1) completed synchronously.
         // 2) was pended.
         // 3) failed.
+#if MONO
+        private object Windows_PostCompletion(int numBytes)
+#else
         internal override object PostCompletion(int numBytes)
+#endif
         {
             if (ErrorCode == 0 && NetEventSource.IsEnabled)
             {
@@ -121,9 +164,17 @@ namespace System.Net.Sockets
 
             if (size > -1)
             {
+#if MONO
+                if (_Windows_wsaBuffers != null)
+#else
                 if (_wsaBuffers != null)
+#endif
                 {
+#if MONO
+                    foreach (WSABuffer wsaBuffer in _Windows_wsaBuffers)
+#else
                     foreach (WSABuffer wsaBuffer in _wsaBuffers)
+#endif
                     {
                         if (NetEventSource.IsEnabled) NetEventSource.DumpBuffer(this, wsaBuffer.Pointer, Math.Min(wsaBuffer.Length, size));
                         if ((size -= wsaBuffer.Length) <= 0)
@@ -134,7 +185,11 @@ namespace System.Net.Sockets
                 }
                 else
                 {
+#if MONO
+                    if (NetEventSource.IsEnabled) NetEventSource.DumpBuffer(this, _Windows_singleBuffer.Pointer, Math.Min(_Windows_singleBuffer.Length, size));
+#else
                     if (NetEventSource.IsEnabled) NetEventSource.DumpBuffer(this, _singleBuffer.Pointer, Math.Min(_singleBuffer.Length, size));
+#endif
                 }
             }
         }

@@ -9,6 +9,14 @@ namespace System.Net
 {
     internal static class InteropIPAddressExtensions
     {
+#if MONO
+        static InteropIPAddressExtensions()
+        {
+            if (!Environment.IsRunningOnUnix)
+                throw new PlatformNotSupportedException();
+        }
+#endif
+
         public static unsafe Interop.Sys.IPAddress GetNativeIPAddress(this IPAddress ipAddress)
         {
             var nativeIPAddress = default(Interop.Sys.IPAddress);

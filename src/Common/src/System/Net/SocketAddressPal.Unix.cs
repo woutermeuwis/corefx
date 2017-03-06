@@ -9,8 +9,18 @@ using System.Text;
 
 namespace System.Net
 {
-    internal static class SocketAddressPal
+    internal static partial class SocketAddressPal
     {
+#if MONO
+    private static class Unix
+    {
+        static Unix()
+        {
+            if (!Environment.IsRunningOnUnix)
+                throw new PlatformNotSupportedException();
+        }
+#endif
+
         public const int DataOffset = 0;
 
         public static readonly int IPv6AddressSize = GetIPv6AddressSize();
@@ -163,5 +173,8 @@ namespace System.Net
 
             ThrowOnFailure(err);
         }
+#if MONO
+    } // Unix
+#endif
     }
 }

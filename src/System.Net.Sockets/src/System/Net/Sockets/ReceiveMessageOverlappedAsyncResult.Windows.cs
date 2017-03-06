@@ -30,7 +30,11 @@ namespace System.Net.Sockets
             return Marshal.UnsafeAddrOfPinnedArrayElement(_socketAddress.Buffer, _socketAddress.GetAddressSizeOffset());
         }
 
+#if MONO
+        private unsafe int Windows_GetSocketAddressSize()
+#else
         internal unsafe int GetSocketAddressSize()
+#endif
         {
             return *(int*)GetSocketAddressSizePtr();
         }
@@ -41,7 +45,11 @@ namespace System.Net.Sockets
         // These calls are outside the runtime and are unmanaged code, so we need
         // to prepare specific structures and ints that lie in unmanaged memory
         // since the overlapped calls may complete asynchronously.
+#if MONO
+        private void Windows_SetUnmanagedStructures(byte[] buffer, int offset, int size, Internals.SocketAddress socketAddress, SocketFlags socketFlags)
+#else
         internal void SetUnmanagedStructures(byte[] buffer, int offset, int size, Internals.SocketAddress socketAddress, SocketFlags socketFlags)
+#endif
         {
             _messageBuffer = new byte[s_wsaMsgSize];
             _wsaBufferArray = new byte[s_wsaBufferSize];
@@ -118,13 +126,21 @@ namespace System.Net.Sockets
             }
         }
 
+#if MONO
+        private void Windows_ForceReleaseUnmanagedStructures()
+#else
         protected override void ForceReleaseUnmanagedStructures()
+#endif
         {
             _socketFlags = _message->flags;
             base.ForceReleaseUnmanagedStructures();
         }
 
+#if MONO
+        private object Windows_PostCompletion(int numBytes)
+#else
         internal override object PostCompletion(int numBytes)
+#endif
         {
             InitIPPacketInformation();
             if (ErrorCode == 0 && NetEventSource.IsEnabled)

@@ -9,14 +9,21 @@ namespace System.Net.Sockets
 {
     internal static class SocketErrorPal
     {
-#if DEBUG
+#if DEBUG || MONO
         static SocketErrorPal()
         {
+#if DEBUG
             Debug.Assert(s_nativeErrorToSocketError.Count == NativeErrorToSocketErrorCount,
                 $"Expected s_nativeErrorToSocketError to have {NativeErrorToSocketErrorCount} count instead of {s_nativeErrorToSocketError.Count}.");
 
             Debug.Assert(s_socketErrorToNativeError.Count == SocketErrorToNativeErrorCount,
                 $"Expected s_socketErrorToNativeError to have {SocketErrorToNativeErrorCount} count instead of {s_socketErrorToNativeError.Count}.");
+#endif
+
+#if MONO
+            if (!Environment.IsRunningOnUnix)
+                throw new PlatformNotSupportedException();
+#endif
         }
 #endif
 

@@ -19,7 +19,11 @@ namespace System.Net.Sockets
 
         // This method will be called by us when the IO completes synchronously and
         // by the ThreadPool when the IO completes asynchronously. (only called on WinNT)
+#if MONO
+        private object Windows_PostCompletion(int numBytes)
+#else
         internal override object PostCompletion(int numBytes)
+#endif
         {
             SocketError errorCode = (SocketError)ErrorCode;
 
@@ -89,7 +93,11 @@ namespace System.Net.Sockets
         // overlapped Winsock call. These calls are outside the runtime and are
         // unmanaged code, so we need to prepare specific structures and ints that
         // lie in unmanaged memory since the overlapped calls may complete asynchronously.
+#if MONO
+        private void Windows_SetUnmanagedStructures(byte[] buffer, int addressBufferLength)
+#else
         internal void SetUnmanagedStructures(byte[] buffer, int addressBufferLength)
+#endif
         {
             // has to be called first to pin memory
             base.SetUnmanagedStructures(buffer);
@@ -113,7 +121,11 @@ namespace System.Net.Sockets
             }
         }
 
+#if MONO
+        private Socket Windows_AcceptSocket
+#else
         internal Socket AcceptSocket
+#endif
         {
             set
             {

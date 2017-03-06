@@ -16,7 +16,11 @@ namespace System.Net.Sockets
     {
         private Socket _acceptedSocket;
 
+#if MONO
+        private Socket Unix_AcceptSocket
+#else
         internal Socket AcceptSocket
+#endif
         {
             set
             {
@@ -26,7 +30,11 @@ namespace System.Net.Sockets
             }
         }
 
+#if MONO
+        private void Unix_CompletionCallback(IntPtr acceptedFileDescriptor, byte[] socketAddress, int socketAddressLen, SocketError errorCode)
+#else
         public void CompletionCallback(IntPtr acceptedFileDescriptor, byte[] socketAddress, int socketAddressLen, SocketError errorCode)
+#endif
         {
             _buffer = null;
             _numBytes = 0;
@@ -44,7 +52,11 @@ namespace System.Net.Sockets
             base.CompletionCallback(0, errorCode);
         }
 
+#if MONO
+        private object Unix_PostCompletion(int numBytes)
+#else
         internal override object PostCompletion(int numBytes)
+#endif
         {
             _numBytes = numBytes;
             return (SocketError)ErrorCode == SocketError.Success ? _acceptedSocket : null;

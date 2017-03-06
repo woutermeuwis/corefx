@@ -16,13 +16,25 @@ using System.Threading;
 
 namespace System.Net.Sockets
 {
-    internal static class SocketPal
+    internal static partial class SocketPal
     {
+#if MONO
+    private static class Windows
+    {
+        static Windows()
+        {
+            if (!Environment.IsRunningOnWindows)
+                throw new PlatformNotSupportedException();
+        }
+#endif
         public const bool SupportsMultipleConnectAttempts = true;
 
         private static readonly int s_protocolInformationSize = Marshal.SizeOf<Interop.Winsock.WSAPROTOCOL_INFO>();
 
-        public static int ProtocolInformationSize { get { return s_protocolInformationSize; } }
+        public static int ProtocolInformationSize
+        {
+            get { return s_protocolInformationSize; }
+        }
 
         private static void MicrosecondsToTimeValue(long microseconds, ref Interop.Winsock.TimeValue socketTime)
         {
@@ -562,7 +574,7 @@ namespace System.Net.Sockets
         }
 
         public static SocketError SetLingerOption(SafeCloseSocket handle, LingerOption optionValue)
-        {
+       {
             Interop.Winsock.Linger lngopt = new Interop.Winsock.Linger();
             lngopt.OnOff = optionValue.Enabled ? (ushort)1 : (ushort)0;
             lngopt.Time = (ushort)optionValue.LingerTime;
@@ -834,7 +846,11 @@ namespace System.Net.Sockets
                 int bytesTransferred;
                 SocketError errorCode = Interop.Winsock.WSASend(
                     handle,
+#if MONO
+                    ref asyncResult._Windows_singleBuffer,
+#else
                     ref asyncResult._singleBuffer,
+#endif
                     1, // There is only ever 1 buffer being sent.
                     out bytesTransferred,
                     socketFlags,
@@ -860,8 +876,13 @@ namespace System.Net.Sockets
                 int bytesTransferred;
                 SocketError errorCode = Interop.Winsock.WSASend(
                     handle,
+#if MONO
+                    asyncResult._Windows_wsaBuffers,
+                    asyncResult._Windows_wsaBuffers.Length,
+#else
                     asyncResult._wsaBuffers,
                     asyncResult._wsaBuffers.Length,
+#endif
                     out bytesTransferred,
                     socketFlags,
                     asyncResult.OverlappedHandle,
@@ -940,7 +961,11 @@ namespace System.Net.Sockets
                 int bytesTransferred;
                 SocketError errorCode = Interop.Winsock.WSASendTo(
                     handle,
+#if MONO
+                    ref asyncResult._Windows_singleBuffer,
+#else
                     ref asyncResult._singleBuffer,
+#endif
                     1, // There is only ever 1 buffer being sent.
                     out bytesTransferred,
                     socketFlags,
@@ -968,7 +993,11 @@ namespace System.Net.Sockets
                 int bytesTransferred;
                 SocketError errorCode = Interop.Winsock.WSARecv(
                     handle,
+#if MONO
+                    ref asyncResult._Windows_singleBuffer,
+#else
                     ref asyncResult._singleBuffer,
+#endif
                     1,
                     out bytesTransferred,
                     ref socketFlags,
@@ -994,8 +1023,13 @@ namespace System.Net.Sockets
                 int bytesTransferred;
                 SocketError errorCode = Interop.Winsock.WSARecv(
                     handle,
+#if MONO
+                    asyncResult._Windows_wsaBuffers,
+                    asyncResult._Windows_wsaBuffers.Length,
+#else
                     asyncResult._wsaBuffers,
                     asyncResult._wsaBuffers.Length,
+#endif
                     out bytesTransferred,
                     ref socketFlags,
                     asyncResult.OverlappedHandle,
@@ -1019,7 +1053,11 @@ namespace System.Net.Sockets
                 int bytesTransferred;
                 SocketError errorCode = Interop.Winsock.WSARecvFrom(
                     handle,
+#if MONO
+                    ref asyncResult._Windows_singleBuffer,
+#else
                     ref asyncResult._singleBuffer,
+#endif
                     1,
                     out bytesTransferred,
                     ref socketFlags,
@@ -1130,5 +1168,8 @@ namespace System.Net.Sockets
 
             return errorCode;
         }
+#if MONO
+    } // Windows
+#endif
     }
 }

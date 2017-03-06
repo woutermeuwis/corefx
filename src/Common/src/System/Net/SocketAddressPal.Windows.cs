@@ -9,8 +9,18 @@ using System.Text;
 
 namespace System.Net
 {
-    internal static class SocketAddressPal
+    internal static partial class SocketAddressPal
     {
+#if MONO
+    private static class Windows
+    {
+        static Windows()
+        {
+            if (!Environment.IsRunningOnWindows)
+                throw new PlatformNotSupportedException();
+        }
+#endif
+
         public const int IPv6AddressSize = 28;
         public const int IPv4AddressSize = 16;
         public const int DataOffset = 2;
@@ -98,5 +108,8 @@ namespace System.Net
                 buffer[8 + i] = address[i];
             }
         }
+#if MONO
+    } // Windows
+#endif
     }
 }

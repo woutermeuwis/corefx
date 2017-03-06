@@ -14,13 +14,21 @@ namespace System.Net
         private WindowsIdentity _windowsIdentity;
 
         // Security: We need an assert for a call into WindowsIdentity.GetCurrent.
+#if MONO
+        private void Windows_SafeCaptureIdentity()
+#else
         private void SafeCaptureIdentity()
+#endif
         {
             _windowsIdentity = WindowsIdentity.GetCurrent();
         }
 
         // Just like ContextCopy.
+#if MONO
+        internal WindowsIdentity Windows_Identity
+#else
         internal WindowsIdentity Identity
+#endif
         {
             get
             {
@@ -71,7 +79,11 @@ namespace System.Net
             }
         }
 
+#if MONO
+        private void Windows_CleanupInternal()
+#else
         private void CleanupInternal()
+#endif
         {
             if (_windowsIdentity != null)
             {

@@ -13,13 +13,21 @@ namespace System.Net.Sockets
     // ConnectOverlappedAsyncResult - used to take care of storage for async Socket BeginConnect call.
     internal sealed partial class ConnectOverlappedAsyncResult : BaseOverlappedAsyncResult
     {
+#if MONO
+        private void Unix_CompletionCallback(SocketError errorCode)
+#else
         public void CompletionCallback(SocketError errorCode)
+#endif
         {
             CompletionCallback(0, errorCode);
         }
 
         // This method is called by base.CompletionPortCallback base.OverlappedCallback as part of IO completion
+#if MONO
+        private object Unix_PostCompletion(int numBytes)
+#else
         internal override object PostCompletion(int numBytes)
+#endif
         {
             var errorCode = (SocketError)ErrorCode;
             if (errorCode == SocketError.Success)

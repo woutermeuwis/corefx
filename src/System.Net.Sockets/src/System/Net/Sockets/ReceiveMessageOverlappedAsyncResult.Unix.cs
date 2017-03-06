@@ -10,12 +10,20 @@ namespace System.Net.Sockets
     {
         private int _socketAddressSize;
 
+#if MONO
+        private int Unix_GetSocketAddressSize()
+#else
         internal int GetSocketAddressSize()
+#endif
         {
             return _socketAddressSize;
         }
 
+#if MONO
+        private void Unix_CompletionCallback(int numBytes, byte[] socketAddress, int socketAddressSize, SocketFlags receivedFlags, IPPacketInformation ipPacketInformation, SocketError errorCode)
+#else
         public void CompletionCallback(int numBytes, byte[] socketAddress, int socketAddressSize, SocketFlags receivedFlags, IPPacketInformation ipPacketInformation, SocketError errorCode)
+#endif
         {
             Debug.Assert(_socketAddress != null, "_socketAddress was null");
             Debug.Assert(socketAddress == null || _socketAddress.Buffer == socketAddress, $"Unexpected socketAddress: {socketAddress}");

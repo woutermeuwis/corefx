@@ -14,12 +14,20 @@ namespace System.Net.Sockets
     {
         private int _socketAddressSize;
 
+#if MONO
+        private int Unix_GetSocketAddressSize()
+#else
         internal int GetSocketAddressSize()
+#endif
         {
             return _socketAddressSize;
         }
 
+#if MONO
+        private void Unix_CompletionCallback(int numBytes, byte[] socketAddress, int socketAddressSize, SocketFlags receivedFlags, SocketError errorCode)
+#else
         public void CompletionCallback(int numBytes, byte[] socketAddress, int socketAddressSize, SocketFlags receivedFlags, SocketError errorCode)
+#endif
         {
             if (_socketAddress != null)
             {

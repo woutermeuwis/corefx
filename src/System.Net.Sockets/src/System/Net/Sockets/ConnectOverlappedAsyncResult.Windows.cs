@@ -14,7 +14,11 @@ namespace System.Net.Sockets
     internal sealed partial class ConnectOverlappedAsyncResult : BaseOverlappedAsyncResult
     {
         // This method is called by base.CompletionPortCallback base.OverlappedCallback as part of IO completion
+#if MONO
+        private object Windows_PostCompletion(int numBytes)
+#else
         internal override object PostCompletion(int numBytes)
+#endif
         {
             SocketError errorCode = (SocketError)ErrorCode;
             Socket socket = (Socket)AsyncObject;
