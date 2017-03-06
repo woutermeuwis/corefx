@@ -8,7 +8,11 @@ namespace System.Net.Internals
 {
     internal static partial class SocketExceptionFactory
     {
+#if MONO
+        private static SocketException Windows_CreateSocketException(SocketError errorCode, int platformError)
+#else
         public static SocketException CreateSocketException(SocketError errorCode, int platformError)
+#endif
         {
             return new SocketException((int)errorCode);
         }

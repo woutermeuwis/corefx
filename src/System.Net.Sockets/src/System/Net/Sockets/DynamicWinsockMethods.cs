@@ -12,6 +12,14 @@ namespace System.Net.Sockets
 {
     internal sealed class DynamicWinsockMethods
     {
+#if MONO
+        static DynamicWinsockMethods()
+        {
+            if (!Environment.IsRunningOnWindows)
+                throw new PlatformNotSupportedException();
+        }
+#endif
+
         // In practice there will never be more than four of these, so its not worth a complicated
         // hash table structure.  Store them in a list and search through it.
         private static List<DynamicWinsockMethods> s_methodTable = new List<DynamicWinsockMethods>();

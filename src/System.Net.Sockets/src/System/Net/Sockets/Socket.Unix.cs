@@ -10,7 +10,11 @@ namespace System.Net.Sockets
 {
     public partial class Socket
     {
+#if MONO
+        private Socket Unix_GetOrCreateAcceptSocket(Socket acceptSocket, bool unused, string propertyName, out SafeCloseSocket handle)
+#else
         private Socket GetOrCreateAcceptSocket(Socket acceptSocket, bool unused, string propertyName, out SafeCloseSocket handle)
+#endif
         {
             // AcceptSocket is not supported on Unix.
             if (acceptSocket != null)
@@ -32,7 +36,11 @@ namespace System.Net.Sockets
             }
         }
 
+#if MONO
+        private void Unix_SendFileInternal(string fileName, byte[] preBuffer, byte[] postBuffer, TransmitFileOptions flags)
+#else
         private void SendFileInternal(string fileName, byte[] preBuffer, byte[] postBuffer, TransmitFileOptions flags)
+#endif
         {
             CheckTransmitFileOptions(flags);
 
@@ -129,7 +137,11 @@ namespace System.Net.Sockets
             }
         }
 
+#if MONO
+        private IAsyncResult Unix_BeginSendFileInternal(string fileName, byte[] preBuffer, byte[] postBuffer, TransmitFileOptions flags, AsyncCallback callback, object state)
+#else
         private IAsyncResult BeginSendFileInternal(string fileName, byte[] preBuffer, byte[] postBuffer, TransmitFileOptions flags, AsyncCallback callback, object state)
+#endif
         {
             CheckTransmitFileOptions(flags);
 
@@ -140,7 +152,11 @@ namespace System.Net.Sockets
             return TaskToApm.Begin(SendFileInternalAsync(fileStream, preBuffer, postBuffer), callback, state);
         }
 
+#if MONO
+        private void Unix_EndSendFileInternal(IAsyncResult asyncResult)
+#else
         private void EndSendFileInternal(IAsyncResult asyncResult)
+#endif
         {
             TaskToApm.End(asyncResult);
         }

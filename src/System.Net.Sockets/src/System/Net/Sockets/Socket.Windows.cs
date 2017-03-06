@@ -22,6 +22,9 @@ namespace System.Net.Sockets
             }
         }
 
+#if MONO
+        private bool Windows_AcceptEx(SafeCloseSocket listenSocketHandle, SafeCloseSocket acceptSocketHandle, IntPtr buffer, int len, int localAddressLength, int remoteAddressLength, out int bytesReceived, SafeHandle overlapped)
+#else
         internal bool AcceptEx(SafeCloseSocket listenSocketHandle,
             SafeCloseSocket acceptSocketHandle,
             IntPtr buffer,
@@ -30,6 +33,7 @@ namespace System.Net.Sockets
             int remoteAddressLength,
             out int bytesReceived,
             SafeHandle overlapped)
+#endif
         {
             EnsureDynamicWinsockMethods();
             AcceptExDelegate acceptEx = _dynamicWinsockMethods.GetDelegate<AcceptExDelegate>(listenSocketHandle);
@@ -44,6 +48,9 @@ namespace System.Net.Sockets
                 overlapped);
         }
 
+#if MONO
+        private void Windows_GetAcceptExSockaddrs(IntPtr buffer, int receiveDataLength, int localAddressLength, int remoteAddressLength, out IntPtr localSocketAddress, out int localSocketAddressLength, out IntPtr remoteSocketAddress, out int remoteSocketAddressLength)
+#else
         internal void GetAcceptExSockaddrs(IntPtr buffer,
             int receiveDataLength,
             int localAddressLength,
@@ -52,6 +59,7 @@ namespace System.Net.Sockets
             out int localSocketAddressLength,
             out IntPtr remoteSocketAddress,
             out int remoteSocketAddressLength)
+#endif
         {
             EnsureDynamicWinsockMethods();
             GetAcceptExSockaddrsDelegate getAcceptExSockaddrs = _dynamicWinsockMethods.GetDelegate<GetAcceptExSockaddrsDelegate>(_handle);
@@ -66,7 +74,11 @@ namespace System.Net.Sockets
                 out remoteSocketAddressLength);
         }
 
+#if MONO
+        private bool Windows_DisconnectEx(SafeCloseSocket socketHandle, SafeHandle overlapped, int flags, int reserved)
+#else
         internal bool DisconnectEx(SafeCloseSocket socketHandle, SafeHandle overlapped, int flags, int reserved)
+#endif
         {
             EnsureDynamicWinsockMethods();
             DisconnectExDelegate disconnectEx = _dynamicWinsockMethods.GetDelegate<DisconnectExDelegate>(socketHandle);
@@ -74,7 +86,11 @@ namespace System.Net.Sockets
             return disconnectEx(socketHandle, overlapped, flags, reserved);
         }
 
+#if MONO
+        private bool Windows_DisconnectExBlocking(SafeCloseSocket socketHandle, IntPtr overlapped, int flags, int reserved)
+#else
         internal bool DisconnectExBlocking(SafeCloseSocket socketHandle, IntPtr overlapped, int flags, int reserved)
+#endif
         {
             EnsureDynamicWinsockMethods();
             DisconnectExDelegateBlocking disconnectEx_Blocking = _dynamicWinsockMethods.GetDelegate<DisconnectExDelegateBlocking>(socketHandle);
@@ -82,6 +98,9 @@ namespace System.Net.Sockets
             return disconnectEx_Blocking(socketHandle, overlapped, flags, reserved);
         }
 
+#if MONO
+        private bool Windows_ConnectEx(SafeCloseSocket socketHandle, IntPtr socketAddress, int socketAddressSize, IntPtr buffer, int dataLength, out int bytesSent, SafeHandle overlapped)
+#else
         internal bool ConnectEx(SafeCloseSocket socketHandle,
             IntPtr socketAddress,
             int socketAddressSize,
@@ -89,6 +108,7 @@ namespace System.Net.Sockets
             int dataLength,
             out int bytesSent,
             SafeHandle overlapped)
+#endif
         {
             EnsureDynamicWinsockMethods();
             ConnectExDelegate connectEx = _dynamicWinsockMethods.GetDelegate<ConnectExDelegate>(socketHandle);
@@ -96,7 +116,11 @@ namespace System.Net.Sockets
             return connectEx(socketHandle, socketAddress, socketAddressSize, buffer, dataLength, out bytesSent, overlapped);
         }
 
+#if MONO
+        private SocketError Windows_WSARecvMsg(SafeCloseSocket socketHandle, IntPtr msg, out int bytesTransferred, SafeHandle overlapped, IntPtr completionRoutine)
+#else
         internal SocketError WSARecvMsg(SafeCloseSocket socketHandle, IntPtr msg, out int bytesTransferred, SafeHandle overlapped, IntPtr completionRoutine)
+#endif
         {
             EnsureDynamicWinsockMethods();
             WSARecvMsgDelegate recvMsg = _dynamicWinsockMethods.GetDelegate<WSARecvMsgDelegate>(socketHandle);
@@ -104,7 +128,11 @@ namespace System.Net.Sockets
             return recvMsg(socketHandle, msg, out bytesTransferred, overlapped, completionRoutine);
         }
 
+#if MONO
+        private SocketError Windows_WSARecvMsgBlocking(IntPtr socketHandle, IntPtr msg, out int bytesTransferred, IntPtr overlapped, IntPtr completionRoutine)
+#else
         internal SocketError WSARecvMsgBlocking(IntPtr socketHandle, IntPtr msg, out int bytesTransferred, IntPtr overlapped, IntPtr completionRoutine)
+#endif
         {
             EnsureDynamicWinsockMethods();
             WSARecvMsgDelegateBlocking recvMsg_Blocking = _dynamicWinsockMethods.GetDelegate<WSARecvMsgDelegateBlocking>(_handle);
@@ -112,7 +140,11 @@ namespace System.Net.Sockets
             return recvMsg_Blocking(socketHandle, msg, out bytesTransferred, overlapped, completionRoutine);
         }
 
+#if MONO
+        private bool Windows_TransmitPackets(SafeCloseSocket socketHandle, IntPtr packetArray, int elementCount, int sendSize, SafeNativeOverlapped overlapped, TransmitFileOptions flags)
+#else
         internal bool TransmitPackets(SafeCloseSocket socketHandle, IntPtr packetArray, int elementCount, int sendSize, SafeNativeOverlapped overlapped, TransmitFileOptions flags)
+#endif
         {
             EnsureDynamicWinsockMethods();
             TransmitPacketsDelegate transmitPackets = _dynamicWinsockMethods.GetDelegate<TransmitPacketsDelegate>(socketHandle);
@@ -120,7 +152,11 @@ namespace System.Net.Sockets
             return transmitPackets(socketHandle, packetArray, elementCount, sendSize, overlapped, flags);
         }
 
+#if MONO
+        private static IntPtr[] Windows_SocketListToFileDescriptorSet(IList socketList)
+#else
         internal static IntPtr[] SocketListToFileDescriptorSet(IList socketList)
+#endif
         {
             if (socketList == null || socketList.Count == 0)
             {
@@ -143,7 +179,11 @@ namespace System.Net.Sockets
 
         // Transform the list socketList such that the only sockets left are those
         // with a file descriptor contained in the array "fileDescriptorArray".
+#if MONO
+        private static void Windows_SelectFileDescriptor(IList socketList, IntPtr[] fileDescriptorSet)
+#else
         internal static void SelectFileDescriptor(IList socketList, IntPtr[] fileDescriptorSet)
+#endif
         {
             // Walk the list in order.
             //
@@ -187,7 +227,11 @@ namespace System.Net.Sockets
             }
         }
 
+#if MONO
+        private Socket Windows_GetOrCreateAcceptSocket(Socket acceptSocket, bool checkDisconnected, string propertyName, out SafeCloseSocket handle)
+#else
         private Socket GetOrCreateAcceptSocket(Socket acceptSocket, bool checkDisconnected, string propertyName, out SafeCloseSocket handle)
+#endif
         {
             // If an acceptSocket isn't specified, then we need to create one.
             if (acceptSocket == null)
@@ -206,7 +250,11 @@ namespace System.Net.Sockets
             return acceptSocket;
         }
 
+#if MONO
+        private void Windows_SendFileInternal(string fileName, byte[] preBuffer, byte[] postBuffer, TransmitFileOptions flags)
+#else
         private void SendFileInternal(string fileName, byte[] preBuffer, byte[] postBuffer, TransmitFileOptions flags)
+#endif
         {
             // Open the file, if any
             FileStream fileStream = OpenFile(fileName);
@@ -237,7 +285,11 @@ namespace System.Net.Sockets
             }
         }
 
+#if MONO
+        private IAsyncResult Windows_BeginSendFileInternal(string fileName, byte[] preBuffer, byte[] postBuffer, TransmitFileOptions flags, AsyncCallback callback, object state)
+#else
         private IAsyncResult BeginSendFileInternal(string fileName, byte[] preBuffer, byte[] postBuffer, TransmitFileOptions flags, AsyncCallback callback, object state)
+#endif
         {
             FileStream fileStream = OpenFile(fileName);
 
@@ -257,7 +309,11 @@ namespace System.Net.Sockets
             return asyncResult;
         }
 
+#if MONO
+        private void Windows_EndSendFileInternal(IAsyncResult asyncResult)
+#else
         private void EndSendFileInternal(IAsyncResult asyncResult)
+#endif
         {
             TransmitFileAsyncResult castedAsyncResult = asyncResult as TransmitFileAsyncResult;
             if (castedAsyncResult == null || castedAsyncResult.AsyncObject != this)
@@ -291,7 +347,11 @@ namespace System.Net.Sockets
 
         }
 
+#if MONO
+        private ThreadPoolBoundHandle Windows_GetOrAllocateThreadPoolBoundHandle()
+#else
         internal ThreadPoolBoundHandle GetOrAllocateThreadPoolBoundHandle()
+#endif
         {
             // There is a known bug that exists through Windows 7 with UDP and
             // SetFileCompletionNotificationModes.
