@@ -13,39 +13,74 @@ namespace System.Net.Sockets
         private SocketFlags _receivedFlags;
         private Action<int, byte[], int, SocketFlags, SocketError> _transferCompletionCallback;
 
-        internal int? SendPacketsDescriptorCount { get { return null; } }
+#if MONO
+        private int? Unix_SendPacketsDescriptorCount
+#else
+        internal int? SendPacketsDescriptorCount
+#endif
+        {
+            get { return null; }
+        }
 
+#if MONO
+        private void Unix_InitializeInternals()
+#else
         private void InitializeInternals()
+#endif
         {
             // No-op for *nix.
         }
 
+#if MONO
+        private void Unix_FreeInternals(bool calledFromFinalizer)
+#else
         private void FreeInternals(bool calledFromFinalizer)
+#endif
         {
             // No-op for *nix.
         }
 
+#if MONO
+        private void Unix_SetupSingleBuffer()
+#else
         private void SetupSingleBuffer()
+#endif
         {
             // No-op for *nix.
         }
 
+#if MONO
+        private void Unix_SetupMultipleBuffers()
+#else
         private void SetupMultipleBuffers()
+#endif
         {
             // No-op for *nix.
         }
 
+#if MONO
+        private void Unix_SetupSendPacketsElements()
+#else
         private void SetupSendPacketsElements()
+#endif
         {
             // No-op for *nix.
         }
 
+#if MONO
+        private void Unix_InnerComplete()
+#else
         private void InnerComplete()
+#endif
         {
             // No-op for *nix.
         }
 
+#if MONO
+        private void Unix_InnerStartOperationAccept(bool userSuppliedBuffer)
+#else
         private void InnerStartOperationAccept(bool userSuppliedBuffer)
+#endif
         {
             _acceptedFileDescriptor = (IntPtr)(-1);
         }
@@ -64,7 +99,11 @@ namespace System.Net.Sockets
             _acceptAddressBufferCount = socketAddressSize;
         }
 
+#if MONO
+        private unsafe SocketError Unix_DoOperationAccept(Socket socket, SafeCloseSocket handle, SafeCloseSocket acceptHandle)
+#else
         internal unsafe SocketError DoOperationAccept(Socket socket, SafeCloseSocket handle, SafeCloseSocket acceptHandle)
+#endif
         {
             if (_buffer != null)
             {
@@ -86,7 +125,11 @@ namespace System.Net.Sockets
             return socketError;
         }
 
+#if MONO
+        private void Unix_InnerStartOperationConnect()
+#else
         private void InnerStartOperationConnect()
+#endif
         {
             // No-op for *nix.
         }
@@ -96,7 +139,11 @@ namespace System.Net.Sockets
             CompletionCallback(0, SocketFlags.None, socketError);
         }
 
+#if MONO
+        private unsafe SocketError Unix_DoOperationConnect(Socket socket, SafeCloseSocket handle)
+#else
         internal unsafe SocketError DoOperationConnect(Socket socket, SafeCloseSocket handle)
+#endif
         {
             SocketError socketError = handle.AsyncContext.ConnectAsync(_socketAddress.Buffer, _socketAddress.Size, ConnectCompletionCallback);
             if (socketError != SocketError.IOPending)
@@ -106,12 +153,20 @@ namespace System.Net.Sockets
             return socketError;
         }
 
+#if MONO
+        private SocketError Unix_DoOperationDisconnect(Socket socket, SafeCloseSocket handle)
+#else
         internal SocketError DoOperationDisconnect(Socket socket, SafeCloseSocket handle)
+#endif
         {
             throw new PlatformNotSupportedException(SR.net_sockets_disconnect_notsupported);
         }
 
+#if MONO
+        private void Unix_InnerStartOperationDisconnect()
+#else
         private void InnerStartOperationDisconnect()
+#endif
         {
             throw new PlatformNotSupportedException(SR.net_sockets_disconnect_notsupported);
         }
@@ -133,13 +188,21 @@ namespace System.Net.Sockets
             _receivedFlags = receivedFlags;
         }
 
+#if MONO
+        private void Unix_InnerStartOperationReceive()
+#else
         private void InnerStartOperationReceive()
+#endif
         {
             _receivedFlags = System.Net.Sockets.SocketFlags.None;
             _socketAddressSize = 0;
         }
 
+#if MONO
+        private unsafe SocketError Unix_DoOperationReceive(SafeCloseSocket handle, out SocketFlags flags)
+#else
         internal unsafe SocketError DoOperationReceive(SafeCloseSocket handle, out SocketFlags flags)
+#endif
         {
             int bytesReceived;
             SocketError errorCode;
@@ -161,13 +224,21 @@ namespace System.Net.Sockets
             return errorCode;
         }
 
+#if MONO
+        private void Unix_InnerStartOperationReceiveFrom()
+#else
         private void InnerStartOperationReceiveFrom()
+#endif
         {
             _receivedFlags = System.Net.Sockets.SocketFlags.None;
             _socketAddressSize = 0;
         }
 
+#if MONO
+        private unsafe SocketError Unix_DoOperationReceiveFrom(SafeCloseSocket handle, out SocketFlags flags)
+#else
         internal unsafe SocketError DoOperationReceiveFrom(SafeCloseSocket handle, out SocketFlags flags)
+#endif
         {
             SocketError errorCode;
             int bytesReceived = 0;
@@ -190,7 +261,11 @@ namespace System.Net.Sockets
             return errorCode;
         }
 
+#if MONO
+        private void Unix_InnerStartOperationReceiveMessageFrom()
+#else
         private void InnerStartOperationReceiveMessageFrom()
+#endif
         {
             _receiveMessageFromPacketInfo = default(IPPacketInformation);
             _receivedFlags = System.Net.Sockets.SocketFlags.None;
@@ -214,7 +289,11 @@ namespace System.Net.Sockets
             _receiveMessageFromPacketInfo = ipPacketInformation;
         }
 
+#if MONO
+        private unsafe SocketError Unix_DoOperationReceiveMessageFrom(Socket socket, SafeCloseSocket handle)
+#else
         internal unsafe SocketError DoOperationReceiveMessageFrom(Socket socket, SafeCloseSocket handle)
+#endif
         {
             bool isIPv4, isIPv6;
             Socket.GetIPProtocolInformation(socket.AddressFamily, _socketAddress, out isIPv4, out isIPv6);
@@ -232,13 +311,21 @@ namespace System.Net.Sockets
             return socketError;
         }
 
+#if MONO
+        private void Unix_InnerStartOperationSend()
+#else
         private void InnerStartOperationSend()
+#endif
         {
             _receivedFlags = System.Net.Sockets.SocketFlags.None;
             _socketAddressSize = 0;
         }
 
+#if MONO
+        private unsafe SocketError Unix_DoOperationSend(SafeCloseSocket handle)
+#else
         internal unsafe SocketError DoOperationSend(SafeCloseSocket handle)
+#endif
         {
             int bytesSent;
             SocketError errorCode;
@@ -260,23 +347,39 @@ namespace System.Net.Sockets
             return errorCode;
         }
 
+#if MONO
+        private void Unix_InnerStartOperationSendPackets()
+#else
         private void InnerStartOperationSendPackets()
+#endif
         {
             throw new PlatformNotSupportedException();
         }
 
+#if MONO
+        private SocketError Unix_DoOperationSendPackets(Socket socket, SafeCloseSocket handle)
+#else
         internal SocketError DoOperationSendPackets(Socket socket, SafeCloseSocket handle)
+#endif
         {
             throw new PlatformNotSupportedException();
         }
 
+#if MONO
+        private void Unix_InnerStartOperationSendTo()
+#else
         private void InnerStartOperationSendTo()
+#endif
         {
             _receivedFlags = System.Net.Sockets.SocketFlags.None;
             _socketAddressSize = 0;
         }
 
+#if MONO
+        private SocketError Unix_DoOperationSendTo(SafeCloseSocket handle)
+#else
         internal SocketError DoOperationSendTo(SafeCloseSocket handle)
+#endif
         {
             int bytesSent;
             int socketAddressLen = _socketAddress.Size;
@@ -299,7 +402,11 @@ namespace System.Net.Sockets
             return errorCode;
         }
 
+#if MONO
+        private void Unix_LogBuffer(int size)
+#else
         internal void LogBuffer(int size)
+#endif
         {
             if (!NetEventSource.IsEnabled) return;
 
@@ -313,12 +420,20 @@ namespace System.Net.Sockets
             }
         }
 
+#if MONO
+        private void Unix_LogSendPacketsBuffers(int size)
+#else
         internal void LogSendPacketsBuffers(int size)
+#endif
         {
             throw new PlatformNotSupportedException();
         }
 
+#if MONO
+        private SocketError Unix_FinishOperationAccept(Internals.SocketAddress remoteSocketAddress)
+#else
         private SocketError FinishOperationAccept(Internals.SocketAddress remoteSocketAddress)
+#endif
         {
             System.Buffer.BlockCopy(_acceptBuffer, 0, remoteSocketAddress.Buffer, 0, _acceptAddressBufferCount);
             _acceptSocket = _currentSocket.CreateAcceptSocket(
@@ -327,23 +442,39 @@ namespace System.Net.Sockets
             return SocketError.Success;
         }
 
+#if MONO
+        private SocketError Unix_FinishOperationConnect()
+#else
         private SocketError FinishOperationConnect()
+#endif
         {
             // No-op for *nix.
             return SocketError.Success;
         }
 
+#if MONO
+        private unsafe int Unix_GetSocketAddressSize()
+#else
         private unsafe int GetSocketAddressSize()
+#endif
         {
             return _socketAddressSize;
         }
 
+#if MONO
+        private unsafe void Unix_FinishOperationReceiveMessageFrom()
+#else
         private unsafe void FinishOperationReceiveMessageFrom()
+#endif
         {
             // No-op for *nix.
         }
 
+#if MONO
+        private void Unix_FinishOperationSendPackets()
+#else
         private void FinishOperationSendPackets()
+#endif
         {
             throw new PlatformNotSupportedException();
         }

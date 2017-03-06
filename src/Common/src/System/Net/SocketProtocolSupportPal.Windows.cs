@@ -12,8 +12,18 @@ using SocketType = System.Net.Internals.SocketType;
 
 namespace System.Net
 {
-    internal class SocketProtocolSupportPal
+    internal partial class SocketProtocolSupportPal
     {
+#if MONO
+    private static class Windows
+    {
+        static Windows()
+        {
+            if (!Environment.IsRunningOnWindows)
+                throw new PlatformNotSupportedException();
+        }
+#endif
+
         private static bool s_ipv4 = true;
         private static bool s_ipv6 = true;
 
@@ -91,5 +101,8 @@ namespace System.Net
 
             return ret;
         }
+#if MONO
+    } // Windows
+#endif
     }
 }

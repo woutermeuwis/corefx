@@ -18,9 +18,15 @@ namespace System.Net.Sockets
     public partial class SocketAsyncEventArgs : EventArgs, IDisposable
     {
         // Struct sizes needed for some custom marshaling.
+#if MONO
+        internal static readonly int Windows_s_controlDataSize = Marshal.SizeOf<Interop.Winsock.ControlData>();
+        internal static readonly int Windows_s_controlDataIPv6Size = Marshal.SizeOf<Interop.Winsock.ControlDataIPv6>();
+        internal static readonly int Windows_s_wsaMsgSize = Marshal.SizeOf<Interop.Winsock.WSAMsg>();
+#else
         internal static readonly int s_controlDataSize = Marshal.SizeOf<Interop.Winsock.ControlData>();
         internal static readonly int s_controlDataIPv6Size = Marshal.SizeOf<Interop.Winsock.ControlDataIPv6>();
         internal static readonly int s_wsaMsgSize = Marshal.SizeOf<Interop.Winsock.WSAMsg>();
+#endif
 
         // Buffer,Offset,Count property variables.
         private WSABuffer _wsaBuffer;
@@ -79,7 +85,11 @@ namespace System.Net.Sockets
         private int _pinnedSingleBufferOffset;
         private int _pinnedSingleBufferCount;
 
+#if MONO
+        private int? Windows_SendPacketsDescriptorCount
+#else
         internal int? SendPacketsDescriptorCount
+#endif
         {
             get
             {
@@ -87,34 +97,58 @@ namespace System.Net.Sockets
             }
         }
 
+#if MONO
+        private void Windows_InitializeInternals()
+#else
         private void InitializeInternals()
+#endif
         {
             // Zero tells TransmitPackets to select a default send size.
             _sendPacketsSendSize = 0;
         }
 
+#if MONO
+        private void Windows_FreeInternals(bool calledFromFinalizer)
+#else
         private void FreeInternals(bool calledFromFinalizer)
+#endif
         {
             // Free native overlapped data.
             FreeOverlapped(calledFromFinalizer);
         }
 
+#if MONO
+        private void Windows_SetupSingleBuffer()
+#else
         private void SetupSingleBuffer()
+#endif
         {
             CheckPinSingleBuffer(true);
         }
 
+#if MONO
+        private void Windows_SetupMultipleBuffers()
+#else
         private void SetupMultipleBuffers()
+#endif
         {
             CheckPinMultipleBuffers();
         }
 
+#if MONO
+        private void Windows_SetupSendPacketsElements()
+#else
         private void SetupSendPacketsElements()
+#endif
         {
             _sendPacketsElementsInternal = null;
         }
 
+#if MONO
+        private void Windows_InnerComplete()
+#else
         private void InnerComplete()
+#endif
         {
             CompleteIOCPOperation();
         }
@@ -195,7 +229,11 @@ namespace System.Net.Sockets
             _ptrNativeOverlapped?.FreeNativeOverlapped();
         }
 
+#if MONO
+        private void Windows_InnerStartOperationAccept(bool userSuppliedBuffer)
+#else
         private void InnerStartOperationAccept(bool userSuppliedBuffer)
+#endif
         {
             if (!userSuppliedBuffer)
             {
@@ -203,7 +241,11 @@ namespace System.Net.Sockets
             }
         }
 
+#if MONO
+        private unsafe SocketError Windows_DoOperationAccept(Socket socket, SafeCloseSocket handle, SafeCloseSocket acceptHandle)
+#else
         internal unsafe SocketError DoOperationAccept(Socket socket, SafeCloseSocket handle, SafeCloseSocket acceptHandle)
+#endif
         {
             PrepareIOCPOperation();
 
@@ -221,7 +263,11 @@ namespace System.Net.Sockets
             return ProcessIOCPResult(success, bytesTransferred);
         }
 
+#if MONO
+        private void Windows_InnerStartOperationConnect()
+#else
         private void InnerStartOperationConnect()
+#endif
         {
             // ConnectEx uses a sockaddr buffer containing he remote address to which to connect.
             // It can also optionally take a single buffer of data to send after the connection is complete.
@@ -232,7 +278,11 @@ namespace System.Net.Sockets
             CheckPinNoBuffer();
         }
 
+#if MONO
+        private unsafe SocketError Windows_DoOperationConnect(Socket socket, SafeCloseSocket handle)
+#else
         internal unsafe SocketError DoOperationConnect(Socket socket, SafeCloseSocket handle)
+#endif
         {
             PrepareIOCPOperation();
 
@@ -249,12 +299,20 @@ namespace System.Net.Sockets
             return ProcessIOCPResult(success, bytesTransferred);
         }
 
+#if MONO
+        private void Windows_InnerStartOperationDisconnect()
+#else
         private void InnerStartOperationDisconnect()
+#endif
         {
             CheckPinNoBuffer();
         }
 
+#if MONO
+        private SocketError Windows_DoOperationDisconnect(Socket socket, SafeCloseSocket handle)
+#else
         internal SocketError DoOperationDisconnect(Socket socket, SafeCloseSocket handle)
+#endif
         {
             PrepareIOCPOperation();
 
@@ -267,7 +325,11 @@ namespace System.Net.Sockets
             return ProcessIOCPResult(success, 0);
         }
 
+#if MONO
+        private void Windows_InnerStartOperationReceive()
+#else
         private void InnerStartOperationReceive()
+#endif
         {
             // WWSARecv uses a WSABuffer array describing buffers of data to send.
             //
@@ -284,7 +346,11 @@ namespace System.Net.Sockets
             //   An array of WSABuffer descriptors is allocated.
         }
 
+#if MONO
+        private unsafe SocketError Windows_DoOperationReceive(SafeCloseSocket handle, out SocketFlags flags)
+#else
         internal unsafe SocketError DoOperationReceive(SafeCloseSocket handle, out SocketFlags flags)
+#endif
         {
             PrepareIOCPOperation();
 
@@ -320,7 +386,11 @@ namespace System.Net.Sockets
             return ProcessIOCPResult(socketError == SocketError.Success, bytesTransferred);
         }
 
+#if MONO
+        private void Windows_InnerStartOperationReceiveFrom()
+#else
         private void InnerStartOperationReceiveFrom()
+#endif
         {
             // WSARecvFrom uses e a WSABuffer array describing buffers in which to 
             // receive data and from which to send data respectively. Single and multiple buffers
@@ -340,7 +410,11 @@ namespace System.Net.Sockets
             PinSocketAddressBuffer();
         }
 
+#if MONO
+        private unsafe SocketError Windows_DoOperationReceiveFrom(SafeCloseSocket handle, out SocketFlags flags)
+#else
         internal unsafe SocketError DoOperationReceiveFrom(SafeCloseSocket handle, out SocketFlags flags)
+#endif
         {
             PrepareIOCPOperation();
 
@@ -378,7 +452,11 @@ namespace System.Net.Sockets
             return ProcessIOCPResult(socketError == SocketError.Success, bytesTransferred);
         }
 
+#if MONO
+        private void Windows_InnerStartOperationReceiveMessageFrom()
+#else
         private void InnerStartOperationReceiveMessageFrom()
+#endif
         {
             // WSARecvMsg uses a WSAMsg descriptor.
             // The WSAMsg buffer is pinned with a GCHandle to avoid complicating the use of Overlapped.
@@ -467,7 +545,11 @@ namespace System.Net.Sockets
             }
         }
 
+#if MONO
+        private unsafe SocketError Windows_DoOperationReceiveMessageFrom(Socket socket, SafeCloseSocket handle)
+#else
         internal unsafe SocketError DoOperationReceiveMessageFrom(Socket socket, SafeCloseSocket handle)
+#endif
         {
             PrepareIOCPOperation();
 
@@ -482,7 +564,11 @@ namespace System.Net.Sockets
             return ProcessIOCPResult(socketError == SocketError.Success, bytesTransferred);
         }
 
+#if MONO
+        private void Windows_InnerStartOperationSend()
+#else
         private void InnerStartOperationSend()
+#endif
         {
             // WSASend uses a WSABuffer array describing buffers of data to send.
             //
@@ -499,7 +585,11 @@ namespace System.Net.Sockets
             //   An array of WSABuffer descriptors is allocated.
         }
 
+#if MONO
+        private unsafe SocketError Windows_DoOperationSend(SafeCloseSocket handle)
+#else
         internal unsafe SocketError DoOperationSend(SafeCloseSocket handle)
+#endif
         {
             PrepareIOCPOperation();
 
@@ -533,7 +623,11 @@ namespace System.Net.Sockets
             return ProcessIOCPResult(socketError == SocketError.Success, bytesTransferred);
         }
 
+#if MONO
+        private void Windows_InnerStartOperationSendPackets()
+#else
         private void InnerStartOperationSendPackets()
+#endif
         {
             // Prevent mutithreaded manipulation of the list.
             if (_sendPacketsElements != null)
@@ -622,7 +716,11 @@ namespace System.Net.Sockets
             CheckPinSendPackets();
         }
 
+#if MONO
+        private SocketError Windows_DoOperationSendPackets(Socket socket, SafeCloseSocket handle)
+#else
         internal SocketError DoOperationSendPackets(Socket socket, SafeCloseSocket handle)
+#endif
         {
             PrepareIOCPOperation();
 
@@ -637,7 +735,11 @@ namespace System.Net.Sockets
             return ProcessIOCPResult(result, 0);
         }
 
+#if MONO
+        private void Windows_InnerStartOperationSendTo()
+#else
         private void InnerStartOperationSendTo()
+#endif
         {
             // WSASendTo uses a WSABuffer array describing buffers in which to 
             // receive data and from which to send data respectively. Single and multiple buffers
@@ -657,7 +759,11 @@ namespace System.Net.Sockets
             PinSocketAddressBuffer();
         }
 
+#if MONO
+        private SocketError Windows_DoOperationSendTo(SafeCloseSocket handle)
+#else
         internal SocketError DoOperationSendTo(SafeCloseSocket handle)
+#endif
         {
             PrepareIOCPOperation();
 
@@ -1017,7 +1123,11 @@ namespace System.Net.Sockets
             _pinState = PinState.SendPackets;
         }
 
+#if MONO
+        private void Windows_LogBuffer(int size)
+#else
         internal void LogBuffer(int size)
+#endif
         {
             if (!NetEventSource.IsEnabled) return;
 
@@ -1047,7 +1157,11 @@ namespace System.Net.Sockets
             }
         }
 
+#if MONO
+        private void Windows_LogSendPacketsBuffers(int size)
+#else
         internal void LogSendPacketsBuffers(int size)
+#endif
         {
             if (!NetEventSource.IsEnabled) return;
 
@@ -1069,7 +1183,11 @@ namespace System.Net.Sockets
             }
         }
 
+#if MONO
+        private SocketError Windows_FinishOperationAccept(Internals.SocketAddress remoteSocketAddress)
+#else
         private SocketError FinishOperationAccept(Internals.SocketAddress remoteSocketAddress)
+#endif
         {
             SocketError socketError;
             IntPtr localAddr;
@@ -1113,7 +1231,11 @@ namespace System.Net.Sockets
             return socketError;
         }
 
+#if MONO
+        private SocketError Windows_FinishOperationConnect()
+#else
         private SocketError FinishOperationConnect()
+#endif
         {
             SocketError socketError;
 
@@ -1139,12 +1261,20 @@ namespace System.Net.Sockets
             return socketError;
         }
 
+#if MONO
+        private unsafe int Windows_GetSocketAddressSize()
+#else
         private unsafe int GetSocketAddressSize()
+#endif
         {
             return *(int*)_ptrSocketAddressBufferSize;
         }
 
+#if MONO
+        private unsafe void Windows_FinishOperationReceiveMessageFrom()
+#else
         private unsafe void FinishOperationReceiveMessageFrom()
+#endif
         {
             Interop.Winsock.WSAMsg* PtrMessage = (Interop.Winsock.WSAMsg*)Marshal.UnsafeAddrOfPinnedArrayElement(_wsaMessageBuffer, 0);
 
@@ -1165,7 +1295,11 @@ namespace System.Net.Sockets
             }
         }
 
+#if MONO
+        private void Windows_FinishOperationSendPackets()
+#else
         private void FinishOperationSendPackets()
+#endif
         {
             // Close the files if open.
             if (_sendPacketsFileStreams != null)

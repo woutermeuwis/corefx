@@ -10,8 +10,18 @@ using System.Threading;
 
 namespace System.Net
 {
-    internal class SocketProtocolSupportPal
+    internal partial class SocketProtocolSupportPal
     {
+#if MONO
+    private static class Unix
+    {
+        static Unix()
+        {
+            if (!Environment.IsRunningOnUnix)
+                throw new PlatformNotSupportedException();
+        }
+#endif
+
         private static bool s_ipv4 = true;
         private static bool s_ipv6 = true;
 
@@ -69,5 +79,8 @@ namespace System.Net
                 }
             }
         }
+#if MONO
+    } // Unix
+#endif
     }
 }
