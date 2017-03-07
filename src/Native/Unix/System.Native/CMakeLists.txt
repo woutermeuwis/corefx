@@ -33,18 +33,21 @@ add_library(System.Native
     ${VERSION_FILE_PATH}
 )
 
-
-add_library(System.Native-Static
-    STATIC
-    ${NATIVE_SOURCES}
-    ${VERSION_FILE_PATH}
-)
-SET_TARGET_PROPERTIES(System.Native-Static PROPERTIES PREFIX "")
-SET_TARGET_PROPERTIES(System.Native-Static PROPERTIES OUTPUT_NAME System.Native CLEAN_DIRECT_OUTPUT 1)
+if (NOT MONO)
+    add_library(System.Native-Static
+        STATIC
+        ${NATIVE_SOURCES}
+        ${VERSION_FILE_PATH}
+    )
+    SET_TARGET_PROPERTIES(System.Native-Static PROPERTIES PREFIX "")
+    SET_TARGET_PROPERTIES(System.Native-Static PROPERTIES OUTPUT_NAME System.Native CLEAN_DIRECT_OUTPUT 1)
+endif()
 
 if (CMAKE_SYSTEM_NAME STREQUAL Linux AND NOT CLR_CMAKE_PLATFORM_ANDROID)
     target_link_libraries(System.Native rt)
 endif ()
 
 install_library_and_symbols (System.Native)
-install (TARGETS System.Native-Static DESTINATION .)
+if (NOT MONO)
+    install (TARGETS System.Native-Static DESTINATION .)
+endif()
