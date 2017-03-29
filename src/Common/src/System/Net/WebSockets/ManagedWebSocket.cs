@@ -1205,7 +1205,7 @@ namespace System.Net.WebSockets
         {
             int maskShift = maskIndex * 8;
             int shiftedMask = (int)(((uint)mask >> maskShift) | ((uint)mask << (32 - maskShift)));
-
+#if MONO_FEATUR_SIMD
             // Try to use SIMD.  We can if the number of bytes we're trying to mask is at least as much
             // as the width of a vector and if the width is an even multiple of the mask.
             if (Vector.IsHardwareAccelerated &&
@@ -1225,6 +1225,7 @@ namespace System.Net.WebSockets
                 // Since we processed full masks at a time, we don't need to update maskIndex, and
                 // toMaskOffset has already been updated to point to the correct location.
             }
+#endif
 
             // If there are any bytes remaining (either we couldn't use vectors, or the count wasn't
             // an even multiple of the vector width), process them without vectors.
