@@ -20,7 +20,7 @@ namespace System.Linq.Expressions
     /// Lambda expressions take input through parameters and are expected to be fully bound.
     /// </remarks>
     [DebuggerTypeProxy(typeof(LambdaExpressionProxy))]
-    public abstract class LambdaExpression : Expression, IParameterProvider
+    public abstract partial class LambdaExpression : Expression, IParameterProvider
     {
         private readonly Expression _body;
 
