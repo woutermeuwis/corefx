@@ -18,11 +18,6 @@ namespace System.Net
         private List<ListenerAsyncResult> _asyncWaitQueue = new List<ListenerAsyncResult>();
         private Dictionary<HttpConnection, HttpConnection> _connections = new Dictionary<HttpConnection, HttpConnection>();
 
-        internal SslStream CreateSslStream(Stream innerStream, bool ownsStream, RemoteCertificateValidationCallback callback)
-        {
-            return new SslStream(innerStream, ownsStream, callback);
-        }
-
         public HttpListenerTimeoutManager TimeoutManager
         {
             get
@@ -32,14 +27,9 @@ namespace System.Net
             }
         }
 
-        public HttpListenerPrefixCollection Prefixes
-        {
-            get
-            {
-                CheckDisposed();
-                return _prefixes;
-            }
-        }
+        private void AddPrefixCore(string uriPrefix) => HttpEndPointManager.AddPrefix(uriPrefix, this);
+
+        private void RemovePrefixCore(string uriPrefix) => HttpEndPointManager.RemovePrefix(uriPrefix, this);
 
         public void Start()
         {
@@ -71,14 +61,8 @@ namespace System.Net
 
         public bool UnsafeConnectionNtlmAuthentication
         {
-            get
-            {
-                throw new PlatformNotSupportedException();
-            }
-            set
-            {
-                throw new PlatformNotSupportedException();
-            }
+            get => throw new PlatformNotSupportedException();
+            set => throw new PlatformNotSupportedException();
         }
 
         public void Stop()
