@@ -10,7 +10,7 @@ using System.Globalization;
 
 namespace System.Data.ProviderBase
 {
-    internal sealed class FieldNameLookup
+    internal sealed partial class FieldNameLookup
     {
         // hashtable stores the index into the _fieldNames, match via case-sensitive
         private Hashtable _fieldNameLookup;

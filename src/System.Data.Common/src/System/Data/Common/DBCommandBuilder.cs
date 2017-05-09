@@ -10,7 +10,7 @@ using System.Text.RegularExpressions;
 
 namespace System.Data.Common
 {
-    public abstract class DbCommandBuilder : Component
+    public abstract partial class DbCommandBuilder : Component
     {
         private class ParameterNames
         {

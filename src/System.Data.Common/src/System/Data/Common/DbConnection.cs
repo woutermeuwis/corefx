@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace System.Data.Common
 {
-    public abstract class DbConnection : Component, IDbConnection
+    public abstract partial class DbConnection : Component, IDbConnection
     {
         internal bool _suppressStateChangeForReconnection;
 
