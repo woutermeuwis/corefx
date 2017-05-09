@@ -37,7 +37,7 @@ namespace System.Data
             Column.GetHashCode() ^ IsDescending.GetHashCode();
     }
 
-    internal sealed class Index
+    internal sealed partial class Index
     {
         private sealed class IndexTree : RBTree<int>
         {

@@ -17,7 +17,7 @@ namespace System.Data
     /// </summary>
     [DefaultProperty(nameof(Table))]
     [DefaultEvent("PositionChanged")]
-    public class DataView : MarshalByValueComponent, IBindingListView, System.ComponentModel.ITypedList, ISupportInitializeNotification
+    public partial class DataView : MarshalByValueComponent, IBindingListView, System.ComponentModel.ITypedList, ISupportInitializeNotification
     {
         private DataViewManager _dataViewManager;
         private DataTable _table;
