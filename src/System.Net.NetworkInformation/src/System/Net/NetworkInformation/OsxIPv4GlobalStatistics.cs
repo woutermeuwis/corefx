@@ -4,7 +4,6 @@
 
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 
 namespace System.Net.NetworkInformation
 {
@@ -51,12 +50,12 @@ namespace System.Net.NetworkInformation
             _defaultTtl = statistics.DefaultTtl;
             _forwarding = statistics.Forwarding == 1;
 
-            HashSet<string> interfaceSet = new HashSet<string>();
+            Dictionary<string, object> interfaceSet = new Dictionary<string, object>();
             int numIPAddresses = 0;
             Interop.Sys.EnumerateInterfaceAddresses(
                 (name, addressInfo, netmaskInfo) =>
                 {
-                    interfaceSet.Add(name);
+                    interfaceSet.TryAdd(name, null);
                     numIPAddresses++;
                 },
                 null,

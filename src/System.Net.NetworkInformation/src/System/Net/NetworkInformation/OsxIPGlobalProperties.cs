@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace System.Net.NetworkInformation
@@ -58,7 +57,21 @@ namespace System.Net.NetworkInformation
         public override IPEndPoint[] GetActiveTcpListeners()
         {
             TcpConnectionInformation[] allConnections = GetActiveTcpConnections();
-            return allConnections.Where(tci => tci.State != TcpState.Listen).Select(tci => tci.RemoteEndPoint).ToArray();
+            IPEndPoint[] endPoints = new IPEndPoint[allConnections.Length];
+
+            int j = 0;
+            for (int i = 0; i < allConnections.Length; i++)
+            {
+                if (allConnections[i].State == TcpState.Listen)
+                {
+                    continue;
+                }
+
+                endPoints[j++] = allConnections[i].RemoteEndPoint;
+            }
+
+            Array.Resize<IPEndPoint>(ref endPoints, j);
+            return endPoints;
         }
 
         public unsafe override IPEndPoint[] GetActiveUdpListeners()

@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Collections.Generic;
-using System.Linq;
 
 namespace System.Net.NetworkInformation
 {
@@ -44,7 +43,7 @@ namespace System.Net.NetworkInformation
 
         private static unsafe GatewayIPAddressInformationCollection GetGatewayAddresses(int interfaceIndex)
         {
-            HashSet<IPAddress> addressSet = new HashSet<IPAddress>();
+            Dictionary<IPAddress, object> addressSet = new Dictionary<IPAddress, object>();
             if (Interop.Sys.EnumerateGatewayAddressesForInterface((uint)interfaceIndex,
                 (gatewayAddressInfo) =>
                 {
@@ -54,14 +53,14 @@ namespace System.Net.NetworkInformation
                         Buffer.MemoryCopy(gatewayAddressInfo->AddressBytes, ipArrayPtr, ipBytes.Length, ipBytes.Length);
                     }
                     IPAddress ipAddress = new IPAddress(ipBytes);
-                    addressSet.Add(ipAddress);
+                    addressSet.TryAdd(ipAddress, null);
                 }) == -1)
             {
                 throw new NetworkInformationException(SR.net_PInvokeError);
             }
 
             GatewayIPAddressInformationCollection collection = new GatewayIPAddressInformationCollection();
-            foreach (IPAddress address in addressSet)
+            foreach (IPAddress address in addressSet.Keys)
             {
                 collection.InternalAdd(new SimpleGatewayIPAddressInformation(address));
             }

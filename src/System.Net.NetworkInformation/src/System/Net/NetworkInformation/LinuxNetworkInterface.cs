@@ -4,7 +4,6 @@
 
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 
 namespace System.Net.NetworkInformation
 {
@@ -91,7 +90,9 @@ namespace System.Net.NetworkInformation
                 }
                 else if (result == 0)
                 {
-                    return interfacesByName.Values.ToArray();
+                    LinuxNetworkInterface[] interfaces = new LinuxNetworkInterface[interfacesByName.Values.Count];
+                    interfacesByName.Values.CopyTo (interfaces, 0);
+                    return interfaces;
                 }
                 else
                 {

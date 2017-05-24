@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Collections.Generic;
-using System.Linq;
 
 namespace System.Net.NetworkInformation
 {
@@ -89,7 +88,9 @@ namespace System.Net.NetworkInformation
                 }
                 else if (result == 0)
                 {
-                    return interfacesByName.Values.ToArray();
+                    OsxNetworkInterface[] interfaces = new OsxNetworkInterface[interfacesByName.Values.Count];
+                    interfacesByName.Values.CopyTo (interfaces, 0);
+                    return interfaces;
                 }
                 else
                 {

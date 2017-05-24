@@ -4,7 +4,6 @@
 
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 
 namespace System.Net.NetworkInformation
 {
@@ -45,7 +44,14 @@ namespace System.Net.NetworkInformation
                 ? Sockets.AddressFamily.InterNetwork
                 : Sockets.AddressFamily.InterNetworkV6;
 
-            return _addresses.Any(addr => addr.AddressFamily == family);
+            foreach (var addr in _addresses)
+            {
+                if (addr.AddressFamily == family)
+                {
+                    return true;
+                }
+            }
+            return false;
         }
 
         /// <summary>
