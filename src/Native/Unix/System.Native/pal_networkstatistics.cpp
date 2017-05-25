@@ -249,7 +249,7 @@ extern "C" int32_t SystemNative_GetActiveTcpConnectionInfos(NativeTcpConnectionI
     assert(infoCount != nullptr);
 
     size_t estimatedSize = GetEstimatedTcpPcbSize();
-    uint8_t* buffer = new (std::nothrow) uint8_t[estimatedSize];
+    uint8_t* buffer = reinterpret_cast<uint8_t*>(malloc(estimatedSize));
     if (buffer == nullptr)
     {
         errno = ENOMEM;
@@ -261,10 +261,10 @@ extern "C" int32_t SystemNative_GetActiveTcpConnectionInfos(NativeTcpConnectionI
 
     while (sysctlbyname("net.inet.tcp.pcblist", buffer, &estimatedSize, newp, newlen) != 0)
     {
-        delete[] buffer;
+        free(buffer);
         size_t tmpEstimatedSize;
         if (!multiply_s(estimatedSize, static_cast<size_t>(2), &tmpEstimatedSize) ||
-            (buffer = new (std::nothrow) uint8_t[estimatedSize]) == nullptr)
+            (buffer = reinterpret_cast<uint8_t*>(malloc(estimatedSize))) == nullptr)
         {
             errno = ENOMEM;
             return -1;
@@ -276,7 +276,7 @@ extern "C" int32_t SystemNative_GetActiveTcpConnectionInfos(NativeTcpConnectionI
     if (count > *infoCount)
     {
         // Not enough space in caller-supplied buffer.
-        delete[] buffer;
+        free(buffer);
         *infoCount = count;
         return -1;
     }
@@ -322,7 +322,7 @@ extern "C" int32_t SystemNative_GetActiveTcpConnectionInfos(NativeTcpConnectionI
         ntci->RemoteEndPoint.Port = in_pcb.inp_fport;
     }
 
-    delete[] buffer;
+    free(buffer);
     return 0;
 }
 
@@ -349,7 +349,7 @@ extern "C" int32_t SystemNative_GetActiveUdpListeners(IPEndPointInfo* infos, int
     assert(infoCount != nullptr);
 
     size_t estimatedSize = GetEstimatedUdpPcbSize();
-    uint8_t* buffer = new (std::nothrow) uint8_t[estimatedSize];
+    uint8_t* buffer = reinterpret_cast<uint8_t*>(malloc(estimatedSize));
     if (buffer == nullptr)
     {
         errno = ENOMEM;
@@ -361,10 +361,10 @@ extern "C" int32_t SystemNative_GetActiveUdpListeners(IPEndPointInfo* infos, int
 
     while (sysctlbyname("net.inet.udp.pcblist", buffer, &estimatedSize, newp, newlen) != 0)
     {
-        delete[] buffer;
+        free(buffer);
         size_t tmpEstimatedSize;
         if (!multiply_s(estimatedSize, static_cast<size_t>(2), &tmpEstimatedSize) ||
-            (buffer = new (std::nothrow) uint8_t[estimatedSize]) == nullptr)
+            (buffer = reinterpret_cast<uint8_t*>(malloc(estimatedSize))) == nullptr)
         {
             errno = ENOMEM;
             return -1;
@@ -375,7 +375,7 @@ extern "C" int32_t SystemNative_GetActiveUdpListeners(IPEndPointInfo* infos, int
     if (count > *infoCount)
     {
         // Not enough space in caller-supplied buffer.
-        delete[] buffer;
+        free(buffer);
         *infoCount = count;
         return -1;
     }
@@ -410,7 +410,7 @@ extern "C" int32_t SystemNative_GetActiveUdpListeners(IPEndPointInfo* infos, int
         iepi->Port = in_pcb.inp_lport;
     }
 
-    delete[] buffer;
+    free(buffer);
     return 0;
 }
 
@@ -434,7 +434,7 @@ extern "C" int32_t SystemNative_GetNativeIPInterfaceStatistics(char* interfaceNa
         return -1;
     }
 
-    uint8_t* buffer = new (std::nothrow) uint8_t[len];
+    uint8_t* buffer = reinterpret_cast<uint8_t*>(malloc(len));
     if (buffer == nullptr)
     {
         errno = ENOMEM;
@@ -444,7 +444,7 @@ extern "C" int32_t SystemNative_GetNativeIPInterfaceStatistics(char* interfaceNa
     if (sysctl(statisticsMib, 6, buffer, &len, nullptr, 0) == -1)
     {
         // Not enough space.
-        delete[] buffer;
+        free(buffer);
         memset(retStats, 0, sizeof(NativeIPInterfaceStatistics));
         return -1;
     }
@@ -471,13 +471,13 @@ extern "C" int32_t SystemNative_GetNativeIPInterfaceStatistics(char* interfaceNa
             retStats->OutMulticastPackets = systemStats.ifi_omcasts;
             retStats->InDrops = systemStats.ifi_iqdrops;
             retStats->InNoProto = systemStats.ifi_noproto;
-            delete[] buffer;
+            free(buffer);
             return 0;
         }
     }
 
     // No statistics were found with the given interface index; shouldn't happen.
-    delete[] buffer;
+    free(buffer);
     memset(retStats, 0, sizeof(NativeIPInterfaceStatistics));
     return -1;
 }
@@ -492,7 +492,7 @@ extern "C" int32_t SystemNative_GetNumRoutes()
         return -1;
     }
 
-    uint8_t* buffer = new (std::nothrow) uint8_t[len];
+    uint8_t* buffer = reinterpret_cast<uint8_t*>(malloc(len));
     if (buffer == nullptr)
     {
         errno = ENOMEM;
@@ -501,7 +501,7 @@ extern "C" int32_t SystemNative_GetNumRoutes()
 
     if (sysctl(routeDumpMib, 6, buffer, &len, nullptr, 0) == -1)
     {
-        delete[] buffer;
+        free(buffer);
         return -1;
     }
 
@@ -520,7 +520,7 @@ extern "C" int32_t SystemNative_GetNumRoutes()
         headPtr += rtmsg->rtm_msglen;
     }
 
-    delete[] buffer;
+    free(buffer);
     return count;
 }
 

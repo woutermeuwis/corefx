@@ -156,7 +156,7 @@ extern "C" int32_t SystemNative_EnumerateGatewayAddressesForInterface(uint32_t i
         return -1;
     }
 
-    uint8_t* buffer = new (std::nothrow) uint8_t[byteCount];
+    uint8_t* buffer = reinterpret_cast<uint8_t*>(malloc(byteCount));
     if (buffer == nullptr)
     {
         errno = ENOMEM;
@@ -165,8 +165,8 @@ extern "C" int32_t SystemNative_EnumerateGatewayAddressesForInterface(uint32_t i
 
     while (sysctl(routeDumpName, 6, buffer, &byteCount, nullptr, 0) != 0)
     {
-        delete[] buffer;
-        buffer = new (std::nothrow) uint8_t[byteCount];
+        free (buffer);
+        buffer = reinterpret_cast<uint8_t*>(malloc(byteCount));
         if (buffer == nullptr)
         {
             errno = ENOMEM;
@@ -194,7 +194,7 @@ extern "C" int32_t SystemNative_EnumerateGatewayAddressesForInterface(uint32_t i
         }
     }
 
-    delete[] buffer;
+    free(buffer);
     return 0;
 }
 #endif // HAVE_RT_MSGHDR
