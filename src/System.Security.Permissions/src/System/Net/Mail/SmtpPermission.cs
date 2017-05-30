@@ -7,6 +7,7 @@ using System.Security.Permissions;
 
 namespace System.Net.Mail
 {
+    [Serializable]
     public sealed class SmtpPermission : CodeAccessPermission, IUnrestrictedPermission
     {
         public SmtpPermission(bool unrestricted) { }

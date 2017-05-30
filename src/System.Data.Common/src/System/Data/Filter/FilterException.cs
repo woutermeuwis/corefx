@@ -8,6 +8,7 @@ using System.Runtime.Serialization;
 
 namespace System.Data
 {
+    [Serializable]
     public class InvalidExpressionException : DataException
     {
         protected InvalidExpressionException(SerializationInfo info, StreamingContext context)
@@ -22,6 +23,7 @@ namespace System.Data
         public InvalidExpressionException(string message, Exception innerException) : base(message, innerException) { }
     }
 
+    [Serializable]
     public class EvaluateException : InvalidExpressionException
     {
         protected EvaluateException(SerializationInfo info, StreamingContext context)
@@ -36,6 +38,7 @@ namespace System.Data
         public EvaluateException(string message, Exception innerException) : base(message, innerException) { }
     }
 
+    [Serializable]
     public class SyntaxErrorException : InvalidExpressionException
     {
         protected SyntaxErrorException(SerializationInfo info, StreamingContext context)

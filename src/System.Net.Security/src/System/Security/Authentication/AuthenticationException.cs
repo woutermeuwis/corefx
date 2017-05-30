@@ -11,6 +11,7 @@ namespace System.Security.Authentication
     /// The authentication process can be retried with different parameters subject to
     /// remote party willingness of accepting that.
     /// </summary>
+    [Serializable]
     public class AuthenticationException : SystemException
     {
         public AuthenticationException() { }
@@ -29,6 +30,7 @@ namespace System.Security.Authentication
     /// underlined stream.
     /// </para>
     /// </summary>
+    [Serializable]
     public class InvalidCredentialException : AuthenticationException
     {
         public InvalidCredentialException() { }

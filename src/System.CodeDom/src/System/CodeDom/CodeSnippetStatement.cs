@@ -4,6 +4,7 @@
 
 namespace System.CodeDom
 {
+    [Serializable]
     public class CodeSnippetStatement : CodeStatement
     {
         private string _value;

@@ -4,6 +4,7 @@
 
 namespace System.CodeDom
 {
+    [Serializable]
     public class CodeArgumentReferenceExpression : CodeExpression
     {
         private string _parameterName;

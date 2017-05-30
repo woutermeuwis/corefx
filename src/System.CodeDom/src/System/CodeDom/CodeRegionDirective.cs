@@ -4,6 +4,7 @@
 
 namespace System.CodeDom
 {
+    [Serializable]
     public class CodeRegionDirective : CodeDirective
     {
         private string _regionText;

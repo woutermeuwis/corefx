@@ -7,6 +7,7 @@ using System.Security.Permissions;
 
 namespace System.Diagnostics
 {
+    [Serializable]
     [AttributeUsage(AttributeTargets.Assembly | AttributeTargets.Class | AttributeTargets.Struct
         | AttributeTargets.Constructor | AttributeTargets.Method | AttributeTargets.Event, AllowMultiple = true, Inherited = false)]
     public class EventLogPermissionAttribute : CodeAccessSecurityAttribute

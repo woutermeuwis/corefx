@@ -13,6 +13,7 @@ namespace System.Security.Claims
     /// <summary>
     /// An Identity that is represented by a set of claims.
     /// </summary>
+    [Serializable]
     public class ClaimsIdentity : IIdentity
     {
         private const string PreFix = "System.Security.ClaimsIdentity.";

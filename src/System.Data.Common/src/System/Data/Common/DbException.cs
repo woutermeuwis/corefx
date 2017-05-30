@@ -4,6 +4,7 @@
 
 namespace System.Data.Common
 {
+    [Serializable]
     public abstract class DbException : System.Runtime.InteropServices.ExternalException
     {
         protected DbException() : base() { }

@@ -4,6 +4,7 @@
 
 namespace System.Diagnostics
 {
+    [Serializable]
     public class PerformanceCounterPermissionEntry
     {
         public PerformanceCounterPermissionEntry(PerformanceCounterPermissionAccess permissionAccess, string machineName, string categoryName) { }

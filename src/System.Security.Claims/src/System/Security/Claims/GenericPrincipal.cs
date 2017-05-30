@@ -9,6 +9,7 @@ using System.Security.Claims;
 
 namespace System.Security.Principal
 {
+    [Serializable]
     public class GenericPrincipal : ClaimsPrincipal
     {
         private readonly IIdentity m_identity;

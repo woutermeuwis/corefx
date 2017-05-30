@@ -6,6 +6,7 @@ using System.Runtime.Serialization;
 
 namespace System.Configuration
 {
+    [Serializable]
     public class SettingsPropertyIsReadOnlyException : Exception
     {
         public SettingsPropertyIsReadOnlyException(String message)

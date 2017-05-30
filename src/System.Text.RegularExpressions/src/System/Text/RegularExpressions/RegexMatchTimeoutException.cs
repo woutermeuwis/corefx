@@ -9,6 +9,7 @@ namespace System.Text.RegularExpressions
     /// <summary>
     /// This is the exception that is thrown when a RegEx matching timeout occurs.
     /// </summary>
+    [Serializable]
     public class RegexMatchTimeoutException : TimeoutException, ISerializable
     {
         /// <summary>

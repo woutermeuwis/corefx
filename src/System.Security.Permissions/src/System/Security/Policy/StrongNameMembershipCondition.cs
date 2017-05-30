@@ -6,6 +6,7 @@ using System.Security.Permissions;
 
 namespace System.Security.Policy
 {
+    [Serializable]
     public sealed partial class StrongNameMembershipCondition : ISecurityEncodable, ISecurityPolicyEncodable, IMembershipCondition
     {
         public StrongNameMembershipCondition(StrongNamePublicKeyBlob blob, string name, Version version) { }

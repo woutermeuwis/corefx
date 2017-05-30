@@ -4,6 +4,7 @@
 
 namespace System.Net
 {
+    [Serializable]
     public class EndpointPermission
     {
         internal EndpointPermission() { }

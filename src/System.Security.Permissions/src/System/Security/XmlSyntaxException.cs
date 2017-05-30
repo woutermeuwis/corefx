@@ -6,6 +6,7 @@ using System.Runtime.Serialization;
 
 namespace System.Security
 {
+    [Serializable]
     public sealed partial class XmlSyntaxException : SystemException
     {
         public XmlSyntaxException() { }

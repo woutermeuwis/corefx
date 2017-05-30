@@ -4,6 +4,7 @@
 
 namespace System.Security.Policy
 {
+    [Serializable]
     public sealed partial class PermissionRequestEvidence : EvidenceBase
     {
         public PermissionRequestEvidence(PermissionSet request, PermissionSet optional, PermissionSet denied) { }

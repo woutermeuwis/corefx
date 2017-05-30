@@ -7,6 +7,7 @@ using System.Reflection;
 
 namespace System.CodeDom.Compiler
 {
+    [Serializable]
     public partial class CompilerResults
     {
         private readonly CompilerErrorCollection _errors = new CompilerErrorCollection();

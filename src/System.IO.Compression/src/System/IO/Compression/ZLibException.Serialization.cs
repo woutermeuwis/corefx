@@ -6,6 +6,7 @@ using System.Runtime.Serialization;
 
 namespace System.IO.Compression
 {
+    [Serializable]
     internal partial class ZLibException : IOException, ISerializable
     {
         /// <summary>

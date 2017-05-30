@@ -6,6 +6,7 @@ using System.Reflection;
 
 namespace System.CodeDom
 {
+    [Serializable]
     public class CodeTypeDeclaration : CodeTypeMember
     {
         private readonly CodeTypeReferenceCollection _baseTypes = new CodeTypeReferenceCollection();

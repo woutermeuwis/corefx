@@ -4,6 +4,7 @@
 
 namespace System.Security.Policy
 {
+    [Serializable]
     public sealed partial class PolicyStatement : ISecurityEncodable, ISecurityPolicyEncodable
     {
         public PolicyStatement(PermissionSet permSet) { }

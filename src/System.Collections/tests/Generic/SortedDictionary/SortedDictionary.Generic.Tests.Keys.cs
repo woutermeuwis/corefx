@@ -68,7 +68,6 @@ namespace System.Collections.Tests
         {
             return (ICollection)(new SortedDictionary<string, string>().Keys);
         }
-        protected override bool SupportsSerialization { get { return false; } }
 
         protected override ICollection NonGenericICollectionFactory(int count)
         {

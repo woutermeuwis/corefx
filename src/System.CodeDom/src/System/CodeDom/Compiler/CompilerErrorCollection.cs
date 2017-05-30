@@ -6,6 +6,7 @@ using System.Collections;
 
 namespace System.CodeDom.Compiler
 {
+    [Serializable]
     public class CompilerErrorCollection : CollectionBase
     {
         public CompilerErrorCollection() { }

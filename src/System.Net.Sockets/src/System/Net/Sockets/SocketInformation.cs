@@ -4,6 +4,7 @@
 
 namespace System.Net.Sockets
 {
+    [Serializable]
     public struct SocketInformation
     {
         public byte[] ProtocolInformation { get; set; }

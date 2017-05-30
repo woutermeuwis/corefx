@@ -4,6 +4,7 @@
 
 namespace System.Security.Permissions
 {
+    [Serializable]
     public sealed partial class ReflectionPermission : CodeAccessPermission, IUnrestrictedPermission
     {
         public ReflectionPermission(PermissionState state) { }

@@ -6,6 +6,7 @@ using System.Security.Cryptography.X509Certificates;
 
 namespace System.Security.Policy
 {
+    [Serializable]
     public sealed partial class Publisher : EvidenceBase, IIdentityPermissionFactory
     {
         public Publisher(X509Certificate cert) { }

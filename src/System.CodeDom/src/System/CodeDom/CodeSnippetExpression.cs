@@ -4,6 +4,7 @@
 
 namespace System.CodeDom
 {
+    [Serializable]
     public class CodeSnippetExpression : CodeExpression
     {
         private string _value;

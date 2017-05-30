@@ -4,6 +4,7 @@
 
 namespace System.CodeDom
 {
+    [Serializable]
     public class CodeFieldReferenceExpression : CodeExpression
     {
         private string _fieldName;

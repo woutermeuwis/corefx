@@ -11,6 +11,7 @@ namespace System.IO
     // This class implements a TextWriter for writing characters to a Stream.
     // This is designed for character output in a particular Encoding, 
     // whereas the Stream class is designed for byte input and output.  
+    [Serializable]
     public class StreamWriter : TextWriter
     {
         // For UTF-8, the values of 1K for the default buffer size and 4K for the

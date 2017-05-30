@@ -321,6 +321,7 @@ namespace System.Collections
 
 
         // Implements a synchronization wrapper around a queue.
+        [Serializable]
         private class SynchronizedQueue : Queue
         {
             private Queue _q;
@@ -443,6 +444,7 @@ namespace System.Collections
         // Implements an enumerator for a Queue.  The enumerator uses the
         // internal version number of the list to ensure that no modifications are
         // made to the list while an enumeration is in progress.
+        [Serializable]
         private class QueueEnumerator : IEnumerator, ICloneable
         {
             private Queue _q;

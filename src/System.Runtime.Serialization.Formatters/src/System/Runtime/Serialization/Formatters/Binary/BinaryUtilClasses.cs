@@ -192,6 +192,7 @@ namespace System.Runtime.Serialization.Formatters.Binary
     }
 
     // Implements a Growable array
+    [Serializable]
     internal sealed class SizedArray : ICloneable
     {
         internal object[] _objects = null;
@@ -279,6 +280,7 @@ namespace System.Runtime.Serialization.Formatters.Binary
         }
     }
 
+    [Serializable]
     internal sealed class IntSizedArray : ICloneable
     {
         internal int[] _objects = new int[16];

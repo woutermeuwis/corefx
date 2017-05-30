@@ -13,6 +13,7 @@ namespace System.Security.Claims
     /// A Claim consists of a Type, Value, a Subject and an Issuer.
     /// Additional properties, ValueType, Properties and OriginalIssuer help understand the claim when making decisions.
     /// </summary>
+    [Serializable]
     public class Claim
     {
         private enum SerializationMask

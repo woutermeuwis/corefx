@@ -241,6 +241,7 @@ namespace System.Collections
             return objArray;
         }
 
+        [Serializable]
         private class SyncStack : Stack
         {
             private Stack _s;
@@ -351,6 +352,7 @@ namespace System.Collections
             }
         }
 
+        [Serializable]
         private class StackEnumerator : IEnumerator, ICloneable
         {
             private Stack _stack;

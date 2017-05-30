@@ -23,6 +23,7 @@ namespace System.Runtime.Serialization
         GenericTypeParameter = 0x00000002
     }
 
+    [Serializable]
 #if !FEATURE_SERIALIZATION
     public class CodeTypeReference : CodeObject
 #else

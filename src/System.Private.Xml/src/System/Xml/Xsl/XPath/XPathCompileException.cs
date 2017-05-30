@@ -7,6 +7,7 @@ using System.Text;
 
 namespace System.Xml.Xsl.XPath
 {
+    [Serializable]
     internal class XPathCompileException : XslLoadException
     {
         public string queryString;

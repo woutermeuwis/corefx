@@ -4,6 +4,7 @@
 
 namespace System.Security.Permissions
 {
+    [Serializable]
     public sealed partial class FileDialogPermission : CodeAccessPermission, IUnrestrictedPermission
     {
         public FileDialogPermission(FileDialogPermissionAccess access) { }

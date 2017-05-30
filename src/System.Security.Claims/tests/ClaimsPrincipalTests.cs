@@ -202,6 +202,12 @@ namespace System.Security.Claims
             AssertExtensions.Throws<ArgumentNullException>("reader", () => new ClaimsPrincipal((BinaryReader)null));
         }
 
+        [Fact]
+        public void ClaimPrincipal_SerializeDeserialize_Roundtrip()
+        {
+            Assert.NotNull(BinaryFormatterHelpers.Clone(new ClaimsPrincipal()));
+        }
+
         private class NonClaimsPrincipal : IPrincipal
         {
             public IIdentity Identity { get; set; }

@@ -4,6 +4,7 @@
 
 namespace System.CodeDom
 {
+    [Serializable]
     public class CodeMethodInvokeExpression : CodeExpression
     {
         private CodeMethodReferenceExpression _method;

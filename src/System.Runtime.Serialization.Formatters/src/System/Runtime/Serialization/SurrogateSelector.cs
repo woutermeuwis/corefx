@@ -186,6 +186,7 @@ namespace System.Runtime.Serialization
         }
     }
 
+    [Serializable]
     internal sealed class SurrogateKey
     {
         internal readonly Type _type;

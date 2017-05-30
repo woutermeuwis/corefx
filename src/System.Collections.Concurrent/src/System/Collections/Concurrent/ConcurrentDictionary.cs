@@ -34,6 +34,7 @@ namespace System.Collections.Concurrent
     /// </remarks>
     [DebuggerTypeProxy(typeof(IDictionaryDebugView<,>))]
     [DebuggerDisplay("Count = {Count}")]
+    [Serializable]
     public class ConcurrentDictionary<TKey, TValue> : IDictionary<TKey, TValue>, IDictionary, IReadOnlyDictionary<TKey, TValue>
     {
         /// <summary>
@@ -2035,6 +2036,7 @@ namespace System.Collections.Concurrent
         /// <summary>
         /// A node in a singly-linked list representing a particular hash table bucket.
         /// </summary>
+        [Serializable]
         private sealed class Node
         {
             internal readonly TKey _key;
@@ -2055,6 +2057,7 @@ namespace System.Collections.Concurrent
         /// A private class to represent enumeration over the dictionary that implements the 
         /// IDictionaryEnumerator interface.
         /// </summary>
+        [Serializable]
         private sealed class DictionaryEnumerator : IDictionaryEnumerator
         {
             IEnumerator<KeyValuePair<TKey, TValue>> _enumerator; // Enumerator over the dictionary.

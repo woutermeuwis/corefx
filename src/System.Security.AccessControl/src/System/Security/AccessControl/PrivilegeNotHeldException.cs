@@ -8,6 +8,7 @@ using System.Runtime.Serialization;
 
 namespace System.Security.AccessControl
 {
+    [Serializable]
     public sealed class PrivilegeNotHeldException : UnauthorizedAccessException, ISerializable
     {
         private readonly string _privilegeName = null;

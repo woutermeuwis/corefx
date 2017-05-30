@@ -18,6 +18,7 @@
     <Compile Include="FileInfo\Replace.cs" />
     <Compile Include="FileStream\Handle.cs" />
     <Compile Include="Directory\GetLogicalDrives.cs" />
+    <Compile Include="DirectoryInfo\Serialization.cs" />
     <Compile Include="FileStream\EndRead.cs" />
     <Compile Include="FileStream\EndWrite.cs" />
     <Compile Include="FileStream\LockUnlock.cs" />

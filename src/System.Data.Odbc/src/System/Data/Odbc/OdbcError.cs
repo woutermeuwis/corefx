@@ -4,6 +4,7 @@
 
 namespace System.Data.Odbc
 {
+    [Serializable]
     public sealed class OdbcError
     {
         //Data

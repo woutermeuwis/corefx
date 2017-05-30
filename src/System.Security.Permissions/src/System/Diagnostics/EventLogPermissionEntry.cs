@@ -4,6 +4,7 @@
 
 namespace System.Diagnostics
 {
+    [Serializable]
     public class EventLogPermissionEntry
     {
         public EventLogPermissionEntry(EventLogPermissionAccess permissionAccess, string machineName) { }

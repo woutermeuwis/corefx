@@ -7,6 +7,7 @@ using System.Threading;
 namespace System.Configuration
 {
     // This is a multithreadsafe version of System.Collections.Specialized.BitVector32.
+    [Serializable]
     internal struct SafeBitVector32
     {
         private volatile int _data;

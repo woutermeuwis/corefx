@@ -4,6 +4,7 @@
 
 namespace System.Security.Permissions
 {
+    [Serializable]
     public sealed partial class EnvironmentPermission : CodeAccessPermission, IUnrestrictedPermission
     {
         public EnvironmentPermission(EnvironmentPermissionAccess flag, string pathList) { }

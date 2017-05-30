@@ -527,6 +527,7 @@ namespace System.Net.Tests
         {
             var headers = new WebHeaderCollection();
             Assert.Throws<ArgumentException>(paramName, () => headers.Add(header));
+
         }
 
         [Fact]

@@ -6,6 +6,7 @@ using System.Runtime.Serialization;
 
 namespace System.IO
 {
+    [Serializable]
     public sealed class InvalidDataException : SystemException
     {
         public InvalidDataException()

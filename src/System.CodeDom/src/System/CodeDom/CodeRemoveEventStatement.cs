@@ -4,6 +4,7 @@
 
 namespace System.CodeDom
 {
+    [Serializable]
     public class CodeRemoveEventStatement : CodeStatement
     {
         private CodeEventReferenceExpression _eventRef;

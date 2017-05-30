@@ -7,6 +7,7 @@ using System.Security.Permissions;
 
 namespace System.Transactions
 {
+    [Serializable]
     public sealed class DistributedTransactionPermission : CodeAccessPermission, IUnrestrictedPermission
     {
         public DistributedTransactionPermission(PermissionState state) { }

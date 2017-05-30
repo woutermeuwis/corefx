@@ -6,6 +6,7 @@ using System.Collections.Generic;
 
 namespace System.Security.Policy
 {
+    [Serializable]
     public sealed partial class ApplicationTrust : EvidenceBase, ISecurityEncodable
     {
         public ApplicationTrust() { }

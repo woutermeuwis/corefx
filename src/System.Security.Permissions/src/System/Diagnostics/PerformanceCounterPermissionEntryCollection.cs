@@ -6,6 +6,7 @@ using System.Collections;
 
 namespace System.Diagnostics
 {
+    [Serializable]
     public class PerformanceCounterPermissionEntryCollection : CollectionBase
     {
         internal PerformanceCounterPermissionEntryCollection() { }

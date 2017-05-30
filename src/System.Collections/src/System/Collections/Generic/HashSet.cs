@@ -1757,6 +1757,7 @@ namespace System.Collections.Generic
             internal T value;
         }
 
+        [Serializable]
         public struct Enumerator : IEnumerator<T>, IEnumerator
         {
             private HashSet<T> _set;

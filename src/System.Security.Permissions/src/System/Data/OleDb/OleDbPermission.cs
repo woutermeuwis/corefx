@@ -8,6 +8,7 @@ using System.Security.Permissions;
 
 namespace System.Data.OleDb
 {
+    [Serializable]
     public sealed class OleDbPermission : DBDataPermission
     {
         public OleDbPermission() : base(default(PermissionState)) { }

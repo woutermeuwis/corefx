@@ -8,6 +8,7 @@ using System.Text;
 
 namespace System.Data.Odbc
 {
+    [Serializable]
     public sealed class OdbcException : System.Data.Common.DbException
     {
         private OdbcErrorCollection _odbcErrors = new OdbcErrorCollection();

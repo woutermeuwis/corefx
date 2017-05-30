@@ -7,6 +7,7 @@ using System.Runtime.Serialization;
 
 namespace System.Configuration
 {
+    [Serializable]
     public class SettingsAttributeDictionary : Hashtable
     {
         public SettingsAttributeDictionary() : base() { }

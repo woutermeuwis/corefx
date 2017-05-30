@@ -4,6 +4,7 @@
 
 namespace System.CodeDom
 {
+    [Serializable]
     public class CodeParameterDeclarationExpression : CodeExpression
     {
         private CodeTypeReference _type;

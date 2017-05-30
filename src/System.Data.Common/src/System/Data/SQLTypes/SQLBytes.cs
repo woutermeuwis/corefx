@@ -21,6 +21,7 @@ namespace System.Data.SqlTypes
         Stream = 3,
     }
 
+    [Serializable]
     [XmlSchemaProvider("GetXsdType")]
     public sealed class SqlBytes : INullable, IXmlSerializable, ISerializable
     {

@@ -9,6 +9,7 @@ using System.Threading;
 
 namespace System.Security.Permissions
 {
+    [Serializable]
     public sealed class PrincipalPermission : IPermission, ISecurityEncodable, IUnrestrictedPermission
     {
         private IDRole[] _idArray;

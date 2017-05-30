@@ -7,6 +7,7 @@ using System.Security;
 
 namespace System.Diagnostics
 {
+    [Serializable]
     public partial class Activity
     {
         /// <summary>
@@ -34,6 +35,7 @@ namespace System.Diagnostics
 
 #region private
         
+        [Serializable]
         private partial class KeyValueListNode
         {
         }

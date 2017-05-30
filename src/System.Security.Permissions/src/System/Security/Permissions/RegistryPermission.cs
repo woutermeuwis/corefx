@@ -6,6 +6,7 @@ using System.Security.AccessControl;
 
 namespace System.Security.Permissions
 {
+    [Serializable]
     public sealed partial class RegistryPermission : CodeAccessPermission, IUnrestrictedPermission
     {
         public RegistryPermission(PermissionState state) { }

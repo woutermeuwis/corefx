@@ -4,6 +4,7 @@
 
 namespace System.CodeDom
 {
+    [Serializable]
     public class CodeEventReferenceExpression : CodeExpression
     {
         private string _eventName;

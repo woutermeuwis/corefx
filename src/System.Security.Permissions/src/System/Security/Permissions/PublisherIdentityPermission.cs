@@ -6,6 +6,7 @@ using System.Security.Cryptography.X509Certificates;
 
 namespace System.Security.Permissions
 {
+    [Serializable]
     public sealed partial class PublisherIdentityPermission : CodeAccessPermission
     {
         public PublisherIdentityPermission(X509Certificate certificate) { }

@@ -4,6 +4,7 @@
 
 namespace System.CodeDom
 {
+    [Serializable]
     public class CodeSnippetTypeMember : CodeTypeMember
     {
         private string _text;

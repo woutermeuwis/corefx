@@ -4,6 +4,7 @@
 
 namespace System.CodeDom
 {
+    [Serializable]
     public class CodeLabeledStatement : CodeStatement
     {
         private string _label;

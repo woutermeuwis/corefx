@@ -7,6 +7,7 @@ using System.Security.Permissions;
 
 namespace System.Net
 {
+    [Serializable]
     public sealed class SocketPermission : CodeAccessPermission, IUnrestrictedPermission
     {
         public const int AllPorts = -1;

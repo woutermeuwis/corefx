@@ -12,6 +12,7 @@ using System.Text;
 
 namespace System.Security.Cryptography.X509Certificates
 {
+    [Serializable]
     public class X509Certificate2 : X509Certificate
     {
         private volatile byte[] _lazyRawData;

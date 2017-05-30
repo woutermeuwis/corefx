@@ -7,6 +7,7 @@ using System.Security.Permissions;
 
 namespace System.Security
 {
+    [Serializable]
     public partial class HostProtectionException : System.SystemException
     {
         public HostProtectionException() { }

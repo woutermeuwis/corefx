@@ -4,6 +4,7 @@
 
 namespace System.CodeDom
 {
+    [Serializable]
     public class CodeTypeParameter : CodeObject
     {
         private string _name;

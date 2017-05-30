@@ -6,6 +6,7 @@ using System.Security.Permissions;
 
 namespace System.Security
 {
+    [Serializable]
     public sealed partial class NamedPermissionSet : PermissionSet
     {
         public NamedPermissionSet(NamedPermissionSet permSet) : base(default(PermissionState)) { }

@@ -57,6 +57,7 @@ namespace System.Transactions.Distributed
     /// clones have the same capabilities as the original transaction, except for the ability to commit 
     /// the transaction.
     /// </summary>
+    [Serializable]
     internal class DistributedTransaction : ISerializable, IObjectReference
     {
         internal DistributedTransaction()
@@ -147,12 +148,14 @@ namespace System.Transactions.Distributed
             return new PlatformNotSupportedException(SR.DistributedNotSupported);
         }
 
+        [Serializable]
         internal class RealDistributedTransaction
         {
             internal InternalTransaction InternalTransaction { get; set; }
         }
     }
 
+    [Serializable]
     internal class DistributedDependentTransaction : DistributedTransaction
     {
         internal void Complete()
@@ -161,6 +164,7 @@ namespace System.Transactions.Distributed
         }
     }
 
+    [Serializable]
     internal class DistributedCommittableTransaction : DistributedTransaction
     {
         internal void BeginCommit(InternalTransaction tx)

@@ -6,6 +6,7 @@ using System.Runtime.Serialization;
 
 namespace System.Configuration
 {
+    [Serializable]
     public class SettingsPropertyNotFoundException : Exception
     {
         public SettingsPropertyNotFoundException(String message)

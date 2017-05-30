@@ -18,6 +18,7 @@ namespace System.ComponentModel.Design
     ///       a source control program.
     ///    </para>
     /// </summary>
+    [Serializable]
     public class CheckoutException : ExternalException
     {
         private const int E_ABORT = unchecked((int)0x80004004);

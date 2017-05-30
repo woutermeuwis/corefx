@@ -7,6 +7,7 @@ using System.Security.Permissions;
 
 namespace System.Net.PeerToPeer.Collaboration
 {
+    [Serializable]
     public sealed class PeerCollaborationPermission : CodeAccessPermission, IUnrestrictedPermission
     {
         public PeerCollaborationPermission(PermissionState state) { }

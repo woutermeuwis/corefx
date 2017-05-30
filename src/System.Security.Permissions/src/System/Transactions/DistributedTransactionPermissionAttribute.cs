@@ -7,6 +7,7 @@ using System.Security.Permissions;
 
 namespace System.Transactions
 {
+    [Serializable]
     [AttributeUsage(AttributeTargets.All, AllowMultiple = true)]
     public sealed class DistributedTransactionPermissionAttribute : CodeAccessSecurityAttribute
     {

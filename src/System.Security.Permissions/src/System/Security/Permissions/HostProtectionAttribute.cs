@@ -4,6 +4,7 @@
 
 namespace System.Security.Permissions
 {
+    [Serializable]
     [AttributeUsage((AttributeTargets)(4205), AllowMultiple = true, Inherited = false)]
     public sealed partial class HostProtectionAttribute : CodeAccessSecurityAttribute
     {

@@ -6,6 +6,7 @@ using System.Reflection;
 
 namespace System.CodeDom
 {
+    [Serializable]
     public class CodeTypeDelegate : CodeTypeDeclaration
     {
         private CodeTypeReference _returnType;

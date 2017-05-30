@@ -21,6 +21,7 @@ namespace System.Security
         string Attribute(string attributeName);
     }
 
+    [Serializable]
     public sealed class SecurityElement : ISecurityElementFactory
     {
         internal string _tag;

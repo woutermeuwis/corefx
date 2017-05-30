@@ -12,6 +12,7 @@ namespace System.Net
     ///     Provides an Internet Protocol (IP) address.
     ///   </para>
     /// </devdoc>
+    [Serializable]
     public class IPAddress
     {
         public static readonly IPAddress Any = new IPAddress(0x0000000000000000);

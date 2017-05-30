@@ -12,6 +12,7 @@ using System.Text;
 
 namespace System.Security.Cryptography.X509Certificates
 {
+    [Serializable]
     public class X509Certificate : IDisposable, IDeserializationCallback, ISerializable
     {
         private volatile byte[] _lazyCertHash;

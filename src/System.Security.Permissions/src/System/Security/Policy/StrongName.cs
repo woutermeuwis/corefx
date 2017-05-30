@@ -6,6 +6,7 @@ using System.Security.Permissions;
 
 namespace System.Security.Policy
 {
+    [Serializable]
     public sealed partial class StrongName : EvidenceBase, IIdentityPermissionFactory
     {
         public StrongName(StrongNamePublicKeyBlob blob, string name, Version version) { }

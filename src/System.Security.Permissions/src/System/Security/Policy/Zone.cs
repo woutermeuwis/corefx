@@ -4,6 +4,7 @@
 
 namespace System.Security.Policy
 {
+    [Serializable]
     public sealed partial class Zone : EvidenceBase, IIdentityPermissionFactory
     {
         public Zone(SecurityZone zone) { }

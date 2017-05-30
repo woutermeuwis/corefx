@@ -6,6 +6,7 @@ using System.Collections.Specialized;
 
 namespace System.CodeDom
 {
+    [Serializable]
     public class CodeCompileUnit : CodeObject
     {
         private StringCollection _assemblies = null;

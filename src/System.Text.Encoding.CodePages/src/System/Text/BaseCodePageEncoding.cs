@@ -41,6 +41,7 @@ namespace System.Text
     //       WORD        byteReplace;    // 2 bytes = 48     // default replacement byte(s)
     //       BYTE[]      data;           // data section
     //   }
+    [Serializable]
     internal abstract class BaseCodePageEncoding : EncodingNLS, ISerializable
     {
         internal const String CODE_PAGE_DATA_FILE_NAME = "codepages.nlp";

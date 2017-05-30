@@ -7,6 +7,7 @@ using System.Security;
 
 namespace System
 {
+    [Serializable]
     public sealed class ApplicationIdentity : ISerializable
     {
         private ApplicationIdentity() { }

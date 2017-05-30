@@ -19,6 +19,7 @@ namespace System.Text.RegularExpressions
     /// contains static methods that allow use of regular expressions without instantiating
     /// a Regex explicitly.
     /// </summary>
+    [Serializable]
     public class Regex : ISerializable
     {
         protected internal string pattern;                   // The string pattern provided

@@ -4,6 +4,7 @@
 
 namespace System.Security.Policy
 {
+    [Serializable]
     public sealed partial class FileCodeGroup : CodeGroup
     {
         public FileCodeGroup(IMembershipCondition membershipCondition, Permissions.FileIOPermissionAccess access) : base(default(IMembershipCondition), default(PolicyStatement)) { }

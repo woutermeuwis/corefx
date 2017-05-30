@@ -8,6 +8,7 @@ using System.Security.Permissions;
 
 namespace System.Data.Odbc
 {
+    [Serializable]
     public sealed class OdbcPermission : DBDataPermission
     {
         public OdbcPermission() : base(default(PermissionState)) { }

@@ -4,6 +4,7 @@
 
 namespace System.CodeDom
 {
+    [Serializable]
     public class CodeChecksumPragma : CodeDirective
     {
         private string _fileName;

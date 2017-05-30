@@ -7,6 +7,7 @@ using System.Runtime.Serialization;
 
 namespace System.Data.Common
 {
+    [Serializable]
     internal sealed class NameValuePair
     {
         readonly private string _name;

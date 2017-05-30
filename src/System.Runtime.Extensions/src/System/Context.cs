@@ -8,11 +8,13 @@ using System.Runtime.Serialization;
 
 namespace System
 {
+    [Serializable]
     public abstract class ContextBoundObject : System.MarshalByRefObject
     {
         protected ContextBoundObject() { }
     }
 
+    [Serializable]
     public class ContextMarshalException : SystemException
     {
         public ContextMarshalException() : this(SR.Arg_ContextMarshalException, null)
@@ -34,6 +36,7 @@ namespace System
         }
     }
 
+    [Serializable]
     [AttributeUsage(AttributeTargets.Field, Inherited = false)]
     public partial class ContextStaticAttribute : System.Attribute
     {

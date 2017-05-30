@@ -31,6 +31,7 @@ namespace System.Resources
         public MissingManifestResourceException(string message, System.Exception inner) { }
         protected MissingManifestResourceException(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) { }
     }
+    [System.Serializable]
     public class MissingSatelliteAssemblyException : System.SystemException
     {
         public MissingSatelliteAssemblyException(): base()  { }
@@ -77,6 +78,7 @@ namespace System.Resources
         protected UltimateResourceFallbackLocation FallbackLocation { get { throw null; } set { } }
         public static ResourceManager CreateFileBasedResourceManager(string baseName, string resourceDir, System.Type usingResourceSet) { throw null; }    
     }
+    [System.Serializable]
     public class ResourceSet : System.IDisposable, System.Collections.IEnumerable
     {
         protected ResourceSet() { }

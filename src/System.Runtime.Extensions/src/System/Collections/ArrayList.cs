@@ -859,6 +859,7 @@ namespace System.Collections
 
         // This class wraps an IList, exposing it as a ArrayList
         // Note this requires reimplementing half of ArrayList...
+        [Serializable]
         private class IListWrapper : ArrayList
         {
             private IList _list;
@@ -1263,6 +1264,7 @@ namespace System.Collections
 
             // This is the enumerator for an IList that's been wrapped in another
             // class that implements all of ArrayList's methods.
+            [Serializable]
             private sealed class IListWrapperEnumWrapper : IEnumerator, ICloneable
             {
                 private IEnumerator _en;
@@ -1330,6 +1332,7 @@ namespace System.Collections
             }
         }
 
+        [Serializable]
         private class SyncArrayList : ArrayList
         {
             private ArrayList _list;
@@ -1685,6 +1688,7 @@ namespace System.Collections
         }
 
 
+        [Serializable]
         private class SyncIList : IList
         {
             private IList _list;
@@ -1814,6 +1818,7 @@ namespace System.Collections
             }
         }
 
+        [Serializable]
         private class FixedSizeList : IList
         {
             private IList _list;
@@ -1906,6 +1911,7 @@ namespace System.Collections
             }
         }
 
+        [Serializable]
         private class FixedSizeArrayList : ArrayList
         {
             private ArrayList _list;
@@ -2127,6 +2133,7 @@ namespace System.Collections
             }
         }
 
+        [Serializable]
         private class ReadOnlyList : IList
         {
             private IList _list;
@@ -2219,6 +2226,7 @@ namespace System.Collections
             }
         }
 
+        [Serializable]
         private class ReadOnlyArrayList : ArrayList
         {
             private ArrayList _list;
@@ -2440,6 +2448,7 @@ namespace System.Collections
         // Implements an enumerator for a ArrayList. The enumerator uses the
         // internal version number of the list to ensure that no modifications are
         // made to the list while an enumeration is in progress.
+        [Serializable]
         private sealed class ArrayListEnumerator : IEnumerator, ICloneable
         {
             private ArrayList _list;
@@ -2500,6 +2509,7 @@ namespace System.Collections
 
         // Implementation of a generic list subrange. An instance of this class
         // is returned by the default implementation of List.GetRange.
+        [Serializable]
         private class Range : ArrayList
         {
             private ArrayList _baseList;
@@ -2933,6 +2943,7 @@ namespace System.Collections
             }
         }
 
+        [Serializable]
         private sealed class ArrayListEnumeratorSimple : IEnumerator, ICloneable
         {
             private ArrayList _list;

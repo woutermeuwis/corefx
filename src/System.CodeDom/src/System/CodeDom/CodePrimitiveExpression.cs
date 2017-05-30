@@ -4,6 +4,7 @@
 
 namespace System.CodeDom
 {
+    [Serializable]
     public class CodePrimitiveExpression : CodeExpression
     {
         public CodePrimitiveExpression() { }

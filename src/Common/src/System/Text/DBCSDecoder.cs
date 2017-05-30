@@ -8,6 +8,7 @@ using System.Diagnostics;
 
 namespace System.Text
 {
+    [Serializable]
     internal sealed class DecoderDBCS : Decoder
     {
         private readonly Encoding _encoding;

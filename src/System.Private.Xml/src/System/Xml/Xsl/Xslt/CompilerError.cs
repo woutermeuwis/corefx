@@ -6,6 +6,7 @@ using System.Collections;
 
 namespace System.Xml.Xsl.Xslt
 {
+    [Serializable]
     internal class CompilerError
     {
         public CompilerError(string fileName, int line, int column, string errorNumber, string errorText)
@@ -30,6 +31,7 @@ namespace System.Xml.Xsl.Xslt
         public string FileName { get; set; }
     }
 
+    [Serializable]
     internal class CompilerErrorCollection : CollectionBase
     {
         public CompilerErrorCollection() { }

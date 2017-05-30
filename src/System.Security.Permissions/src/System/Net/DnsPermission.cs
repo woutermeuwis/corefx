@@ -7,6 +7,7 @@ using System.Security.Permissions;
 
 namespace System.Net
 {
+    [Serializable]
     public sealed class DnsPermission : CodeAccessPermission, IUnrestrictedPermission
     {
         public DnsPermission(PermissionState state) { }

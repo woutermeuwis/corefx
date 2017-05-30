@@ -8,6 +8,7 @@ using System.Runtime.Serialization;
 
 namespace System.Security
 {
+    [Serializable]
     public partial class PermissionSet : ICollection, IEnumerable, IDeserializationCallback, ISecurityEncodable, IStackWalk
     {
         public PermissionSet(PermissionState state) { }

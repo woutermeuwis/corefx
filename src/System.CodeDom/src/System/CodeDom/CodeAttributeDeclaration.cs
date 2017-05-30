@@ -5,6 +5,7 @@
 
 namespace System.CodeDom
 {
+    [Serializable]
     public class CodeAttributeDeclaration
     {
         private string _name;

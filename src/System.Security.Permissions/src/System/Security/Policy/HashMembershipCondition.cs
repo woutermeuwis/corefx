@@ -7,6 +7,7 @@ using System.Security.Cryptography;
 
 namespace System.Security.Policy
 {
+    [Serializable]
     public sealed partial class HashMembershipCondition : IDeserializationCallback, ISerializable, ISecurityEncodable, ISecurityPolicyEncodable, IMembershipCondition
     {
         public HashMembershipCondition(HashAlgorithm hashAlg, byte[] value) { }

@@ -16,6 +16,7 @@ namespace System.Configuration
     ///     line
     ///     number information where possible.
     /// </summary>
+    [Serializable]
     public class ConfigurationException : SystemException
     {
         private string _filename;

@@ -4,6 +4,7 @@
 
 namespace System.Security.Policy
 {
+    [Serializable]
     public sealed partial class Site : EvidenceBase, IIdentityPermissionFactory
     {
         public Site(string name) { }

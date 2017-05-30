@@ -6,6 +6,7 @@ using System.Runtime.Serialization;
 
 namespace System.Configuration.Provider
 {
+    [Serializable]
     public class ProviderException : Exception
     {
         public ProviderException() { }

@@ -6,6 +6,7 @@ using System.Collections;
 
 namespace System.Security.Policy
 {
+    [Serializable]
     public sealed partial class PolicyLevel
     {
         internal PolicyLevel() { }

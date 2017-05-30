@@ -4,6 +4,7 @@
 
 namespace System.Security.Permissions
 {
+    [Serializable]
     public sealed partial class SiteIdentityPermission : CodeAccessPermission
     {
         public SiteIdentityPermission(PermissionState state) { }

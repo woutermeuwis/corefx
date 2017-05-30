@@ -4,6 +4,7 @@
 
 namespace System.Security.Policy
 {
+    [Serializable]
     public sealed partial class GacInstalled : EvidenceBase, IIdentityPermissionFactory
     {
         public GacInstalled() { }

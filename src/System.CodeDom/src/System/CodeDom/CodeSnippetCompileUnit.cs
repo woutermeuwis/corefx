@@ -4,6 +4,7 @@
 
 namespace System.CodeDom
 {
+    [Serializable]
     public class CodeSnippetCompileUnit : CodeCompileUnit
     {
         private string _value;

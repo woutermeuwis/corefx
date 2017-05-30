@@ -6,6 +6,7 @@ using System.Runtime.Serialization;
 
 namespace System.Data
 {
+    [Serializable]
     public sealed class DBConcurrencyException : SystemException
     {
         private DataRow[] _dataRows;

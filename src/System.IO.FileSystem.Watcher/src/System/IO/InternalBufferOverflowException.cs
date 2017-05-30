@@ -9,6 +9,7 @@ namespace System.IO
     /// <devdoc>
     ///    The exception that is thrown when the internal buffer overflows.
     /// </devdoc>
+    [Serializable]
     public class InternalBufferOverflowException : SystemException
     {
         /// <devdoc>

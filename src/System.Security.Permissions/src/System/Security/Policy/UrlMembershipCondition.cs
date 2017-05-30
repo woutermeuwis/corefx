@@ -4,6 +4,7 @@
 
 namespace System.Security.Policy
 {
+    [Serializable]
     public sealed partial class UrlMembershipCondition : ISecurityEncodable, IMembershipCondition, ISecurityPolicyEncodable
     {
         public UrlMembershipCondition(string url) { }

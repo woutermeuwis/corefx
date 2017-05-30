@@ -19,6 +19,7 @@ namespace System.Data.SqlTypes
     /// a ten-thousandth of currency unit to be stored in or retrieved from a
     /// database.
     /// </summary>
+    [Serializable]
     [StructLayout(LayoutKind.Sequential)]
     [XmlSchemaProvider("GetXsdType")]
     public struct SqlMoney : INullable, IComparable, IXmlSerializable

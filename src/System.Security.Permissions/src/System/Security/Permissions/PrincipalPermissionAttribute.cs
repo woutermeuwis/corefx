@@ -4,6 +4,7 @@
 
 namespace System.Security.Permissions
 {
+    [Serializable]
     [AttributeUsage((AttributeTargets)(68), AllowMultiple = true, Inherited = false)]
     public sealed partial class PrincipalPermissionAttribute : CodeAccessSecurityAttribute
     {

@@ -4,6 +4,7 @@
 
 namespace System.CodeDom
 {
+    [Serializable]
     public class CodeDelegateCreateExpression : CodeExpression
     {
         private CodeTypeReference _delegateType;

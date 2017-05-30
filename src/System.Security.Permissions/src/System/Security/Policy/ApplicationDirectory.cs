@@ -4,6 +4,7 @@
 
 namespace System.Security.Policy
 {
+    [Serializable]
     public sealed partial class ApplicationDirectory : EvidenceBase
     {
         public ApplicationDirectory(string name) { }

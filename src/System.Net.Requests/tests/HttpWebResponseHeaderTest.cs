@@ -10,7 +10,6 @@ using System.Runtime.Serialization.Formatters.Binary;
 
 using Xunit;
 using Xunit.Abstractions;
-using System.Runtime.Serialization;
 
 namespace System.Net.Tests
 {
@@ -142,7 +141,7 @@ namespace System.Net.Tests
                         else
                         {
                             // HttpWebResponse is not serializable on .NET Core.
-                            Assert.Throws<SerializationException>(() => formatter.Serialize(fs, hwr));
+                            Assert.Throws<PlatformNotSupportedException>(() => formatter.Serialize(fs, hwr));
                         }
                     }
                 }

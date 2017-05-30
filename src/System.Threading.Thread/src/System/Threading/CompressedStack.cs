@@ -6,6 +6,7 @@ using System.Runtime.Serialization;
 
 namespace System.Threading
 {
+    [Serializable]
     public sealed class CompressedStack : ISerializable
     {
         private CompressedStack()

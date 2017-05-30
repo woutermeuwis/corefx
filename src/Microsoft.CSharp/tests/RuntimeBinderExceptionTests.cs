@@ -20,6 +20,7 @@ namespace Microsoft.CSharp.RuntimeBinder.Tests
             Assert.Empty(rbe.Data);
             Assert.True((rbe.HResult & 0xFFFF0000) == 0x80130000); // Error from .NET
             Assert.Contains(rbe.GetType().FullName, rbe.Message); // Localized, but should contain type name.
+            BinaryFormatterHelpers.AssertRoundtrips(rbe);
         }
 
         [Fact]
@@ -33,6 +34,7 @@ namespace Microsoft.CSharp.RuntimeBinder.Tests
             Assert.Same(message, rbe.Message);
             rbe = new RuntimeBinderException(null);
             Assert.Equal(new RuntimeBinderException().Message, rbe.Message);
+            BinaryFormatterHelpers.AssertRoundtrips(rbe);
         }
 
 
@@ -43,6 +45,7 @@ namespace Microsoft.CSharp.RuntimeBinder.Tests
             Exception inner = new Exception("This is a test exception");
             RuntimeBinderException rbe = new RuntimeBinderException(message, inner);
             Assert.Same(inner, rbe.InnerException);
+            BinaryFormatterHelpers.AssertRoundtrips(rbe);
         }
     }
 }

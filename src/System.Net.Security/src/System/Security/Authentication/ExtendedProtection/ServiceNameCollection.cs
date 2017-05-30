@@ -10,6 +10,7 @@ using System.Net;
 
 namespace System.Security.Authentication.ExtendedProtection
 {
+    [Serializable]
     public class ServiceNameCollection : ReadOnlyCollectionBase
     {
         public ServiceNameCollection(ICollection items)

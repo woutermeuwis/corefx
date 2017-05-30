@@ -7,6 +7,7 @@ using System.Security.Permissions;
 
 namespace System.Data.OracleClient
 {
+    [Serializable]
     public sealed class OraclePermission : CodeAccessPermission, IUnrestrictedPermission
     {
         public OraclePermission(PermissionState state) { }

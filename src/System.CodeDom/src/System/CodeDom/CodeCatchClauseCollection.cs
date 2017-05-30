@@ -6,6 +6,7 @@ using System.Collections;
 
 namespace System.CodeDom
 {
+    [Serializable]
     public class CodeCatchClauseCollection : CollectionBase
     {
         public CodeCatchClauseCollection() { }

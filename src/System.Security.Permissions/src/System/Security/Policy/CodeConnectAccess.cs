@@ -4,6 +4,7 @@
 
 namespace System.Security.Policy
 {
+    [Serializable]
     public partial class CodeConnectAccess
     {
         public static readonly string AnyScheme;

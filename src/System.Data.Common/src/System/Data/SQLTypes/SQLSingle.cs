@@ -16,6 +16,7 @@ namespace System.Data.SqlTypes
     /// 3.40E +38 to be stored in or retrieved from a database.
     /// </summary>
     [StructLayout(LayoutKind.Sequential)]
+    [Serializable]
     [XmlSchemaProvider("GetXsdType")]
     public struct SqlSingle : INullable, IComparable, IXmlSerializable
     {

@@ -4,6 +4,7 @@
 
 namespace System.CodeDom
 {
+    [Serializable]
     public class CodeIndexerExpression : CodeExpression
     {
         private CodeExpressionCollection _indices;

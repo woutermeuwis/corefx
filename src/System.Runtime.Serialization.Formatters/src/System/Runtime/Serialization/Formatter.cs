@@ -9,6 +9,7 @@ using System.Reflection;
 
 namespace System.Runtime.Serialization
 {
+    [Serializable]
     [CLSCompliant(false)]
     public abstract class Formatter : IFormatter
     {

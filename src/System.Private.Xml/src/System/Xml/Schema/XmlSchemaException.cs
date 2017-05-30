@@ -13,6 +13,7 @@ namespace System.Xml.Schema
     using System.Diagnostics;
 
     /// <include file='doc\XmlSchemaException.uex' path='docs/doc[@for="XmlSchemaException"]/*' />
+    [Serializable]
     public class XmlSchemaException : SystemException
     {
         private string _res;

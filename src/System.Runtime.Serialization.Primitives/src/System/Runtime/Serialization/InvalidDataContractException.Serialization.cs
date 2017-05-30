@@ -6,6 +6,7 @@ using System;
 
 namespace System.Runtime.Serialization
 {
+    [Serializable]
     public partial class InvalidDataContractException : Exception
     {
         protected InvalidDataContractException(SerializationInfo info, StreamingContext context)

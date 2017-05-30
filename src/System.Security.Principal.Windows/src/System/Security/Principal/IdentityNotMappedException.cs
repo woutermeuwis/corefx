@@ -6,6 +6,7 @@ using System.Runtime.Serialization;
 
 namespace System.Security.Principal
 {
+    [Serializable]
     public sealed class IdentityNotMappedException : SystemException
     {
         private IdentityReferenceCollection _unmappedIdentities;

@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 
 namespace System.Net
 {
+    [Serializable]
     public partial class WebException : InvalidOperationException, ISerializable
     {
         private const WebExceptionStatus DefaultStatus = WebExceptionStatus.UnknownError;

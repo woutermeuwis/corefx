@@ -75,6 +75,7 @@ namespace System.DirectoryServices.ActiveDirectory
         }
     }
 
+    [Serializable]
     public class ActiveDirectoryObjectNotFoundException : Exception, ISerializable
     {
         private Type _objectType;
@@ -120,6 +121,7 @@ namespace System.DirectoryServices.ActiveDirectory
         }
     }
 
+    [Serializable]
     public class ActiveDirectoryOperationException : Exception, ISerializable
     {
         private int _errorCode = 0;
@@ -159,6 +161,7 @@ namespace System.DirectoryServices.ActiveDirectory
         }
     }
 
+    [Serializable]
     public class ActiveDirectoryServerDownException : Exception, ISerializable
     {
         private int _errorCode = 0;
@@ -222,6 +225,7 @@ namespace System.DirectoryServices.ActiveDirectory
         }
     }
 
+    [Serializable]
     public class ActiveDirectoryObjectExistsException : Exception
     {
         public ActiveDirectoryObjectExistsException(string message, Exception inner) : base(message, inner) { }
@@ -236,6 +240,7 @@ namespace System.DirectoryServices.ActiveDirectory
         }
     }
 
+    [Serializable]
     public class SyncFromAllServersOperationException : ActiveDirectoryOperationException, ISerializable
     {
         private SyncFromAllServersErrorInformation[] _errors = null;
@@ -277,6 +282,7 @@ namespace System.DirectoryServices.ActiveDirectory
         }
     }
 
+    [Serializable]
     public class ForestTrustCollisionException : ActiveDirectoryOperationException, ISerializable
     {
         private ForestTrustRelationshipCollisionCollection _collisions = new ForestTrustRelationshipCollisionCollection();

@@ -12,6 +12,7 @@ using System.Security.Permissions;
 
 namespace System.DirectoryServices.AccountManagement
 {
+    [Serializable()]
     abstract public class PrincipalException : SystemException
     {
         internal PrincipalException() : base() { }
@@ -29,6 +30,7 @@ namespace System.DirectoryServices.AccountManagement
         }
     }
 
+    [Serializable()]
     public class MultipleMatchesException : PrincipalException
     {
         public MultipleMatchesException() : base() { }
@@ -46,6 +48,7 @@ namespace System.DirectoryServices.AccountManagement
         }
     }
 
+    [Serializable()]
     public class NoMatchingPrincipalException : PrincipalException
     {
         public NoMatchingPrincipalException() : base() { }
@@ -63,6 +66,7 @@ namespace System.DirectoryServices.AccountManagement
         }
     }
 
+    [Serializable()]
     public class PasswordException : PrincipalException
     {
         public PasswordException() : base() { }
@@ -80,6 +84,7 @@ namespace System.DirectoryServices.AccountManagement
         }
     }
 
+    [Serializable()]
     public class PrincipalExistsException : PrincipalException
     {
         public PrincipalExistsException() : base() { }
@@ -97,6 +102,7 @@ namespace System.DirectoryServices.AccountManagement
         }
     }
 
+    [Serializable()]
     public class PrincipalServerDownException : PrincipalException
     {
         private int _errorCode = 0;
@@ -136,6 +142,7 @@ namespace System.DirectoryServices.AccountManagement
         }
     }
 
+    [Serializable()]
     public class PrincipalOperationException : PrincipalException
     {
         private int _errorCode = 0;

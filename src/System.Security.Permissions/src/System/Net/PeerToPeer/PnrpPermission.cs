@@ -7,6 +7,7 @@ using System.Security.Permissions;
 
 namespace System.Net.PeerToPeer
 {
+    [Serializable]
     public sealed class PnrpPermission : CodeAccessPermission, IUnrestrictedPermission
     {
         public PnrpPermission(PermissionState state) { }

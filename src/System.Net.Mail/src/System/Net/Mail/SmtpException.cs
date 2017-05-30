@@ -8,6 +8,7 @@ using System.Runtime.Serialization;
 
 namespace System.Net.Mail
 {
+    [Serializable]
     public class SmtpException : Exception, ISerializable
     {
         private SmtpStatusCode _statusCode = SmtpStatusCode.GeneralFailure;
