@@ -17,7 +17,9 @@ namespace System.Drawing
     ///    </para>
     /// </summary>
     [Serializable]
+#if !MONO
     [System.Runtime.CompilerServices.TypeForwardedFrom("System.Drawing, Version=4.0.0.0, PublicKeyToken=b77a5c561934e089")]
+#endif
     public struct SizeF : IEquatable<SizeF>
     {
         /// <summary>

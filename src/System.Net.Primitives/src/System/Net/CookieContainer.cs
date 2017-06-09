@@ -88,7 +88,9 @@ namespace System.Net
     //
     // Manage cookies for a user (implicit). Based on RFC 2965.
     [Serializable]
+#if !MONO
     [System.Runtime.CompilerServices.TypeForwardedFrom("System, Version=4.0.0.0, PublicKeyToken=b77a5c561934e089")]
+#endif
     public class CookieContainer
     {
         public const int DefaultCookieLimit = 300;
