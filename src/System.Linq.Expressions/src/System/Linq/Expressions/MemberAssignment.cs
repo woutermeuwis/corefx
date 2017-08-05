@@ -97,9 +97,9 @@ namespace System.Linq.Expressions
 #if __MonoCS__
             if (member is PropertyInfo pi)
             {
-                if (!pi.CanRead)
+                if (!pi.CanWrite)
                 {
-                    throw Error.PropertyDoesNotHaveGetter(pi, nameof(member));
+                    throw Error.PropertyDoesNotHaveSetter(pi, nameof(member));
                 }
 
                 memberType = pi.PropertyType;
