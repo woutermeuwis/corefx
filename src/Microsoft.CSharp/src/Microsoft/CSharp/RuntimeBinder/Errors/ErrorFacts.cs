@@ -92,9 +92,6 @@ namespace Microsoft.CSharp.RuntimeBinder.Errors
                 case ErrorCode.ERR_AssgReadonlyProp:
                     codeStr = SR.AssgReadonlyProp;
                     break;
-                case ErrorCode.ERR_AbstractBaseCall:
-                    codeStr = SR.AbstractBaseCall;
-                    break;
                 case ErrorCode.ERR_RefProperty:
                     codeStr = SR.RefProperty;
                     break;
@@ -112,15 +109,6 @@ namespace Microsoft.CSharp.RuntimeBinder.Errors
                     break;
                 case ErrorCode.ERR_AmbigMember:
                     codeStr = SR.AmbigMember;
-                    break;
-                case ErrorCode.ERR_SizeofUnsafe:
-                    codeStr = SR.SizeofUnsafe;
-                    break;
-                case ErrorCode.ERR_CallingFinalizeDepracated:
-                    codeStr = SR.CallingFinalizeDepracated;
-                    break;
-                case ErrorCode.ERR_CallingBaseFinalizeDeprecated:
-                    codeStr = SR.CallingBaseFinalizeDeprecated;
                     break;
                 case ErrorCode.ERR_NoImplicitConvCast:
                     codeStr = SR.NoImplicitConvCast;
@@ -182,32 +170,17 @@ namespace Microsoft.CSharp.RuntimeBinder.Errors
                 case ErrorCode.ERR_AmbigUDConv:
                     codeStr = SR.AmbigUDConv;
                     break;
-                case ErrorCode.ERR_PredefinedTypeNotFound:
-                    codeStr = SR.PredefinedTypeNotFound;
-                    break;
                 case ErrorCode.ERR_BindToBogus:
                     codeStr = SR.BindToBogus;
                     break;
                 case ErrorCode.ERR_CantCallSpecialMethod:
                     codeStr = SR.CantCallSpecialMethod;
                     break;
-                case ErrorCode.ERR_BogusType:
-                    codeStr = SR.BogusType;
-                    break;
-                case ErrorCode.ERR_MissingPredefinedMember:
-                    codeStr = SR.MissingPredefinedMember;
-                    break;
-                case ErrorCode.ERR_LiteralDoubleCast:
-                    codeStr = SR.LiteralDoubleCast;
-                    break;
                 case ErrorCode.ERR_ConvertToStaticClass:
                     codeStr = SR.ConvertToStaticClass;
                     break;
                 case ErrorCode.ERR_GenericArgIsStaticClass:
                     codeStr = SR.GenericArgIsStaticClass;
-                    break;
-                case ErrorCode.ERR_PartialMethodToDelegate:
-                    codeStr = SR.PartialMethodToDelegate;
                     break;
                 case ErrorCode.ERR_IncrementLvalueExpected:
                     codeStr = SR.IncrementLvalueExpected;
@@ -223,9 +196,6 @@ namespace Microsoft.CSharp.RuntimeBinder.Errors
                     break;
                 case ErrorCode.ERR_BadArgTypes:
                     codeStr = SR.BadArgTypes;
-                    break;
-                case ErrorCode.ERR_BadArgType:
-                    codeStr = SR.BadArgType;
                     break;
                 case ErrorCode.ERR_RefLvalueExpected:
                     codeStr = SR.RefLvalueExpected;
@@ -254,12 +224,6 @@ namespace Microsoft.CSharp.RuntimeBinder.Errors
                 case ErrorCode.ERR_ReturnNotLValue:
                     codeStr = SR.ReturnNotLValue;
                     break;
-                case ErrorCode.ERR_BadArgExtraRef:
-                    codeStr = SR.BadArgExtraRef;
-                    break;
-                case ErrorCode.ERR_BadArgRef:
-                    codeStr = SR.BadArgRef;
-                    break;
                 case ErrorCode.ERR_AssgReadonly2:
                     codeStr = SR.AssgReadonly2;
                     break;
@@ -286,15 +250,6 @@ namespace Microsoft.CSharp.RuntimeBinder.Errors
                     break;
                 case ErrorCode.ERR_BadExtensionArgTypes:
                     codeStr = SR.BadExtensionArgTypes;
-                    break;
-                case ErrorCode.ERR_BadInstanceArgType:
-                    codeStr = SR.BadInstanceArgType;
-                    break;
-                case ErrorCode.ERR_BadArgTypesForCollectionAdd:
-                    codeStr = SR.BadArgTypesForCollectionAdd;
-                    break;
-                case ErrorCode.ERR_InitializerAddHasParamModifiers:
-                    codeStr = SR.InitializerAddHasParamModifiers;
                     break;
                 case ErrorCode.ERR_NonInvocableMemberCalled:
                     codeStr = SR.NonInvocableMemberCalled;
