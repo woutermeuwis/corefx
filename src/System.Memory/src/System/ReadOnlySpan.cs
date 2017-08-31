@@ -2,10 +2,16 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+#if MONO
+using System.Diagnostics.Private;
+#else
 using System.Diagnostics;
+#endif
 using System.Runtime.CompilerServices;
+#if !MONO
 using EditorBrowsableState = System.ComponentModel.EditorBrowsableState;
 using EditorBrowsableAttribute = System.ComponentModel.EditorBrowsableAttribute;
+#endif
 
 #pragma warning disable 0809  //warning CS0809: Obsolete member 'Span<T>.Equals(object)' overrides non-obsolete member 'object.Equals(object)'
 
@@ -214,7 +220,9 @@ namespace System
         /// </exception>
         /// </summary>
         [Obsolete("Equals() on Span will always throw an exception. Use == instead.")]
+#if !MONO
         [EditorBrowsable(EditorBrowsableState.Never)]
+#endif
         public override bool Equals(object obj)
         {
             throw new NotSupportedException(SR.CannotCallEqualsOnSpan);
@@ -227,7 +235,9 @@ namespace System
         /// </exception>
         /// </summary>
         [Obsolete("GetHashCode() on Span will always throw an exception.")]
+#if !MONO
         [EditorBrowsable(EditorBrowsableState.Never)]
+#endif
         public override int GetHashCode()
         {
             throw new NotSupportedException(SR.CannotCallGetHashCodeOnSpan);
