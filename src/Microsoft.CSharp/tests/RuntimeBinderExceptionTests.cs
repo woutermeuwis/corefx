@@ -115,5 +115,11 @@ namespace Microsoft.CSharp.RuntimeBinder.Tests
             Func<CallSite, object, object> targ = site.Target;
             AssertExtensions.Throws<ArgumentException>("Type Argument", () => targ.Invoke(site, 23));
         }
+
+        [Fact]
+        public void AssertExceptionDeserializationFails()
+        {
+            BinaryFormatterHelpers.AssertExceptionDeserializationFails<RuntimeBinderException>();
+        }
     }
 }

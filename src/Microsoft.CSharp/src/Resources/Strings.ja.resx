@@ -180,9 +180,6 @@
   <data name="GenericConstraintNotSatisfiedNullableInterface" xml:space="preserve">
     <value>型 '{3}' はジェネリック型またはメソッド '{0}' 内で型パラメーター '{2}' として使用できません。Null 許容型 '{3}' は、'{1}' の制約を満たしていません。Null 許容型はインターフェイス制約を満たすことはできません。</value>
   </data>
-  <data name="GenericConstraintNotSatisfiedTyVar" xml:space="preserve">
-    <value>型 '{3}' はジェネリック型またはメソッド '{0}' 内で型パラメーター '{2}' として使用できません。'{3}' から '{1}' へのボックス変換または型パラメーター変換がありません。</value>
-  </data>
   <data name="GenericConstraintNotSatisfiedValType" xml:space="preserve">
     <value>型 '{3}' はジェネリック型またはメソッド '{0}' 内で型パラメーター '{2}' として使用できません。'{3}' から '{1}' へのボックス変換がありません。</value>
   </data>
@@ -221,12 +218,6 @@
   </data>
   <data name="IncrementLvalueExpected" xml:space="preserve">
     <value>インクリメント演算子またはデクリメント演算子のオペランドには、変数、プロパティ、またはインデクサーを指定してください。</value>
-  </data>
-  <data name="NoSuchMemberOrExtension" xml:space="preserve">
-    <value>'{0}' に '{1}' の定義が含まれておらず、型 '{0}' の最初の引数を受け付ける拡張メソッド '{1}' が見つかりませんでした。using ディレクティブまたはアセンブリ参照が不足しています</value>
-  </data>
-  <data name="ValueTypeExtDelegate" xml:space="preserve">
-    <value>値の型 '{1}' で定義された拡張メソッド '{0}' は、デリゲートを作成するために使用できません</value>
   </data>
   <data name="BadArgCount" xml:space="preserve">
     <value>引数を '{1}' 個指定できる、メソッド '{0}' のオーバーロードはありません</value>
@@ -284,9 +275,6 @@
   </data>
   <data name="BadCtorArgCount" xml:space="preserve">
     <value>'{0}' に、引数を '{1}' 個指定できるコンストラクターがありません</value>
-  </data>
-  <data name="BadExtensionArgTypes" xml:space="preserve">
-    <value>'{0}' に '{1}' の定義が含まれておらず、最も適している拡張メソッド オーバーロード '{2}' には無効な引数がいくつか含まれています</value>
   </data>
   <data name="NonInvocableMemberCalled" xml:space="preserve">
     <value>実行不可能なメンバー '{0}' をメソッドのように使用することはできません。</value>

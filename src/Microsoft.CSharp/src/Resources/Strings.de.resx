@@ -180,9 +180,6 @@
   <data name="GenericConstraintNotSatisfiedNullableInterface" xml:space="preserve">
     <value>Der {3}-Typ kann nicht als {2}-Typparameter im generischen Typ oder in der generischen {0}-Methode verwendet werden. Der {3}-Typ, der NULL-Werte zulässt, entspricht nicht der Einschränkung von {1}. Typen, die NULL-Werte zulassen, können Schnittstelleneinschränkungen nicht entsprechen.</value>
   </data>
-  <data name="GenericConstraintNotSatisfiedTyVar" xml:space="preserve">
-    <value>Der {3}-Typ kann nicht als {2}-Typparameter im generischen Typ oder in der generischen {0}-Methode verwendet werden. Es ist keine Boxing-Konvertierung oder Typparameterkonvertierung von {3} in {1} vorhanden.</value>
-  </data>
   <data name="GenericConstraintNotSatisfiedValType" xml:space="preserve">
     <value>Der {3}-Typ kann nicht als {2}-Typparameter im generischen Typ oder in der generischen {0}-Methode verwendet werden. Es ist keine Boxing-Konvertierung von {3} in {1} vorhanden.</value>
   </data>
@@ -221,12 +218,6 @@
   </data>
   <data name="IncrementLvalueExpected" xml:space="preserve">
     <value>Der Operand eines Inkrement- oder Dekrementoperators muss eine Variable, eine Eigenschaft oder ein Indexer sein.</value>
-  </data>
-  <data name="NoSuchMemberOrExtension" xml:space="preserve">
-    <value>{0} enthält keine Definition für {1}, und es konnte keine {1}-Erweiterungsmethode gefunden werden, die ein erstes Argument vom Typ "{0}" akzeptiert (möglicherweise fehlt eine Using-Direktive oder ein Assemblyverweis).</value>
-  </data>
-  <data name="ValueTypeExtDelegate" xml:space="preserve">
-    <value>Die im {1}-Werttyp definierten {0}-Erweiterungsmethoden können nicht zum Erstellen von Delegaten verwendet werden.</value>
   </data>
   <data name="BadArgCount" xml:space="preserve">
     <value>Keine Überladung für die {0}-Methode nimmt {1}-Argumente an.</value>
@@ -284,9 +275,6 @@
   </data>
   <data name="BadCtorArgCount" xml:space="preserve">
     <value>"{0}" enthält keinen Konstruktor, der {1}-Argumente akzeptiert.</value>
-  </data>
-  <data name="BadExtensionArgTypes" xml:space="preserve">
-    <value>"{0}" enthält keine Definition für {1}, und die Überladung der optimalen {2}-Erweiterungsmethode enthält einige ungültige Argumente.</value>
   </data>
   <data name="NonInvocableMemberCalled" xml:space="preserve">
     <value>Der nicht aufrufbare Member "{0}" kann nicht wie eine Methode verwendet werden.</value>

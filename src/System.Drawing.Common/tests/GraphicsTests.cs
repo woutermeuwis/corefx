@@ -8,6 +8,7 @@ using System.Drawing.Imaging;
 using System.Drawing.Text;
 using System.Linq;
 using Xunit;
+using Xunit.Sdk;
 
 namespace System.Drawing.Tests
 {
@@ -1820,6 +1821,7 @@ namespace System.Drawing.Tests
             }
         }
 
+        [ActiveIssue(23650)]
         [ActiveIssue(20884, TestPlatforms.AnyUnix)]
         [ConditionalTheory(Helpers.GdiplusIsAvailable)]
         [InlineData(0, 0, 0, 0, 10, 10)]
@@ -2435,6 +2437,7 @@ namespace System.Drawing.Tests
             }
         }
 
+        [ActiveIssue(20884, TestPlatforms.AnyUnix)]
         [ConditionalFact(Helpers.GdiplusIsAvailable)]
         public void DrawArc_NullPen_ThrowsArgumentNullException()
         {
@@ -2448,6 +2451,7 @@ namespace System.Drawing.Tests
             }
         }
 
+        [ActiveIssue(20884, TestPlatforms.AnyUnix)]
         [ConditionalFact(Helpers.GdiplusIsAvailable)]
         public void DrawArc_DisposedPen_ThrowsArgumentException()
         {
@@ -2517,6 +2521,7 @@ namespace System.Drawing.Tests
             }
         }
 
+        [ActiveIssue(20884, TestPlatforms.AnyUnix)]
         [ConditionalFact(Helpers.GdiplusIsAvailable)]
         public void DrawArc_Disposed_ThrowsArgumentException()
         {
@@ -2582,6 +2587,7 @@ namespace System.Drawing.Tests
             }
         }
 
+        [ActiveIssue(20884, TestPlatforms.AnyUnix)]
         [ConditionalFact(Helpers.GdiplusIsAvailable)]
         public void DrawBezier_Disposed_ThrowsArgumentException()
         {
@@ -3457,6 +3463,32 @@ namespace System.Drawing.Tests
                 graphics.Dispose();
 
                 AssertExtensions.Throws<ArgumentException>(null, () => graphics.Clear(Color.Red));
+            }
+        }
+
+        [ActiveIssue(20884, TestPlatforms.AnyUnix)]
+        [ConditionalFact(Helpers.GdiplusIsAvailable)]
+        public void DrawString_DefaultFont_Succeeds()
+        {
+            using (var image = new Bitmap(50, 50))
+            using (Graphics graphics = Graphics.FromImage(image))
+            {
+                graphics.DrawString("Test text", SystemFonts.DefaultFont, Brushes.White, new Point());
+                Helpers.VerifyBitmapNotBlank(image);
+            }
+        }
+
+        [ActiveIssue(20884, TestPlatforms.AnyUnix)]
+        [ConditionalFact(Helpers.GdiplusIsAvailable)]
+        public void DrawString_CompositingModeSourceCopy_ThrowsArgumentException()
+        {
+            using (var image = new Bitmap(10, 10))
+            using (Graphics graphics = Graphics.FromImage(image))
+            {
+                graphics.CompositingMode = CompositingMode.SourceCopy;
+                AssertExtensions.Throws<ArgumentException>(
+                    null,
+                    () => graphics.DrawString("Test text", SystemFonts.DefaultFont, Brushes.White, new Point()));
             }
         }
 

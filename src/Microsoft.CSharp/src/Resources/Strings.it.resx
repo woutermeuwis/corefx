@@ -180,9 +180,6 @@
   <data name="GenericConstraintNotSatisfiedNullableInterface" xml:space="preserve">
     <value>Impossibile utilizzare il tipo '{3}' come parametro di tipo '{2}' nel tipo o metodo generico '{0}'. Il tipo nullable '{3}' non soddisfa il vincolo di '{1}'. I tipi nullable non soddisfano i vincoli di interfaccia.</value>
   </data>
-  <data name="GenericConstraintNotSatisfiedTyVar" xml:space="preserve">
-    <value>Impossibile utilizzare il tipo '{3}' come parametro di tipo '{2}' nel metodo o nel tipo generico '{0}'. Nessuna conversione boxing o conversione di parametri di tipo da '{3}' a '{1}'.</value>
-  </data>
   <data name="GenericConstraintNotSatisfiedValType" xml:space="preserve">
     <value>Impossibile utilizzare il tipo '{3}' come parametro di tipo '{2}' nel metodo o nel tipo generico '{0}'. Nessuna conversione boxing da '{3}' a '{1}'.</value>
   </data>
@@ -221,12 +218,6 @@
   </data>
   <data name="IncrementLvalueExpected" xml:space="preserve">
     <value>L'operando di un operatore di incremento o decremento deve essere una variabile, una proprietà o un indicizzatore</value>
-  </data>
-  <data name="NoSuchMemberOrExtension" xml:space="preserve">
-    <value>'{0}' non contiene una definizione per '{1}' e non è stato trovato alcun metodo di estensione '{1}' che accetta un primo argomento di tipo '{0}'. Probabilmente manca una direttiva using o un riferimento a un assembly.</value>
-  </data>
-  <data name="ValueTypeExtDelegate" xml:space="preserve">
-    <value>Impossibile utilizzare i metodi di estensione '{0}' definiti nel tipo di valore '{1}' per creare delegati</value>
   </data>
   <data name="BadArgCount" xml:space="preserve">
     <value>Nessun overload del metodo '{0}' accetta argomenti '{1}'</value>
@@ -284,9 +275,6 @@
   </data>
   <data name="BadCtorArgCount" xml:space="preserve">
     <value>'{0}' non contiene un costruttore che accetta argomenti '{1}'</value>
-  </data>
-  <data name="BadExtensionArgTypes" xml:space="preserve">
-    <value>'{0}' non contiene una definizione per '{1}' e l'overload migliore del metodo di estensione '{2}' presenta alcuni argomenti non validi</value>
   </data>
   <data name="NonInvocableMemberCalled" xml:space="preserve">
     <value>Impossibile utilizzare il membro non richiamabile '{0}' come metodo.</value>
