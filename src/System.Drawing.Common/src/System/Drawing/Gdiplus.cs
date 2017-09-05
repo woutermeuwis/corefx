@@ -77,6 +77,9 @@ namespace System.Drawing
 
             static Gdip()
             {
+#if MONO
+                s_initToken = (IntPtr) 1;
+#else
                 Debug.Assert(s_initToken == IntPtr.Zero, "GdiplusInitialization: Initialize should not be called more than once in the same domain!");
                 Debug.WriteLineIf(s_gdiPlusInitialization.TraceVerbose, "Initialize GDI+ [" + AppDomain.CurrentDomain.FriendlyName + "]");
                 Debug.Indent();
@@ -94,7 +97,7 @@ namespace System.Drawing
                 CheckStatus(status);
 
                 Debug.Unindent();
-
+#endif
                 // Sync to event for handling shutdown
                 AppDomain currentDomain = AppDomain.CurrentDomain;
                 currentDomain.ProcessExit += new EventHandler(OnProcessExit);
@@ -209,7 +212,7 @@ namespace System.Drawing
             //----------------------------------------------------------------------------------------                                                           
             // Initialization methods (GdiplusInit.h)
             //----------------------------------------------------------------------------------------
-
+#if !MONO
             internal static int GdipDeletePath(HandleRef path) => Initialized ? IntGdipDeletePath(path) : Ok;
             internal static int GdipDeletePathIter(HandleRef pathIter) => Initialized ? IntGdipDeletePathIter(pathIter) : Ok;
             internal static int GdipDeleteMatrix(HandleRef matrix) => Initialized ? IntGdipDeleteMatrix(matrix) : Ok;
@@ -234,7 +237,7 @@ namespace System.Drawing
             internal static int GdipDeleteFontFamily(HandleRef fontFamily) => Initialized ? IntGdipDeleteFontFamily(fontFamily) : Ok;
             internal static int GdipDeleteFont(HandleRef font) => Initialized ? IntGdipDeleteFont(font) : Ok;
             internal static int GdipDeleteStringFormat(HandleRef format) => Initialized ? IntGdipDeleteStringFormat(format) : Ok;
-
+#endif
             //----------------------------------------------------------------------------------------                                                           
             // Status codes
             //----------------------------------------------------------------------------------------
