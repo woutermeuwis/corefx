@@ -15,24 +15,29 @@ namespace System.Drawing
     {
         internal unsafe partial class Gdip
         {
+#if MONO
             private static IntPtr LoadNativeLibrary()
             {
+                IntPtr lib = Interop.Libdl.dlopen("libgdiplus.dylib", Interop.Libdl.RTLD_NOW);
+                if (lib != IntPtr.Zero)
+                    return lib;
+
                 // Various Unix package managers have chosen different names for the "libgdiplus" shared library.
                 // The mono project, where libgdiplus originated, allowed both of the names below to be used, via
                 // a global configuration setting. We prefer the "unversioned" shared object name, and fallback to
                 // the name suffixed with ".0".
-                IntPtr lib = Interop.Libdl.dlopen("libgdiplus.so", Interop.Libdl.RTLD_NOW);
-                if (lib == IntPtr.Zero)
-                {
-                    lib = Interop.Libdl.dlopen("libgdiplus.so.0", Interop.Libdl.RTLD_NOW);
-                    if (lib == IntPtr.Zero)
-                    {
-                        throw new DllNotFoundException(SR.LibgdiplusNotFound);
-                    }
-                }
+                lib = Interop.Libdl.dlopen("libgdiplus.so", Interop.Libdl.RTLD_NOW);
+                if (lib != IntPtr.Zero)
+                    return lib;
 
-                return lib;
+                lib = Interop.Libdl.dlopen("libgdiplus.so.0", Interop.Libdl.RTLD_NOW);
+                if (lib != IntPtr.Zero)
+                    return lib;
+
+
+                throw new DllNotFoundException(SR.LibgdiplusNotFound);
             }
+#endif
 
             private static IntPtr LoadFunctionPointer(IntPtr nativeLibraryHandle, string functionName) => Interop.Libdl.dlsym(nativeLibraryHandle, functionName);
 
