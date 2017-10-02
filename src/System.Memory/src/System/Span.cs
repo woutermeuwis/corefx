@@ -22,7 +22,7 @@ namespace System
     /// </summary>
     [DebuggerTypeProxy(typeof(SpanDebugView<>))]
     [DebuggerDisplay("Length = {Length}")]
-    public struct Span<T>
+    public readonly ref struct Span<T>
     {
         /// <summary>
         /// Creates a new span over the entirety of the target array.
@@ -109,6 +109,7 @@ namespace System
         /// <param name="objectData">A reference to data within that object.</param>
         /// <param name="length">The number of <typeparamref name="T"/> elements the memory contains.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [EditorBrowsable(EditorBrowsableState.Never)]
         public static Span<T> DangerousCreate(object obj, ref T objectData, int length)
         {
             Pinnable<T> pinnable = Unsafe.As<Pinnable<T>>(obj);
@@ -426,6 +427,7 @@ namespace System
         /// would have been stored. Such a reference can be used for pinning but must never be dereferenced.
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [EditorBrowsable(EditorBrowsableState.Never)]
         public ref T DangerousGetPinnableReference()
         {
             if (_pinnable == null)

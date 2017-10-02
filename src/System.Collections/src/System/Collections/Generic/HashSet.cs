@@ -1150,7 +1150,7 @@ namespace System.Collections.Generic
             }
 
             // Able to increase capacity; copy elements to larger array and rehash
-            SetCapacity(newSize, false);
+            SetCapacity(newSize);
         }
 
         /// <summary>
@@ -1158,7 +1158,7 @@ namespace System.Collections.Generic
         /// *must* be a prime.  It is very likely that you want to call IncreaseCapacity()
         /// instead of this method.
         /// </summary>
-        private void SetCapacity(int newSize, bool forceNewHashCodes)
+        private void SetCapacity(int newSize)
         {
             Debug.Assert(_buckets != null, "SetCapacity called on a set with no elements");
 
@@ -1167,21 +1167,6 @@ namespace System.Collections.Generic
             {
                 Array.Copy(_slots, 0, newSlots, 0, _lastIndex);
             }
-
-#if FEATURE_RANDOMIZED_STRING_HASHING
-            if (forceNewHashCodes)
-            {
-                for (int i = 0; i < _lastIndex; i++)
-                {
-                    if (newSlots[i].hashCode != -1)
-                    {
-                        newSlots[i].hashCode = InternalGetHashCode(newSlots[i].value);
-                    }
-                }
-            }
-#else
-            Debug.Assert(!forceNewHashCodes);
-#endif
 
             int[] newBuckets = new int[newSize];
             for (int i = 0; i < _lastIndex; i++)
@@ -1209,18 +1194,13 @@ namespace System.Collections.Generic
 
             int hashCode = InternalGetHashCode(value);
             int bucket = hashCode % _buckets.Length;
-#if FEATURE_RANDOMIZED_STRING_HASHING
-            int collisionCount = 0;
-#endif
+
             for (int i = _buckets[bucket] - 1; i >= 0; i = _slots[i].next)
             {
                 if (_slots[i].hashCode == hashCode && _comparer.Equals(_slots[i].value, value))
                 {
                     return false;
                 }
-#if FEATURE_RANDOMIZED_STRING_HASHING
-                collisionCount++;
-#endif
             }
 
             int index;
@@ -1246,14 +1226,6 @@ namespace System.Collections.Generic
             _buckets[bucket] = index + 1;
             _count++;
             _version++;
-
-#if FEATURE_RANDOMIZED_STRING_HASHING
-            if (collisionCount > HashHelpers.HashCollisionThreshold && HashHelpers.IsWellKnownEqualityComparer(_comparer))
-            {
-                _comparer = (IEqualityComparer<T>)HashHelpers.GetRandomizedEqualityComparer(_comparer);
-                SetCapacity(_buckets.Length, true);
-            }
-#endif // FEATURE_RANDOMIZED_STRING_HASHING
 
             return true;
         }
