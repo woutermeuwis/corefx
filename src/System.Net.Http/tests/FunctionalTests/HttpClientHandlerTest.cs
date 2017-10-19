@@ -1282,34 +1282,6 @@ namespace System.Net.Http.Functional.Tests
 
         [OuterLoop] // TODO: Issue #11345
         [Theory]
-        [InlineData(200)]
-        [InlineData(500)]
-        [InlineData(600)]
-        [InlineData(900)]
-        [InlineData(999)]
-        public async Task GetAsync_ExpectedStatusCode(int statusCode)
-        {
-            await LoopbackServer.CreateServerAsync(async (server, url) =>
-            {
-                using (HttpClient client = CreateHttpClient())
-                {
-                    Task<HttpResponseMessage> getResponseTask = client.GetAsync(url);
-                    await TestHelper.WhenAllCompletedOrAnyFailed(
-                        getResponseTask,
-                        LoopbackServer.ReadRequestAndSendResponseAsync(server,
-                            $"HTTP/1.1 {statusCode}\r\n" +
-                            $"Date: {DateTimeOffset.UtcNow:R}\r\n" +
-                            "\r\n"));
-                    using (HttpResponseMessage response = await getResponseTask)
-                    {
-                        Assert.Equal(statusCode, (int)response.StatusCode);
-                    }
-                }
-            });
-        }
-
-        [OuterLoop] // TODO: Issue #11345
-        [Theory]
         [InlineData(99)]
         [InlineData(1000)]
         public async Task GetAsync_StatusCodeOutOfRange_ExpectedException(int statusCode)
@@ -1859,12 +1831,6 @@ namespace System.Net.Http.Functional.Tests
         [Fact]
         public async Task SendAsync_RequestVersion10_ServerReceivesVersion10Request()
         {
-            if (UseManagedHandler)
-            {
-                // TODO #23132: ManagedHandler doesn't support 1.0 currently.
-                return;
-            }
-
             Version receivedRequestVersion = await SendRequestAndGetRequestVersionAsync(new Version(1, 0));
             Assert.Equal(new Version(1, 0), receivedRequestVersion);
         }
@@ -1882,12 +1848,6 @@ namespace System.Net.Http.Functional.Tests
         [Fact]
         public async Task SendAsync_RequestVersionNotSpecified_ServerReceivesVersion11Request()
         {
-            if (UseManagedHandler)
-            {
-                // TODO #23132: ManagedHandler requires 1.1 currently.
-                return;
-            }
-
             // The default value for HttpRequestMessage.Version is Version(1,1).
             // So, we need to set something different (0,0), to test the "unknown" version.
             Version receivedRequestVersion = await SendRequestAndGetRequestVersionAsync(new Version(0, 0));

@@ -63,7 +63,8 @@ namespace System
         start,
         text,
         obj,
-        ownedMemory
+        ownedMemory,
+        pointer
     }
 #endif
 }
