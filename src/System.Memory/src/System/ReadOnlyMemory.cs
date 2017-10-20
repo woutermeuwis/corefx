@@ -3,8 +3,10 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Buffers;
+#if !MONO
 using EditorBrowsableAttribute = System.ComponentModel.EditorBrowsableAttribute;
 using EditorBrowsableState = System.ComponentModel.EditorBrowsableState;
+#endif
 using System.Diagnostics;
 using System.Runtime;
 using System.Runtime.CompilerServices;
@@ -207,7 +209,9 @@ namespace System
         /// Get an array segment from the underlying memory. 
         /// If unable to get the array segment, return false with a default array segment.
         /// </summary>
+#if !MONO
         [EditorBrowsable(EditorBrowsableState.Never)]
+#endif
         public bool DangerousTryGetArray(out ArraySegment<T> arraySegment)
         {
             if (_index < 0)
@@ -238,7 +242,9 @@ namespace System
         /// <summary>
         /// Determines whether the specified object is equal to the current object.
         /// </summary>
+#if !MONO
         [EditorBrowsable(EditorBrowsableState.Never)]
+#endif
         public override bool Equals(object obj)
         {
             if (obj is ReadOnlyMemory<T> readOnlyMemory)
@@ -270,7 +276,9 @@ namespace System
         /// <summary>
         /// Serves as the default hash function.
         /// </summary>
+#if !MONO
         [EditorBrowsable( EditorBrowsableState.Never)]
+#endif
         public override int GetHashCode()
         {
             return CombineHashCodes(_arrayOrOwnedMemory.GetHashCode(), (_index & RemoveOwnedFlagBitMask).GetHashCode(), _length.GetHashCode());

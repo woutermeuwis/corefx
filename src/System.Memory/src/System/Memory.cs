@@ -3,8 +3,10 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Buffers;
+#if !MONO
 using EditorBrowsableAttribute = System.ComponentModel.EditorBrowsableAttribute;
 using EditorBrowsableState = System.ComponentModel.EditorBrowsableState;
+#endif
 using System.Diagnostics;
 using System.Runtime;
 using System.Runtime.CompilerServices;
@@ -253,7 +255,9 @@ namespace System
         /// Determines whether the specified object is equal to the current object.
         /// Returns true if the object is Memory or ReadOnlyMemory and if both objects point to the same array and have the same length.
         /// </summary>
+#if !MONO
         [EditorBrowsable(EditorBrowsableState.Never)]
+#endif
         public override bool Equals(object obj)
         {
             if (obj is ReadOnlyMemory<T>)
@@ -285,7 +289,9 @@ namespace System
         /// <summary>
         /// Serves as the default hash function.
         /// </summary>
+#if !MONO
         [EditorBrowsable(EditorBrowsableState.Never)]
+#endif
         public override int GetHashCode()
         {
             return CombineHashCodes(_arrayOrOwnedMemory.GetHashCode(), (_index & RemoveOwnedFlagBitMask).GetHashCode(), _length.GetHashCode());
