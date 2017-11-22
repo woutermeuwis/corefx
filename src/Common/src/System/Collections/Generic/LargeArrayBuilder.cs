@@ -232,7 +232,12 @@ namespace System.Collections.Generic
             int column = position.Column;
 
             T[] buffer = GetBuffer(row);
-            int copied = CopyToCore(buffer, column);
+            int copied =
+#if __MonoCS__
+            CopyToCore(buffer, column, array, arrayIndex, count);
+#else
+            CopyToCore(buffer, column);
+#endif
 
             if (count == 0)
             {
@@ -242,12 +247,23 @@ namespace System.Collections.Generic
             do
             {
                 buffer = GetBuffer(++row);
-                copied = CopyToCore(buffer, 0);
+                copied =
+#if __MonoCS__
+                CopyToCore(buffer, column, array, arrayIndex, count);
+#else
+                CopyToCore(buffer, column);
+#endif
             } while (count > 0);
 
             return new CopyPosition(row, copied).Normalize(buffer.Length);
 
+#if __MonoCS__
+        }
+
+        static int CopyToCore(T[] sourceBuffer, int sourceIndex, T[] array, int arrayIndex, int count)
+#else
             int CopyToCore(T[] sourceBuffer, int sourceIndex)
+#endif
             {
                 Debug.Assert(sourceBuffer.Length > sourceIndex);
 
@@ -260,7 +276,10 @@ namespace System.Collections.Generic
 
                 return copyCount;
             }
+
+#if !__MonoCS__
         }
+#endif
 
         /// <summary>
         /// Retrieves the buffer at the specified index.
