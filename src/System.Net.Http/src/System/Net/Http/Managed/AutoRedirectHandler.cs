@@ -80,10 +80,10 @@ namespace System.Net.Http
                     location = new Uri(request.RequestUri, location);
                 }
 
-                // Disallow automatic redirection from secure to non-secure schemes
+                // Disallow automatic redirection from https to http
                 bool allowed =
-                    (HttpUtilities.IsSupportedNonSecureScheme(request.RequestUri.Scheme) && HttpUtilities.IsSupportedScheme(location.Scheme)) ||
-                    (HttpUtilities.IsSupportedSecureScheme(request.RequestUri.Scheme) && HttpUtilities.IsSupportedSecureScheme(location.Scheme));
+                    (request.RequestUri.Scheme == UriScheme.Http && (location.Scheme == UriScheme.Http || location.Scheme == UriScheme.Https)) ||
+                    (request.RequestUri.Scheme == UriScheme.Https && location.Scheme == UriScheme.Https);
                 if (!allowed)
                 {
                     break;

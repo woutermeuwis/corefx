@@ -14,14 +14,14 @@ namespace System.Net.Http
         private sealed class HttpConnectionContent : HttpContent
         {
             private readonly CancellationToken _cancellationToken;
-            private HttpContentStream _stream;
+            private HttpContentReadStream _stream;
 
             public HttpConnectionContent(CancellationToken cancellationToken)
             {
                 _cancellationToken = cancellationToken;
             }
 
-            public void SetStream(HttpContentStream stream)
+            public void SetStream(HttpContentReadStream stream)
             {
                 Debug.Assert(stream != null);
                 Debug.Assert(stream.CanRead);
@@ -29,14 +29,14 @@ namespace System.Net.Http
                 _stream = stream;
             }
 
-            private HttpContentStream ConsumeStream()
+            private HttpContentReadStream ConsumeStream()
             {
                 if (_stream == null)
                 {
                     throw new InvalidOperationException(SR.net_http_content_stream_already_read);
                 }
 
-                HttpContentStream stream = _stream;
+                HttpContentReadStream stream = _stream;
                 _stream = null;
                 return stream;
             }
@@ -45,7 +45,7 @@ namespace System.Net.Http
             {
                 Debug.Assert(stream != null);
 
-                using (HttpContentStream contentStream = ConsumeStream())
+                using (HttpContentReadStream contentStream = ConsumeStream())
                 {
                     const int BufferSize = 8192;
                     await contentStream.CopyToAsync(stream, BufferSize, _cancellationToken).ConfigureAwait(false);

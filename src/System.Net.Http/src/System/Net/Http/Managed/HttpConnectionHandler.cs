@@ -89,7 +89,7 @@ namespace System.Net.Http
 
             TransportContext transportContext = null;
 
-            if (HttpUtilities.IsSupportedSecureScheme(uri.Scheme))
+            if (uri.Scheme == UriScheme.Https)
             {
                 SslStream sslStream = await EstablishSslConnection(uri.IdnHost, request, stream).ConfigureAwait(false);
                 stream = sslStream;

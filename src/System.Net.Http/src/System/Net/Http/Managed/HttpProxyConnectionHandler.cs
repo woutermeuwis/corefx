@@ -59,7 +59,7 @@ namespace System.Net.Http
                 throw new InvalidOperationException(SR.net_http_invalid_proxy_scheme);
             }
 
-            if (!HttpUtilities.IsSupportedNonSecureScheme(request.RequestUri.Scheme))
+            if (request.RequestUri.Scheme == UriScheme.Https)
             {
                 // TODO #23136: Implement SSL tunneling through proxy
                 throw new NotImplementedException("no support for SSL tunneling through proxy");

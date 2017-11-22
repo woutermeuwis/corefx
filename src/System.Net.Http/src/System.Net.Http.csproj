@@ -140,13 +140,11 @@
     <Compile Include="System\Net\Http\Managed\HttpConnectionPool.cs" />
     <Compile Include="System\Net\Http\Managed\HttpConnectionPools.cs" />
     <Compile Include="System\Net\Http\Managed\HttpConnectionSettings.cs" />
-    <Compile Include="System\Net\Http\Managed\HttpContentDuplexStream.cs" />
     <Compile Include="System\Net\Http\Managed\HttpContentReadStream.cs" />
     <Compile Include="System\Net\Http\Managed\HttpContentStream.cs" />
     <Compile Include="System\Net\Http\Managed\HttpContentWriteStream.cs" />
     <Compile Include="System\Net\Http\Managed\HttpProxyConnectionHandler.cs" />
     <Compile Include="System\Net\Http\Managed\ManagedHandler.cs" />
-    <Compile Include="System\Net\Http\Managed\RawConnectionStream.cs" />
   </ItemGroup>
   <!-- Common -->
   <ItemGroup>

@@ -16,10 +16,9 @@ namespace System.Net.WebSockets.Client.Tests
     {
         public AbortTest(ITestOutputHelper output) : base(output) { }
 
-        [ActiveIssue(23151, TestPlatforms.AnyUnix)] // need ManagedHandler support for canceling a ConnectAsync operation
         [OuterLoop] // TODO: Issue #11345
         [ConditionalTheory(nameof(WebSocketsSupported)), MemberData(nameof(EchoServers))]
-        public async Task Abort_ConnectAndAbort_ThrowsWebSocketExceptionWithmessage(Uri server)
+        public void Abort_ConnectAndAbort_ThrowsWebSocketExceptionWithmessage(Uri server)
         {
             using (var cws = new ClientWebSocket())
             {
@@ -30,7 +29,7 @@ namespace System.Net.WebSockets.Client.Tests
 
                 Task t = cws.ConnectAsync(ub.Uri, cts.Token);
                 cws.Abort();
-                WebSocketException ex = await Assert.ThrowsAsync<WebSocketException>(() => t);
+                WebSocketException ex = Assert.Throws<WebSocketException>(() => t.GetAwaiter().GetResult());
 
                 Assert.Equal(ResourceHelper.GetExceptionMessage("net_webstatus_ConnectFailure"), ex.Message);
 
