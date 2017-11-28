@@ -84,9 +84,7 @@ namespace System.Net.WebSockets
         /// <summary>CancellationTokenSource used to abort all current and future operations when anything is canceled or any error occurs.</summary>
         private readonly CancellationTokenSource _abortSource = new CancellationTokenSource();
         /// <summary>Buffer used for reading data from the network.</summary>
-        private byte[] _receiveBuffer;
-        /// <summary>Gets whether the receive buffer came from the ArrayPool.</summary>
-        private readonly bool _receiveBufferFromPool;
+        private Memory<byte> _receiveBuffer;
         /// <summary>
         /// Tracks the state of the validity of the UTF8 encoding of text payloads.  Text may be split across fragments.
         /// </summary>
@@ -190,20 +188,14 @@ namespace System.Net.WebSockets
             _isServer = isServer;
             _subprotocol = subprotocol;
 
-            // If we were provided with a buffer to use, use it, as long as it's big enough for our needs, and for simplicity
-            // as long as we're not supposed to use only a portion of it.  If it doesn't meet our criteria, just create a new one.
-            if (receiveBuffer.HasValue &&
-                receiveBuffer.GetValueOrDefault().Array != null &&
-                receiveBuffer.GetValueOrDefault().Offset == 0 && receiveBuffer.GetValueOrDefault().Count == receiveBuffer.GetValueOrDefault().Array.Length &&
-                receiveBuffer.GetValueOrDefault().Count >= MaxMessageHeaderLength)
-            {
-                _receiveBuffer = receiveBuffer.Value.Array;
-            }
-            else
-            {
-                _receiveBufferFromPool = true;
-                _receiveBuffer = ArrayPool<byte>.Shared.Rent(Math.Max(receiveBufferSize, MaxMessageHeaderLength));
-            }
+            // If we were provided with a buffer to use, use it as long as it's big enough for our needs.
+            // If it doesn't meet our criteria, just create a new one. If we need to create a new one,
+            // we avoid using the pool because often many web sockets will be used concurrently, and if each web
+            // socket rents a similarly sized buffer from the pool for its duration, we'll end up draining
+            // the pool, such that other web sockets will allocate anyway, as will anyone else in the process using the
+            // pool.  If someone wants to pool, they can do so by passing in the buffer they want to use, and they can
+            // get it from whatever pool they like.
+            _receiveBuffer = buffer.Length >= MaxMessageHeaderLength ? buffer : new byte[DefaultReceiveBufferSize];
 
             // Set up the abort source so that if it's triggered, we transition the instance appropriately.
             _abortSource.Token.Register(s =>
@@ -245,12 +237,6 @@ namespace System.Net.WebSockets
                 _disposed = true;
                 _keepAliveTimer?.Dispose();
                 _stream?.Dispose();
-                if (_receiveBufferFromPool)
-                {
-                    byte[] old = _receiveBuffer;
-                    _receiveBuffer = null;
-                    ArrayPool<byte>.Shared.Return(old);
-                }
                 if (_state < WebSocketState.Aborted)
                 {
                     _state = WebSocketState.Closed;
@@ -736,25 +722,25 @@ namespace System.Net.WebSockets
                     Debug.Assert(header.Opcode == MessageOpcode.Binary || header.Opcode == MessageOpcode.Text, $"Unexpected opcode {header.Opcode}");
 
                     // If there's no data to read, return an appropriate result.
-                    int bytesToRead = (int)Math.Min(payloadBuffer.Count, header.PayloadLength);
-                    if (bytesToRead == 0)
+                    if (header.PayloadLength == 0 || payloadBuffer.Length == 0)
                     {
                         _lastReceiveHeader = header;
                         return resultGetter.GetResult(
                             0,
                             header.Opcode == MessageOpcode.Text ? WebSocketMessageType.Text : WebSocketMessageType.Binary,
-                            header.PayloadLength == 0 ? header.Fin : false);
+                            header.Fin && header.PayloadLength == 0,
+                            null, null);
                     }
 
                     // Otherwise, read as much of the payload as we can efficiently, and upate the header to reflect how much data
                     // remains for future reads.
-
-                    if (_receiveBufferCount == 0)
+                    int bytesToCopy = Math.Min(payloadBuffer.Length, (int)Math.Min(header.PayloadLength, _receiveBuffer.Length));
+                    Debug.Assert(bytesToCopy > 0, $"Expected {nameof(bytesToCopy)} > 0");
+                    if (_receiveBufferCount < bytesToCopy)
                     {
-                        await EnsureBufferContainsAsync(1, cancellationToken, throwOnPrematureClosure: false).ConfigureAwait(false);
+                        await EnsureBufferContainsAsync(bytesToCopy, cancellationToken, throwOnPrematureClosure: true).ConfigureAwait(false);
                     }
 
-                    int bytesToCopy = Math.Min(bytesToRead, _receiveBufferCount);
                     if (_isServer)
                     {
                         _receivedMaskOffsetOffset = ApplyMask(_receiveBuffer.Span.Slice(_receiveBufferOffset, bytesToCopy), header.Mask, _receivedMaskOffsetOffset);
@@ -774,7 +760,8 @@ namespace System.Net.WebSockets
                     return resultGetter.GetResult(
                         bytesToCopy,
                         header.Opcode == MessageOpcode.Text ? WebSocketMessageType.Text : WebSocketMessageType.Binary,
-                        bytesToCopy == 0 || (header.Fin && header.PayloadLength == 0));
+                        header.Fin && header.PayloadLength == 0,
+                        null, null);
                 }
             }
             catch (Exception exc)
