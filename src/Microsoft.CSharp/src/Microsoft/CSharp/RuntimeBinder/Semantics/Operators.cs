@@ -585,7 +585,7 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
             else
             {
                 resultType = bofs.fnkind == BinOpFuncKind.EnumBinOp
-                    ? GetEnumBinOpType(ek, nonLiftedArg1.Type, nonLiftedArg2.Type, out _)
+                    ? GetEnumBinOpType(ek, nonLiftedArg1.Type, nonLiftedArg2.Type, out var _)
                     : pArgument1.Type;
 
                 if (!(resultType is NullableType))
