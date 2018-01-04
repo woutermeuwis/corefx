@@ -4,7 +4,7 @@
 
 using System.Diagnostics;
 
-#if !netstandard
+#if !netstandard && !MONO
 using Internal.Runtime.CompilerServices;
 #else
 using System.Runtime.CompilerServices;

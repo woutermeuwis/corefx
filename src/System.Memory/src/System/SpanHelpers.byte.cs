@@ -1,3 +1,5 @@
+#define netstandard11 // Simplifies MONO specific defines
+
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
@@ -97,7 +99,7 @@ namespace System
             uint uValue = value; // Use uint for comparisons to avoid unnecessary 8->32 extensions
             IntPtr index = (IntPtr)0; // Use UIntPtr for arithmetic to avoid unnecessary 64->32->64 truncations
             IntPtr nLength = (IntPtr)(uint)length;
-#if !netstandard11 && !MONO
+#if !netstandard11
             if (Vector.IsHardwareAccelerated && length >= Vector<byte>.Count * 2)
             {
                 unchecked
@@ -157,7 +159,7 @@ namespace System
 
                 index += 1;
             }
-#if !netstandard11 && !MONO
+#if !netstandard11
             if (Vector.IsHardwareAccelerated && ((int)(byte*)index < length))
             {
                 nLength = (IntPtr)(uint)((length - (uint)index) & ~(Vector<byte>.Count - 1));
@@ -355,7 +357,7 @@ namespace System
             uint uValue1 = value1; // Use uint for comparisons to avoid unnecessary 8->32 extensions
             IntPtr index = (IntPtr)0; // Use UIntPtr for arithmetic to avoid unnecessary 64->32->64 truncations
             IntPtr nLength = (IntPtr)(uint)length;
-#if !netstandard11 && !MONO
+#if !netstandard11
             if (Vector.IsHardwareAccelerated && length >= Vector<byte>.Count * 2)
             {
                 unchecked
@@ -429,7 +431,7 @@ namespace System
 
                 index += 1;
             }
-#if !netstandard11 && !MONO
+#if !netstandard11
             if (Vector.IsHardwareAccelerated && ((int)(byte*)index < length))
             {
                 nLength = (IntPtr)(uint)((length - (uint)index) & ~(Vector<byte>.Count - 1));
@@ -490,7 +492,7 @@ namespace System
             uint uValue2 = value2; // Use uint for comparisons to avoid unnecessary 8->32 extensions
             IntPtr index = (IntPtr)0; // Use UIntPtr for arithmetic to avoid unnecessary 64->32->64 truncations
             IntPtr nLength = (IntPtr)(uint)length;
-#if !netstandard11 && !MONO
+#if !netstandard11
             if (Vector.IsHardwareAccelerated && length >= Vector<byte>.Count * 2)
             {
                 unchecked
@@ -564,7 +566,7 @@ namespace System
 
                 index += 1;
             }
-#if !netstandard11 && !MONO
+#if !netstandard11
             if (Vector.IsHardwareAccelerated && ((int)(byte*)index < length))
             {
                 nLength = (IntPtr)(uint)((length - (uint)index) & ~(Vector<byte>.Count - 1));
@@ -893,7 +895,7 @@ namespace System
             IntPtr i = (IntPtr)0; // Use IntPtr and byte* for arithmetic to avoid unnecessary 64->32->64 truncations
             IntPtr n = (IntPtr)length;
 
-#if !netstandard11 && !MONO
+#if !netstandard11
             if (Vector.IsHardwareAccelerated && (byte*)n >= (byte*)Vector<byte>.Count)
             {
                 n -= Vector<byte>.Count;
@@ -941,7 +943,7 @@ namespace System
             return false;
         }
 
-#if !netstandard11 && !MONO
+#if !netstandard11
         // Vector sub-search adapted from https://github.com/aspnet/KestrelHttpServer/pull/1138
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static int LocateFirstFoundByte(Vector<byte> match)
@@ -964,9 +966,6 @@ namespace System
         }
 #endif
 
-<<<<<<< HEAD
-#if !netstandard11 && !MONO
-=======
 #if !netstandard11
         // Vector sub-search adapted from https://github.com/aspnet/KestrelHttpServer/pull/1138
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -991,7 +990,6 @@ namespace System
 #endif
 
 #if !netstandard11
->>>>>>> upstream/master
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static int LocateFirstFoundByte(ulong match)
         {
@@ -1005,7 +1003,7 @@ namespace System
         }
 #endif
 
-#if !netstandard11 && !MONO
+#if !netstandard11
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static int LocateLastFoundByte(ulong match)
         {
@@ -1035,7 +1033,7 @@ namespace System
         }
 #endif
 
-#if !netstandard11 && !MONO
+#if !netstandard11
         private const ulong XorPowerOfTwoToHighByte = (0x07ul |
                                                        0x06ul << 8 |
                                                        0x05ul << 16 |
