@@ -864,12 +864,12 @@ namespace System.Dynamic.Utils
             {
                 if (!allowByRef && type.IsByRef)
                 {
-                    throw Error.TypeMustNotBeByRef(paramName);
+                    throw System.Linq.Expressions.Error.TypeMustNotBeByRef(paramName);
                 }
 
                 if (!allowPointer && type.IsPointer)
                 {
-                    throw Error.TypeMustNotBePointer(paramName);
+                    throw System.Linq.Expressions.Error.TypeMustNotBePointer(paramName);
                 }
             }
         }
@@ -884,8 +884,8 @@ namespace System.Dynamic.Utils
             if (type.ContainsGenericParameters)
             {
                 throw type.IsGenericTypeDefinition
-                    ? Error.TypeIsGeneric(type, paramName, index)
-                    : Error.TypeContainsGenericParameters(type, paramName, index);
+                    ? System.Linq.Expressions.Error.TypeIsGeneric(type, paramName, index)
+                    : System.Linq.Expressions.Error.TypeContainsGenericParameters(type, paramName, index);
             }
 
             return true;
