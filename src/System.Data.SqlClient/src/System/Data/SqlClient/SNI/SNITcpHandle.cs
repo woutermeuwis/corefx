@@ -204,7 +204,11 @@ namespace System.Data.SqlClient.SNI
 
             CancellationTokenSource cts = new CancellationTokenSource();
             cts.CancelAfter(timeout);
+#if __MonoCS__
+            cts.Token.Register(delegate
+#else
             void Cancel()
+#endif
             {
                 for (int i = 0; i < sockets.Length; ++i)
                 {
@@ -219,7 +223,12 @@ namespace System.Data.SqlClient.SNI
                     catch { }
                 }
             }
+
+#if __MonoCS__
+            );
+#else
             cts.Token.Register(Cancel);
+#endif
 
             Socket availableSocket = null;
             for (int i = 0; i < sockets.Length; ++i)
