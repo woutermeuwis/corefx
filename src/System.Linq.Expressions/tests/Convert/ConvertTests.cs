@@ -16957,7 +16957,7 @@ namespace System.Linq.Expressions.Tests
             Assert.Throws<InvalidCastException>(() => f(Array.Empty<NonSealed[]>()));
         }
 
-        [Theory, ClassData(typeof(CompilationTypes))]
+        [Theory(Skip="https://github.com/mono/mono/issues/6647"), ClassData(typeof(CompilationTypes))]
         public static void IfaceArrayToNonSealedIList(bool useInterpreter)
         {
             Expression<Func<IInterface[][], IList<NonSealed>[]>> e = a => (IList<NonSealed>[])a;
@@ -16968,7 +16968,7 @@ namespace System.Linq.Expressions.Tests
             Assert.Throws<InvalidCastException>(() => f(Array.Empty<IInterface[]>()));
         }
 
-        [Theory, ClassData(typeof(CompilationTypes))]
+        [Theory(Skip="https://github.com/mono/mono/issues/6647"), ClassData(typeof(CompilationTypes))]
         public static void NonSealedArrayToIfaceIEnumerable(bool useInterpreter)
         {
             Expression<Func<NonSealed[][], IEnumerable<IInterface>[]>> e = a => (IEnumerable<IInterface>[])a;
