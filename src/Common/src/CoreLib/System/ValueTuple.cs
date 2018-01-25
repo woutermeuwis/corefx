@@ -2186,7 +2186,9 @@ namespace System
                                                        rest.GetHashCode());
             }
 
+#if !MONO
             Debug.Fail("Missed all cases for computing ValueTuple hash code");
+#endif
             return -1;
         }
 
@@ -2237,7 +2239,9 @@ namespace System
                                                        comparer.GetHashCode(Item7), rest.GetHashCode(comparer));
             }
 
+#if !MONO
             Debug.Fail("Missed all cases for computing ValueTuple hash code");
+#endif
             return -1;
         }
 

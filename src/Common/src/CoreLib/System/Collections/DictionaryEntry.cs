@@ -2,14 +2,18 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+#if !MONO
 using System.ComponentModel;
+#endif
 
 namespace System.Collections
 {
     // A DictionaryEntry holds a key and a value from a dictionary.
     // It is returned by IDictionaryEnumerator::GetEntry().
     [Serializable]
+#if !MONO
     [System.Runtime.CompilerServices.TypeForwardedFrom("mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089")]
+#endif
     public struct DictionaryEntry
     {
         private Object _key; // Do not rename (binary serialization)
@@ -49,7 +53,9 @@ namespace System.Collections
             }
         }
 
+#if !MONO
         [EditorBrowsable(EditorBrowsableState.Never)]
+#endif
         public void Deconstruct(out object key, out object value)
         {
             key = Key;

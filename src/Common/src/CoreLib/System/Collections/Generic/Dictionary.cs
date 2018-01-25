@@ -34,7 +34,9 @@ namespace System.Collections.Generic
     [DebuggerTypeProxy(typeof(IDictionaryDebugView<,>))]
     [DebuggerDisplay("Count = {Count}")]
     [Serializable]
+#if !MONO
     [System.Runtime.CompilerServices.TypeForwardedFrom("mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089")]
+#endif
     public class Dictionary<TKey, TValue> : IDictionary<TKey, TValue>, IDictionary, IReadOnlyDictionary<TKey, TValue>, ISerializable, IDeserializationCallback
     {
         private struct Entry
@@ -73,11 +75,12 @@ namespace System.Collections.Generic
             if (capacity < 0) ThrowHelper.ThrowArgumentOutOfRangeException(ExceptionArgument.capacity);
             if (capacity > 0) Initialize(capacity);
             _comparer = comparer ?? EqualityComparer<TKey>.Default;
-
+#if !MONO
             if (_comparer == EqualityComparer<string>.Default)
             {
                 _comparer = (IEqualityComparer<TKey>)NonRandomizedStringEqualityComparer.Default;
             }
+#endif
         }
 
         public Dictionary(IDictionary<TKey, TValue> dictionary) : this(dictionary, null) { }
@@ -218,14 +221,18 @@ namespace System.Collections.Generic
             set
             {
                 bool modified = TryInsert(key, value, InsertionBehavior.OverwriteExisting);
+#if !MONO
                 Debug.Assert(modified);
+#endif
             }
         }
 
         public void Add(TKey key, TValue value)
         {
             bool modified = TryInsert(key, value, InsertionBehavior.ThrowOnExisting);
+#if !MONO
             Debug.Assert(modified); // If there was an existing key and the Add failed, an exception will already have been thrown.
+#endif
         }
 
         void ICollection<KeyValuePair<TKey, TValue>>.Add(KeyValuePair<TKey, TValue> keyValuePair)
@@ -446,7 +453,7 @@ namespace System.Collections.Generic
             _entries[index].value = value;
             _buckets[targetBucket] = index;
             _version++;
-
+#if !MONO
             // If we hit the collision threshold we'll need to switch to the comparer which is using randomized string hashing
             // i.e. EqualityComparer<string>.Default.
 
@@ -455,7 +462,7 @@ namespace System.Collections.Generic
                 _comparer = (IEqualityComparer<TKey>)EqualityComparer<string>.Default;
                 Resize(_entries.Length, true);
             }
-
+#endif
             return true;
         }
 
@@ -512,7 +519,9 @@ namespace System.Collections.Generic
 
         private void Resize(int newSize, bool forceNewHashCodes)
         {
+#if !MONO
             Debug.Assert(newSize >= _entries.Length);
+#endif
 
             int[] buckets = new int[newSize];
             for (int i = 0; i < buckets.Length; i++)
