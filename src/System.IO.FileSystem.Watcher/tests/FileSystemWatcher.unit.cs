@@ -182,6 +182,7 @@ namespace System.IO.Tests
         }
 
         [Fact]
+        [SkipOnTargetFramework(TargetFrameworkMonikers.Mono, "Not working")]
         public void FileSystemWatcher_EnableRaisingEvents()
         {
             using (var testDirectory = new TempDirectory(GetTestFilePath()))
