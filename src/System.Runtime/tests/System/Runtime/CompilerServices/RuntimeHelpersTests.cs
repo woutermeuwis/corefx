@@ -115,7 +115,7 @@ namespace System.Runtime.CompilerServices.Tests
         }
 
         [Fact]
-        [SkipOnTargetFramework(TargetFrameworkMonikers.NetFramework)]
+        [SkipOnTargetFramework(TargetFrameworkMonikers.NetFramework | TargetFrameworkMonikers.Mono)]
         public static void PrepareMethod()
         {
             foreach (MethodInfo m in typeof(RuntimeHelpersTests).GetMethods())
@@ -126,6 +126,7 @@ namespace System.Runtime.CompilerServices.Tests
         }
 
         [Fact]
+        [SkipOnTargetFramework(TargetFrameworkMonikers.Mono)]
         public static void PrepareGenericMethod()
         {
             Assert.Throws<ArgumentException>(() => RuntimeHelpers.PrepareMethod(default(RuntimeMethodHandle), null));

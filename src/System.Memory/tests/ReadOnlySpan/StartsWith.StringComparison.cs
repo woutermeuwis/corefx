@@ -251,7 +251,7 @@ namespace System.SpanTests
             Assert.False(span.StartsWith(value, StringComparison.InvariantCultureIgnoreCase));
         }
 
-        [Theory]
+        [Theory(Skip="Mono issue")]
         // CurrentCulture
         [InlineData("Hello", "Hel", StringComparison.CurrentCulture, true)]
         [InlineData("Hello", "Hello", StringComparison.CurrentCulture, true)]
@@ -322,7 +322,7 @@ namespace System.SpanTests
             Assert.Equal(expected, s.AsSpan().StartsWith(value.AsSpan(), comparisonType));
         }
 
-        [Theory]
+        [Theory(Skip="Mono issue")]
         [InlineData(StringComparison.Ordinal)]
         [InlineData(StringComparison.OrdinalIgnoreCase)]
         public static void StartsWith_NullInStrings(StringComparison comparison)
