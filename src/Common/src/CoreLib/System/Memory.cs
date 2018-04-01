@@ -20,8 +20,8 @@ namespace System
     /// Memory represents a contiguous region of arbitrary memory similar to <see cref="Span{T}"/>.
     /// Unlike <see cref="Span{T}"/>, it is not a byref-like type.
     /// </summary>
-    [DebuggerDisplay("{DebuggerDisplay,nq}")]
     [DebuggerTypeProxy(typeof(MemoryDebugView<>))]
+    [DebuggerDisplay("{ToString(),raw}")]
     public readonly struct Memory<T>
     {
         // NOTE: With the current implementation, Memory<T> and ReadOnlyMemory<T> must have the same layout,
@@ -42,20 +42,42 @@ namespace System
         /// Creates a new memory over the entirety of the target array.
         /// </summary>
         /// <param name="array">The target array.</param>
-        /// <exception cref="System.ArgumentNullException">Thrown when <paramref name="array"/> is a null
-        /// reference (Nothing in Visual Basic).</exception>
+        /// <remarks>Returns default when <paramref name="array"/> is null.</remarks>
         /// <exception cref="System.ArrayTypeMismatchException">Thrown when <paramref name="array"/> is covariant and array's type is not exactly T[].</exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public Memory(T[] array)
         {
             if (array == null)
-                ThrowHelper.ThrowArgumentNullException(ExceptionArgument.array);
+            {
+                this = default;
+                return; // returns default
+            }
             if (default(T) == null && array.GetType() != typeof(T[]))
                 ThrowHelper.ThrowArrayTypeMismatchException();
 
             _object = array;
             _index = 0;
             _length = array.Length;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal Memory(T[] array, int start)
+        {
+            if (array == null)
+            {
+                if (start != 0)
+                    ThrowHelper.ThrowArgumentOutOfRangeException();
+                this = default;
+                return; // returns default
+            }
+            if (default(T) == null && array.GetType() != typeof(T[]))
+                ThrowHelper.ThrowArrayTypeMismatchException();
+            if ((uint)start > (uint)array.Length)
+                ThrowHelper.ThrowArgumentOutOfRangeException();
+
+            _object = array;
+            _index = start;
+            _length = array.Length - start;
         }
 
         /// <summary>
@@ -65,8 +87,7 @@ namespace System
         /// <param name="array">The target array.</param>
         /// <param name="start">The index at which to begin the memory.</param>
         /// <param name="length">The number of items in the memory.</param>
-        /// <exception cref="System.ArgumentNullException">Thrown when <paramref name="array"/> is a null
-        /// reference (Nothing in Visual Basic).</exception>
+        /// <remarks>Returns default when <paramref name="array"/> is null.</remarks>
         /// <exception cref="System.ArrayTypeMismatchException">Thrown when <paramref name="array"/> is covariant and array's type is not exactly T[].</exception>
         /// <exception cref="System.ArgumentOutOfRangeException">
         /// Thrown when the specified <paramref name="start"/> or end index is not in the range (&lt;0 or &gt;=Length).
@@ -75,7 +96,12 @@ namespace System
         public Memory(T[] array, int start, int length)
         {
             if (array == null)
-                ThrowHelper.ThrowArgumentNullException(ExceptionArgument.array);
+            {
+                if (start != 0 || length != 0)
+                    ThrowHelper.ThrowArgumentOutOfRangeException();
+                this = default;
+                return; // returns default
+            }
             if (default(T) == null && array.GetType() != typeof(T[]))
                 ThrowHelper.ThrowArrayTypeMismatchException();
             if ((uint)start > (uint)array.Length || (uint)length > (uint)(array.Length - start))
@@ -113,16 +139,13 @@ namespace System
         /// <summary>
         /// Defines an implicit conversion of a <see cref="ArraySegment{T}"/> to a <see cref="Memory{T}"/>
         /// </summary>
-        public static implicit operator Memory<T>(ArraySegment<T> arraySegment) => new Memory<T>(arraySegment.Array, arraySegment.Offset, arraySegment.Count);
+        public static implicit operator Memory<T>(ArraySegment<T> segment) => new Memory<T>(segment.Array, segment.Offset, segment.Count);
 
         /// <summary>
         /// Defines an implicit conversion of a <see cref="Memory{T}"/> to a <see cref="ReadOnlyMemory{T}"/>
         /// </summary>
         public static implicit operator ReadOnlyMemory<T>(Memory<T> memory) =>
             Unsafe.As<Memory<T>, ReadOnlyMemory<T>>(ref memory);
-
-        //Debugger Display = {T[length]}
-        private string DebuggerDisplay => string.Format("{{{0}[{1}]}}", typeof(T).Name, _length);
 
         /// <summary>
         /// Returns an empty <see cref="Memory{T}"/>
@@ -138,6 +161,19 @@ namespace System
         /// Returns true if Length is 0.
         /// </summary>
         public bool IsEmpty => _length == 0;
+
+        /// <summary>
+        /// For <see cref="Memory{Char}"/>, returns a new instance of string that represents the characters pointed to by the memory.
+        /// Otherwise, returns a <see cref="string"/> with the name of the type and the number of elements.
+        /// </summary>
+        public override string ToString()
+        {
+            if (typeof(T) == typeof(char))
+            {
+                return (_object is string str) ? str.Substring(_index, _length) : Span.ToString();
+            }
+            return string.Format("System.Memory<{0}>[{1}]", typeof(T).Name, _length);
+        }
 
         /// <summary>
         /// Forms a slice out of the given memory, beginning at 'start'.
@@ -236,9 +272,49 @@ namespace System
         public bool TryCopyTo(Memory<T> destination) => Span.TryCopyTo(destination.Span);
 
         /// <summary>
-        /// Returns a handle for the array.
-        /// <param name="pin">If pin is true, the GC will not move the array and hence its address can be taken</param>
+        /// Creates a handle for the memory.
+        /// The GC will not move the array until the returned <see cref="MemoryHandle"/>
+        /// is disposed, enabling taking and using the memory's address.
         /// </summary>
+        public unsafe MemoryHandle Pin()
+        {
+            if (_index < 0)
+            {
+                return ((OwnedMemory<T>)_object).Pin((_index & RemoveOwnedFlagBitMask) * Unsafe.SizeOf<T>());
+            }
+            else if (typeof(T) == typeof(char) && _object is string s)
+            {
+                // This case can only happen if a ReadOnlyMemory<char> was created around a string
+                // and then that was cast to a Memory<char> using unsafe / marshaling code.  This needs
+                // to work, however, so that code that uses a single Memory<char> field to store either
+                // a readable ReadOnlyMemory<char> or a writable Memory<char> can still be pinned and
+                // used for interop purposes.
+                GCHandle handle = GCHandle.Alloc(s, GCHandleType.Pinned);
+#if FEATURE_PORTABLE_SPAN
+                void* pointer = Unsafe.Add<T>((void*)handle.AddrOfPinnedObject(), _index);
+#else
+                void* pointer = Unsafe.Add<T>(Unsafe.AsPointer(ref s.GetRawStringData()), _index);
+#endif // FEATURE_PORTABLE_SPAN
+                return new MemoryHandle(null, pointer, handle);
+            }
+            else if (_object is T[] array)
+            {
+                var handle = GCHandle.Alloc(array, GCHandleType.Pinned);
+#if FEATURE_PORTABLE_SPAN
+                void* pointer = Unsafe.Add<T>((void*)handle.AddrOfPinnedObject(), _index);
+#else
+                void* pointer = Unsafe.Add<T>(Unsafe.AsPointer(ref array.GetRawSzArrayData()), _index);
+#endif // FEATURE_PORTABLE_SPAN
+                return new MemoryHandle(null, pointer, handle);
+            }
+            return default;
+        }
+
+        /// <summary>[Obsolete, use Pin()] Creates a handle for the memory.</summary>
+        /// <param name="pin">
+        /// If pin is true, the GC will not move the array until the returned <see cref="MemoryHandle"/>
+        /// is disposed, enabling taking and using the memory's address.
+        /// </param>
         public unsafe MemoryHandle Retain(bool pin = false)
         {
             MemoryHandle memoryHandle = default;
@@ -283,30 +359,6 @@ namespace System
                 }
             }
             return memoryHandle;
-        }
-
-        /// <summary>
-        /// Get an array segment from the underlying memory.
-        /// If unable to get the array segment, return false with a default array segment.
-        /// </summary>
-        public bool TryGetArray(out ArraySegment<T> arraySegment)
-        {
-            if (_index < 0)
-            {
-                if (((OwnedMemory<T>)_object).TryGetArray(out var segment))
-                {
-                    arraySegment = new ArraySegment<T>(segment.Array, segment.Offset + (_index & RemoveOwnedFlagBitMask), _length);
-                    return true;
-                }
-            }
-            else if (_object is T[] arr)
-            {
-                arraySegment = new ArraySegment<T>(arr, _index, _length);
-                return true;
-            }
-
-            arraySegment = default(ArraySegment<T>);
-            return false;
         }
 
         /// <summary>

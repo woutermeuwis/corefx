@@ -51,13 +51,20 @@ namespace System.MemoryTests
             ReadOnlyMemory<int> memory = new int[0];
             MemoryHandle handle = memory.Retain(pin: true);
             Assert.True(handle.HasPointer);
+            handle.Dispose();
+        }
+
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public static void DefaultMemoryRetain(bool pin)
+        {
+            ReadOnlyMemory<int> memory = default;
+            MemoryHandle handle = memory.Retain(pin: pin);
+            Assert.False(handle.HasPointer);
             unsafe
             {
-                int* pointer = (int*)handle.Pointer;
-
-                GC.Collect();
-
-                Assert.True(pointer != null);
+                Assert.True(handle.Pointer == null);
             }
             handle.Dispose();
         }
@@ -151,21 +158,6 @@ namespace System.MemoryTests
                 {
                     Assert.Equal(array[i + 1], span[i]);
                 }
-            }
-            handle.Dispose();
-        }
-
-        [Theory]
-        [InlineData(true)]
-        [InlineData(false)]
-        public static void DefaultMemoryRetain(bool pin)
-        {
-            ReadOnlyMemory<int> memory = default;
-            MemoryHandle handle = memory.Retain(pin: pin);
-            Assert.False(handle.HasPointer);
-            unsafe
-            {
-                Assert.True(handle.Pointer == null);
             }
             handle.Dispose();
         }

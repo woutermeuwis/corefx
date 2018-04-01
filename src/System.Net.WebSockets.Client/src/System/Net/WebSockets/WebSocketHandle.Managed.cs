@@ -9,6 +9,7 @@ using System.Net.Security;
 using System.Net.Sockets;
 using System.Runtime.ExceptionServices;
 using System.Security.Cryptography;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -28,6 +29,9 @@ namespace System.Net.WebSockets
         private const int DefaultReceiveBufferSize = 0x1000;
         /// <summary>GUID appended by the server as part of the security key response.  Defined in the RFC.</summary>
         private const string WSServerGuid = "258EAFA5-E914-47DA-95CA-C5AB0DC85B11";
+
+        /// <summary>Shared, lazily-initialized handler for when using default options.</summary>
+        private static SocketsHttpHandler s_defaultHandler;
 
         private readonly CancellationTokenSource _abortSource = new CancellationTokenSource();
         private WebSocketState _state = WebSocketState.Connecting;
@@ -62,7 +66,7 @@ namespace System.Net.WebSockets
         public Task SendAsync(ArraySegment<byte> buffer, WebSocketMessageType messageType, bool endOfMessage, CancellationToken cancellationToken) =>
             _webSocket.SendAsync(buffer, messageType, endOfMessage, cancellationToken);
 
-        public Task SendAsync(ReadOnlyMemory<byte> buffer, WebSocketMessageType messageType, bool endOfMessage, CancellationToken cancellationToken) =>
+        public ValueTask SendAsync(ReadOnlyMemory<byte> buffer, WebSocketMessageType messageType, bool endOfMessage, CancellationToken cancellationToken) =>
             _webSocket.SendAsync(buffer, messageType, endOfMessage, cancellationToken);
 
         public Task<WebSocketReceiveResult> ReceiveAsync(ArraySegment<byte> buffer, CancellationToken cancellationToken) =>
@@ -76,93 +80,16 @@ namespace System.Net.WebSockets
 
         public Task CloseOutputAsync(WebSocketCloseStatus closeStatus, string statusDescription, CancellationToken cancellationToken) =>
             _webSocket.CloseOutputAsync(closeStatus, statusDescription, cancellationToken);
-
+        
         public async Task ConnectAsyncCore(Uri uri, CancellationToken cancellationToken, ClientWebSocketOptions options)
         {
-            // TODO #14480 : Not currently implemented, or explicitly ignored:
-            // - ClientWebSocketOptions.UseDefaultCredentials
-            // - ClientWebSocketOptions.Credentials
-            // - ClientWebSocketOptions.Proxy
-            // - ClientWebSocketOptions._sendBufferSize
-
-            // Establish connection to the server
-            CancellationTokenRegistration registration = cancellationToken.Register(s => ((WebSocketHandle)s).Abort(), this);
+            HttpResponseMessage response = null;
+            SocketsHttpHandler handler = null;
+            bool disposeHandler = true;
             try
             {
-                // Connect to the remote server
-                Socket connectedSocket = await ConnectSocketAsync(uri.Host, uri.Port, cancellationToken).ConfigureAwait(false);
-                Stream stream = new NetworkStream(connectedSocket, ownsSocket:true);
-
-                // Upgrade to SSL if needed
-                if (uri.Scheme == UriScheme.Wss)
-                {
-                    var sslStream = new SslStream(stream);
-                    await sslStream.AuthenticateAsClientAsync(
-                        uri.Host,
-                        options.ClientCertificates,
-                        SecurityProtocol.AllowedSecurityProtocols,
-                        checkCertificateRevocation: false).ConfigureAwait(false);
-                    stream = sslStream;
-                }
-
-                // Create the security key and expected response, then build all of the request headers
-                KeyValuePair<string, string> secKeyAndSecWebSocketAccept = CreateSecKeyAndSecWebSocketAccept();
-                byte[] requestHeader = BuildRequestHeader(uri, options, secKeyAndSecWebSocketAccept.Key);
-
-                // Write out the header to the connection
-                await stream.WriteAsync(requestHeader, 0, requestHeader.Length, cancellationToken).ConfigureAwait(false);
-
-                // Parse the response and store our state for the remainder of the connection
-                string subprotocol = await ParseAndValidateConnectResponseAsync(stream, options, secKeyAndSecWebSocketAccept.Value, cancellationToken).ConfigureAwait(false);
-
-                _webSocket = WebSocket.CreateClientWebSocket(
-                    stream, subprotocol, options.ReceiveBufferSize, options.SendBufferSize, options.KeepAliveInterval, false, options.Buffer.GetValueOrDefault());
-
-                // If a concurrent Abort or Dispose came in before we set _webSocket, make sure to update it appropriately
-                if (_state == WebSocketState.Aborted)
-                {
-                    _webSocket.Abort();
-                }
-                else if (_state == WebSocketState.Closed)
-                {
-                    _webSocket.Dispose();
-                }
-            }
-            catch (Exception exc)
-            {
-                if (_state < WebSocketState.Closed)
-                {
-                    _state = WebSocketState.Closed;
-                }
-
-                Abort();
-
-                if (exc is WebSocketException)
-                {
-                    throw;
-                }
-                throw new WebSocketException(SR.net_webstatus_ConnectFailure, exc);
-            }
-            finally
-            {
-                registration.Dispose();
-            }
-        }
-
-        /// <summary>Connects a socket to the specified host and port, subject to cancellation and aborting.</summary>
-        /// <param name="host">The host to which to connect.</param>
-        /// <param name="port">The port to which to connect on the host.</param>
-        /// <param name="cancellationToken">The CancellationToken to use to cancel the websocket.</param>
-        /// <returns>The connected Socket.</returns>
-        private async Task<Socket> ConnectSocketAsync(string host, int port, CancellationToken cancellationToken)
-        {
-            IPAddress[] addresses = await Dns.GetHostAddressesAsync(host).ConfigureAwait(false);
-
-            ExceptionDispatchInfo lastException = null;
-            foreach (IPAddress address in addresses)
-            {
-                var socket = new Socket(address.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
-                try
+                var request = new HttpRequestMessage(HttpMethod.Get, uri);
+                if (options._requestHeaders?.Count > 0) // use field to avoid lazily initializing the collection
                 {
                     using (cancellationToken.Register(s => ((Socket)s).Dispose(), socket))
                     using (_abortSource.Token.Register(s => ((Socket)s).Dispose(), socket))
@@ -186,10 +113,70 @@ namespace System.Net.WebSockets
                     _abortSource.Token.ThrowIfCancellationRequested();
                     return socket;
                 }
-                catch (Exception exc)
+
+                // Create the security key and expected response, then build all of the request headers
+                KeyValuePair<string, string> secKeyAndSecWebSocketAccept = CreateSecKeyAndSecWebSocketAccept();
+                AddWebSocketHeaders(request, secKeyAndSecWebSocketAccept.Key, options);
+
+                // Create the handler for this request and populate it with all of the options.
+                // Try to use a shared handler rather than creating a new one just for this request, if
+                // the options are compatible.
+                if (options.Credentials == null &&
+                    !options.UseDefaultCredentials &&
+                    options.Proxy == null &&
+                    options.Cookies == null &&
+                    options.RemoteCertificateValidationCallback == null &&
+                    options._clientCertificates?.Count == 0)
                 {
-                    socket.Dispose();
-                    lastException = ExceptionDispatchInfo.Capture(exc);
+                    disposeHandler = false;
+                    handler = s_defaultHandler;
+                    if (handler == null)
+                    {
+                        handler = new SocketsHttpHandler()
+                        {
+                            PooledConnectionLifetime = TimeSpan.Zero,
+                            UseProxy = false,
+                            UseCookies = false,
+                        };
+                        if (Interlocked.CompareExchange(ref s_defaultHandler, handler, null) != null)
+                        {
+                            handler.Dispose();
+                            handler = s_defaultHandler;
+                        }
+                    }
+                }
+                else
+                {
+                    handler = new SocketsHttpHandler();
+                    handler.PooledConnectionLifetime = TimeSpan.Zero;
+                    handler.CookieContainer = options.Cookies;
+                    handler.UseCookies = options.Cookies != null;
+                    handler.SslOptions.RemoteCertificateValidationCallback = options.RemoteCertificateValidationCallback;
+
+                    if (options.UseDefaultCredentials)
+                    {
+                        handler.Credentials = CredentialCache.DefaultCredentials;
+                    }
+                    else
+                    {
+                        handler.Credentials = options.Credentials;
+                    }
+
+                    if (options.Proxy == null)
+                    {
+                        handler.UseProxy = false;
+                    }
+                    else if (options.Proxy != ClientWebSocket.DefaultWebProxy.Instance)
+                    {
+                        handler.Proxy = options.Proxy;
+                    }
+
+                    if (options._clientCertificates?.Count > 0) // use field to avoid lazily initializing the collection
+                    {
+                        Debug.Assert(handler.SslOptions.ClientCertificates == null);
+                        handler.SslOptions.ClientCertificates = new X509Certificate2Collection();
+                        handler.SslOptions.ClientCertificates.AddRange(options.ClientCertificates);
+                    }
                 }
             }
 
@@ -217,17 +204,20 @@ namespace System.Net.WebSockets
                 builder.Append("Host: ");
                 if (string.IsNullOrEmpty(hostHeader))
                 {
-                    builder.Append(uri.IdnHost).Append(':').Append(uri.Port).Append("\r\n");
+                    linkedCancellation =
+                        externalAndAbortCancellation =
+                        CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, _abortSource.Token);
                 }
                 else
                 {
                     builder.Append(hostHeader).Append("\r\n");
                 }
 
-                builder.Append("Connection: Upgrade\r\n");
-                builder.Append("Upgrade: websocket\r\n");
-                builder.Append("Sec-WebSocket-Version: 13\r\n");
-                builder.Append("Sec-WebSocket-Key: ").Append(secKey).Append("\r\n");
+                using (linkedCancellation)
+                {
+                    response = await new HttpMessageInvoker(handler).SendAsync(request, externalAndAbortCancellation.Token).ConfigureAwait(false);
+                    externalAndAbortCancellation.Token.ThrowIfCancellationRequested(); // poll in case sends/receives in request/response didn't observe cancellation
+                }
 
                 // Add all of the additionally requested headers
                 foreach (string key in options.RequestHeaders.AllKeys)
@@ -253,8 +243,28 @@ namespace System.Net.WebSockets
                     builder.Append("\r\n");
                 }
 
-                // Add an optional cookies header
-                if (options.Cookies != null)
+                // Get or create the buffer to use
+                const int MinBufferSize = 125; // from ManagedWebSocket.MaxControlPayloadLength
+                ArraySegment<byte> optionsBuffer = options.Buffer.GetValueOrDefault();
+                Memory<byte> buffer =
+                    optionsBuffer.Count >= MinBufferSize ? optionsBuffer : // use the provided buffer if it's big enough
+                    default; // or let WebSocket.CreateFromStream use its default
+                    // options.ReceiveBufferSize is ignored, as we rely on the buffer inside the SocketsHttpHandler stream
+
+                // Get the response stream and wrap it in a web socket.
+                Stream connectedStream = await response.Content.ReadAsStreamAsync().ConfigureAwait(false);
+                Debug.Assert(connectedStream.CanWrite);
+                Debug.Assert(connectedStream.CanRead);
+                _webSocket = WebSocket.CreateFromStream(
+                    connectedStream,
+                    isServer: false,
+                    subprotocol,
+                    options.KeepAliveInterval,
+                    buffer);
+            }
+            catch (Exception exc)
+            {
+                if (_state < WebSocketState.Closed)
                 {
                     string header = options.Cookies.GetCookieHeader(uri);
                     if (!string.IsNullOrWhiteSpace(header))
@@ -270,6 +280,23 @@ namespace System.Net.WebSockets
                 return s_defaultHttpEncoding.GetBytes(builder.ToString());
             }
             finally
+            {
+                // Disposing the handler will not affect any active stream wrapped in the WebSocket.
+                if (disposeHandler)
+                {
+                    handler?.Dispose();
+                }
+            }
+        }
+
+        /// <param name="secKey">The generated security key to send in the Sec-WebSocket-Key header.</param>
+        private static void AddWebSocketHeaders(HttpRequestMessage request, string secKey, ClientWebSocketOptions options)
+        {
+            request.Headers.TryAddWithoutValidation(HttpKnownHeaderNames.Connection, HttpKnownHeaderNames.Upgrade);
+            request.Headers.TryAddWithoutValidation(HttpKnownHeaderNames.Upgrade, "websocket");
+            request.Headers.TryAddWithoutValidation(HttpKnownHeaderNames.SecWebSocketVersion, "13");
+            request.Headers.TryAddWithoutValidation(HttpKnownHeaderNames.SecWebSocketKey, secKey);
+            if (options._requestedSubProtocols?.Count > 0)
             {
                 // Make sure we clear the builder
                 builder.Clear();
