@@ -20,8 +20,10 @@ namespace System
     /// Span represents a contiguous region of arbitrary memory. Unlike arrays, it can point to either managed
     /// or native memory, or to memory allocated on the stack. It is type- and memory-safe.
     /// </summary>
+#if !MONO
     [DebuggerTypeProxy(typeof(SpanDebugView<>))]
     [DebuggerDisplay("{ToString(),raw}")]
+#endif
     public readonly ref partial struct Span<T>
     {
         /// <summary>
