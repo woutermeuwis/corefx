@@ -739,7 +739,9 @@ namespace System.Collections.Generic
                 {
                     if (entries[i].hashCode >= 0)
                     {
+#if !MONO
                         Debug.Assert(_comparer == null);
+#endif
                         entries[i].hashCode = (entries[i].key.GetHashCode() & 0x7FFFFFFF);
                     }
                 }

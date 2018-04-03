@@ -2,7 +2,9 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+#if !MONO
 using System.ComponentModel;
+#endif
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 #if !FEATURE_PORTABLE_SPAN
@@ -62,7 +64,9 @@ namespace System
         /// </exception>
         /// </summary>
         [Obsolete("Equals() on Span will always throw an exception. Use == instead.")]
+#if !MONO
         [EditorBrowsable(EditorBrowsableState.Never)]
+#endif
         public override bool Equals(object obj)
         {
             throw new NotSupportedException(SR.NotSupported_CannotCallEqualsOnSpan);
@@ -75,7 +79,9 @@ namespace System
         /// </exception>
         /// </summary>
         [Obsolete("GetHashCode() on Span will always throw an exception.")]
+#if !MONO
         [EditorBrowsable(EditorBrowsableState.Never)]
+#endif
         public override int GetHashCode()
         {
             throw new NotSupportedException(SR.NotSupported_CannotCallGetHashCodeOnSpan);

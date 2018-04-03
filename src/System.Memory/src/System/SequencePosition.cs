@@ -3,7 +3,9 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Numerics.Hashing;
+#if !MONO
 using System.ComponentModel;
+#endif
 
 namespace System
 {
@@ -28,13 +30,17 @@ namespace System
         /// <summary>
         /// Returns object part of this <see cref="SequencePosition"/>
         /// </summary>
+#if !MONO
         [EditorBrowsable(EditorBrowsableState.Never)]
+#endif
         public object GetObject() => _object;
 
         /// <summary>
         /// Returns integer part of this <see cref="SequencePosition"/>
         /// </summary>
+#if !MONO
         [EditorBrowsable(EditorBrowsableState.Never)]
+#endif
         public int GetInteger() => _integer;
 
         /// <summary>
@@ -51,11 +57,15 @@ namespace System
         public bool Equals(SequencePosition other) => this == other;
 
         /// <inheritdoc />
+#if !MONO
         [EditorBrowsable(EditorBrowsableState.Never)]
+#endif
         public override bool Equals(object obj) => obj is SequencePosition other && this == other;
 
         /// <inheritdoc />
+#if !MONO
         [EditorBrowsable(EditorBrowsableState.Never)]
+#endif
         public override int GetHashCode() => HashHelpers.Combine(_object?.GetHashCode() ?? 0, _integer);
     }
 }

@@ -38,7 +38,7 @@ namespace System.Runtime.CompilerServices
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Start<TStateMachine>(ref TStateMachine stateMachine) where TStateMachine : IAsyncStateMachine =>
             // will provide the right ExecutionContext semantics
-#if netstandard
+#if netstandard || MONO
             _methodBuilder.Start(ref stateMachine);
 #else
             AsyncMethodBuilderCore.Start(ref stateMachine);
@@ -143,7 +143,7 @@ namespace System.Runtime.CompilerServices
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Start<TStateMachine>(ref TStateMachine stateMachine) where TStateMachine : IAsyncStateMachine =>
             // will provide the right ExecutionContext semantics
-#if netstandard
+#if netstandard || MONO
             _methodBuilder.Start(ref stateMachine);
 #else
             AsyncMethodBuilderCore.Start(ref stateMachine);
