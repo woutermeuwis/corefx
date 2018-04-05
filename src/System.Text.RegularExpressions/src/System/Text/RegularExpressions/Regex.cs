@@ -1082,7 +1082,7 @@ namespace System.Text.RegularExpressions
         protected bool UseOptionC()
         {
 #if MOBILE
-            return false
+            return false;
 #elif MONO
             // This is here so we can debug this issue: https://github.com/mono/mono/pull/7982,
             // once that is fixed, we can remove this.   Disabling it completely for mobile
