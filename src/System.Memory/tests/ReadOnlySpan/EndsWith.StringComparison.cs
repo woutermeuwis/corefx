@@ -330,6 +330,7 @@ namespace System.SpanTests
         // For desired behavior, use ordinal comparison instead of linguistic comparison.
         // This is a known difference between Windows and Unix (https://github.com/dotnet/coreclr/issues/2051).
         [Theory]
+        [SkipOnTargetFramework(TargetFrameworkMonikers.Mono)]
         [PlatformSpecific(TestPlatforms.Windows)]
         [InlineData(StringComparison.CurrentCulture)]
         [InlineData(StringComparison.CurrentCultureIgnoreCase)]
