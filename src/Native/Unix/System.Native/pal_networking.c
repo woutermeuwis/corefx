@@ -866,6 +866,7 @@ SystemNative_TryGetIPPacketInformation(struct MessageHeader* messageHeader, int3
             }
         }
     }
+#ifdef IPV6_PKTINFO
     else
     {
         for (; controlMessage != NULL && controlMessage->cmsg_len > 0;
@@ -877,6 +878,7 @@ SystemNative_TryGetIPPacketInformation(struct MessageHeader* messageHeader, int3
             }
         }
     }
+#endif
 
     return 0;
 }
@@ -1617,9 +1619,11 @@ static bool TryGetPlatformSocketOption(int32_t socketOptionName, int32_t socketO
 
             switch (socketOptionLevel)
             {
+#ifdef IPV6_HOPLIMIT
                 case SocketOptionName_SO_IPV6_HOPLIMIT:
                     *optName = IPV6_HOPLIMIT;
                     return true;
+#endif
 
                 // case SocketOptionName_SO_IPV6_PROTECTION_LEVEL:
 
@@ -1627,9 +1631,11 @@ static bool TryGetPlatformSocketOption(int32_t socketOptionName, int32_t socketO
                     *optName = IPV6_V6ONLY;
                     return true;
 
+#ifdef IPV6_RECVPKTINFO
                 case SocketOptionName_SO_IP_PKTINFO:
                     *optName = IPV6_RECVPKTINFO;
                     return true;
+#endif
 
                 case SocketOptionName_SO_IP_MULTICAST_IF:
                     *optName = IPV6_MULTICAST_IF;
@@ -1988,7 +1994,12 @@ static int32_t CreateSocketEventPortInner(int32_t* port)
 {
     assert(port != NULL);
 
+#ifdef EPOOL_CLOEXEC
     int epollFd = epoll_create1(EPOLL_CLOEXEC);
+#else
+    int epollFd = epoll_create(256);
+    fcntl(epollFd, F_SETFD, FD_CLOEXEC);
+#endif
     if (epollFd == -1)
     {
         *port = -1;
