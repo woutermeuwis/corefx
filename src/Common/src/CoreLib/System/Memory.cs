@@ -4,6 +4,7 @@
 
 using System.Buffers;
 using System.Diagnostics;
+using System.Diagnostics.Private;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 #if !MONO
@@ -156,7 +157,9 @@ namespace System
         /// <exception cref="System.ArgumentOutOfRangeException">
         /// Thrown when the specified <paramref name="start"/> or end index is not in the range (&lt;0 or &gt;=Length).
         /// </exception>
+#if !MONO
         [EditorBrowsable(EditorBrowsableState.Never)]
+#endif
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Memory<T> CreateFromPinnedArray(T[] array, int start, int length)
         {

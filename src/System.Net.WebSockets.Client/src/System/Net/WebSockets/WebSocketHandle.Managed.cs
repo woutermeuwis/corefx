@@ -97,6 +97,8 @@ namespace System.Net.WebSockets
                 Socket connectedSocket = await ConnectSocketAsync(uri.Host, uri.Port, cancellationToken).ConfigureAwait(false);
                 Stream stream = new NetworkStream(connectedSocket, ownsSocket:true);
 
+               const System.Security.Authentication.SslProtocols AllowedSecurityProtocols = System.Security.Authentication.SslProtocols.Tls | System.Security.Authentication.SslProtocols.Tls11 | System.Security.Authentication.SslProtocols.Tls12;
+
                 // Upgrade to SSL if needed
                 if (uri.Scheme == UriScheme.Wss)
                 {
@@ -104,7 +106,7 @@ namespace System.Net.WebSockets
                     await sslStream.AuthenticateAsClientAsync(
                         uri.Host,
                         options.ClientCertificates,
-                        SecurityProtocol.AllowedSecurityProtocols,
+                        AllowedSecurityProtocols,
                         checkCertificateRevocation: false).ConfigureAwait(false);
                     stream = sslStream;
                 }

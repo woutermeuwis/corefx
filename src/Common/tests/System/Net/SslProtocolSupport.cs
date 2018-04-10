@@ -19,9 +19,11 @@ namespace System.Net.Test.Common
             {
                 SslProtocols supported = SslProtocols.Tls | SslProtocols.Tls11 | SslProtocols.Tls12;
 #pragma warning disable 0618 // SSL2/3 are deprecated
+#if !MONO
                 if (PlatformDetection.IsWindows ||
                     PlatformDetection.IsOSX ||
                     (RuntimeInformation.IsOSPlatform(OSPlatform.Linux) && PlatformDetection.OpenSslVersion < new Version(1, 0, 2) && !PlatformDetection.IsDebian))
+#endif
                 {
                     supported |= SslProtocols.Ssl3;
                 }
