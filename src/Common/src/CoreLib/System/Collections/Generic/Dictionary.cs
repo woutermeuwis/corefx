@@ -150,7 +150,11 @@ namespace System.Collections.Generic
         {
             get
             {
-                return (_comparer == null || _comparer is NonRandomizedStringEqualityComparer) ? EqualityComparer<TKey>.Default : _comparer;
+                return (_comparer == null
+#if !MONO
+                 || _comparer is NonRandomizedStringEqualityComparer
+#endif
+                 ) ? EqualityComparer<TKey>.Default : _comparer;
             }
         }
 
