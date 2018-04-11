@@ -747,7 +747,7 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
         internal static bool InternalsVisibleTo(Assembly assemblyThatDefinesAttribute, Assembly assemblyToCheck)
         {
             RuntimeBinder.EnsureLockIsTaken();
-            (Assembly, Assembly) key = (assemblyThatDefinesAttribute, assemblyToCheck);
+            (Assembly temp1, Assembly temp2) key = (assemblyThatDefinesAttribute, assemblyToCheck);
             if (!s_internalsVisibleToCache.TryGetValue(key, out bool result))
             {
                 AssemblyName assyName;
