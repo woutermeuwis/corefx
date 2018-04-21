@@ -142,7 +142,9 @@ namespace System
         /// Returns a reference to the 0th element of the Span. If the Span is empty, returns null reference.
         /// It can be used for pinning and is required to support the use of span within a fixed statement.
         /// </summary>
+#if !MONO
         [EditorBrowsable(EditorBrowsableState.Never)]
+#endif
         public unsafe ref readonly T GetPinnableReference()
         {
             if (_length != 0)

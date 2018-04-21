@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Diagnostics;
+using System.Diagnostics.Private;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Sources;
 
