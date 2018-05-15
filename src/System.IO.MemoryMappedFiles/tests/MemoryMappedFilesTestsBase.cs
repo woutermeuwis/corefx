@@ -7,6 +7,12 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using Xunit;
 
+#if MONO
+// StringBuilderCache is currently under System.Text
+using System.Text;
+#endif
+
+
 namespace System.IO.MemoryMappedFiles.Tests
 {
     /// <summary>Base class from which all of the memory mapped files test classes derive.</summary>

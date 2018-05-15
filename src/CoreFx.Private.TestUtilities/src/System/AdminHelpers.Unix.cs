@@ -13,7 +13,7 @@ namespace System
     /// <summary>
     /// Returns true if the current process is elevated (in Unix).
     /// </summary>
-    public static partial class AdminHelpers
+    internal static partial class AdminHelpers
     {
         public unsafe static bool IsProcessElevated()
         {
