@@ -4,6 +4,9 @@
 
 using System.Buffers;
 using System.Collections.Generic;
+#if MONO
+using System.Diagnostics.Private;
+#endif
 using System.Diagnostics;
 using System.Globalization;
 using System.Runtime.CompilerServices;

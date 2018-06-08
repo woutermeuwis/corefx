@@ -55,12 +55,35 @@ namespace System
             // Negative values discovered though conversion to high values when converted to unsigned
             // Failure should be rare and location determination and message is delegated to failure functions
             if (array == null || (uint)offset > (uint)array.Length || (uint)count > (uint)(array.Length - offset))
+#if MONO
+                ThrowArraySegmentCtorValidationFailedExceptions(array, offset, count);
+#else
                 ThrowHelper.ThrowArraySegmentCtorValidationFailedExceptions(array, offset, count);
+#endif
 
             _array = array;
             _offset = offset;
             _count = count;
         }
+
+#if MONO  // TODO: this shouldn't be here, just copied for now
+        private static Exception GetArraySegmentCtorValidationFailedException(Array array, int offset, int count)
+        {
+            if (array == null)
+                return new ArgumentNullException(nameof(array));
+            if (offset < 0)
+                return new ArgumentOutOfRangeException(nameof(offset), SR.ArgumentOutOfRange_NeedNonNegNum);
+            if (count < 0)
+                return new ArgumentOutOfRangeException(nameof(count), SR.ArgumentOutOfRange_NeedNonNegNum);
+
+            Debug.Assert(array.Length - offset < count);
+            return new ArgumentException(SR.Argument_InvalidOffLen);
+        }
+        internal static void ThrowArraySegmentCtorValidationFailedExceptions(Array array, int offset, int count)
+        {
+            throw GetArraySegmentCtorValidationFailedException(array, offset, count);
+        }
+#endif
 
         public T[] Array => _array;
 
@@ -310,7 +333,11 @@ namespace System
         {
             if (_array == null)
             {
+#if MONO
+                throw new InvalidOperationException(SR.InvalidOperation_NullArray);
+#else
                 ThrowHelper.ThrowInvalidOperationException(ExceptionResource.InvalidOperation_NullArray);
+#endif
             }
         }
 

@@ -2,12 +2,19 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+#if MONO
+using System.Diagnostics.Private;
+#endif
 using System.Diagnostics;
 using System.Globalization;
 using System.Runtime;
 using System.Runtime.InteropServices;
 
+#if MONO
+using System.Runtime.CompilerServices;
+#else
 using Internal.Runtime.CompilerServices;
+#endif
 
 #if BIT64
 using nuint = System.UInt64;
@@ -350,8 +357,10 @@ namespace System
                     return;
             }
 
+#if !MONO  // MONO TODO: should we enable this?
             // P/Invoke into the native version for large lengths
             if (byteLength >= 512) goto PInvoke;
+#endif
 
             nuint i = 0; // byte offset at which we're copying
 
@@ -455,8 +464,10 @@ namespace System
             return;
 #endif
 
+#if !MONO
         PInvoke:
             RuntimeImports.RhZeroMemory(ref b, byteLength);
+#endif
         }
 
         public static unsafe void ClearWithReferences(ref IntPtr ip, nuint pointerSizeLength)
