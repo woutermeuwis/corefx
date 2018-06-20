@@ -2,8 +2,11 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+#if !MONO
 using System.ComponentModel;
+#endif
 using System.Diagnostics;
+using System.Diagnostics.Private;
 using System.Runtime.CompilerServices;
 using System.Runtime.Versioning;
 using Internal.Runtime.CompilerServices;
@@ -153,7 +156,9 @@ namespace System
         /// Returns a reference to the 0th element of the Span. If the Span is empty, returns null reference.
         /// It can be used for pinning and is required to support the use of span within a fixed statement.
         /// </summary>
+#if !MONO
         [EditorBrowsable(EditorBrowsableState.Never)]
+#endif
         public unsafe ref readonly T GetPinnableReference() => ref (_length != 0) ? ref _pointer.Value : ref Unsafe.AsRef<T>(null);
 
         /// <summary>
