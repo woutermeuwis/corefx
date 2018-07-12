@@ -345,7 +345,7 @@ namespace System
                 wstrcpy(dest, src, value.Length);
             return result;
         }
-#if !MONO // Requires fast-span
+
         public static string Create<TState>(int length, TState state, SpanAction<char, TState> action)
         {
             if (action == null)
@@ -366,7 +366,7 @@ namespace System
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static implicit operator ReadOnlySpan<char>(string value) =>
             value != null ? new ReadOnlySpan<char>(ref value.GetRawStringData(), value.Length) : default;
-#endif
+
         public object Clone()
         {
             return this;
