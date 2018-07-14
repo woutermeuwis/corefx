@@ -121,8 +121,8 @@ c_static_assert(PAL_SEEK_CUR == SEEK_CUR);
 c_static_assert(PAL_SEEK_END == SEEK_END);
 
 // Validate our PollFlags enum values are correct for the platform
-// HACK: AIX values are different; we convert them between PAL_POLL and POLL now
-#ifndef _AIX
+// HACK: AIX and Haiku values are different; we convert them between PAL_POLL and POLL now
+#if !(defined (_AIX) || defined (__HAIKU__))
 c_static_assert(PAL_POLLIN == POLLIN);
 c_static_assert(PAL_POLLPRI == POLLPRI);
 c_static_assert(PAL_POLLOUT == POLLOUT);
@@ -883,6 +883,7 @@ int32_t SystemNative_MAdvise(void* address, uint64_t length, int32_t advice)
 
 int32_t SystemNative_MLock(void* address, uint64_t length)
 {
+#if !defined (__HAIKU__)
     if (length > SIZE_MAX)
     {
         errno = ERANGE;
@@ -890,10 +891,15 @@ int32_t SystemNative_MLock(void* address, uint64_t length)
     }
 
     return mlock(address, (size_t)length);
+#else
+    errno = ENOSYS;
+    return -1;
+#endif
 }
 
 int32_t SystemNative_MUnlock(void* address, uint64_t length)
 {
+#if !defined (__HAIKU__)
     if (length > SIZE_MAX)
     {
         errno = ERANGE;
@@ -901,6 +907,10 @@ int32_t SystemNative_MUnlock(void* address, uint64_t length)
     }
 
     return munlock(address, (size_t)length);
+#else
+    errno = ENOSYS;
+    return -1;
+#endif
 }
 
 int32_t SystemNative_MProtect(void* address, uint64_t length, int32_t protection)
@@ -1442,7 +1452,7 @@ int32_t SystemNative_LockFileRegion(intptr_t fd, int64_t offset, int64_t length,
         return -1;
     }
 
-#if HAVE_FLOCK64
+#if HAVE_FLOCK64 && !defined (__HAIKU__)
     struct flock64 lockArgs;
 #else
     struct flock lockArgs;
