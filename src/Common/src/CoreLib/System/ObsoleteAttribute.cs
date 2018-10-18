@@ -29,7 +29,7 @@ namespace System
 #endif
     public sealed class ObsoleteAttribute : Attribute
     {
-        private String _message;
+        private string _message;
         private bool _error;
 
         public ObsoleteAttribute()
@@ -38,19 +38,19 @@ namespace System
             _error = false;
         }
 
-        public ObsoleteAttribute(String message)
+        public ObsoleteAttribute(string message)
         {
             _message = message;
             _error = false;
         }
 
-        public ObsoleteAttribute(String message, bool error)
+        public ObsoleteAttribute(string message, bool error)
         {
             _message = message;
             _error = error;
         }
 
-        public String Message
+        public string Message
         {
             get { return _message; }
         }

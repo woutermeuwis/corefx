@@ -37,7 +37,7 @@ namespace System.Security.Cryptography.X509Certificates
             _lazyNotBefore = DateTime.MinValue;
             _lazyNotAfter = DateTime.MinValue;
 
-            ICertificatePal pal = Pal;
+            ICertificatePalCore pal = Pal;
             Pal = null;
             if (pal != null)
                 pal.Dispose();
@@ -102,7 +102,7 @@ namespace System.Security.Cryptography.X509Certificates
             Pal = CertificatePal.FromHandle(handle);
         }
 
-        internal X509Certificate(ICertificatePal pal)
+        internal X509Certificate(ICertificatePalCore pal)
         {
             Debug.Assert(pal != null);
             Pal = pal;
@@ -284,9 +284,8 @@ namespace System.Security.Cryptography.X509Certificates
                 throw new CryptographicException(ErrorCode.E_POINTER);  // Not the greatest error, but needed for backward compat.
 
             using (var safePasswordHandle = new SafePasswordHandle(password))
-            using (IExportPal storePal = StorePal.FromCertificate(Pal))
             {
-                return storePal.Export(contentType, safePasswordHandle);
+                return Pal.Export(contentType, safePasswordHandle);
             }
         }
 
@@ -299,9 +298,8 @@ namespace System.Security.Cryptography.X509Certificates
                 throw new CryptographicException(ErrorCode.E_POINTER);  // Not the greatest error, but needed for backward compat.
 
             using (var safePasswordHandle = new SafePasswordHandle(password))
-            using (IExportPal storePal = StorePal.FromCertificate(Pal))
             {
-                return storePal.Export(contentType, safePasswordHandle);
+                return Pal.Export(contentType, safePasswordHandle);
             }
         }
 
@@ -465,13 +463,15 @@ namespace System.Security.Cryptography.X509Certificates
         [Obsolete("This method has been deprecated.  Please use the Subject property instead.  http://go.microsoft.com/fwlink/?linkid=14202")]
         public virtual string GetName()
         {
-            return Subject;
+            ThrowIfInvalid();
+            return Pal.LegacySubject;
         }
 
         [Obsolete("This method has been deprecated.  Please use the Issuer property instead.  http://go.microsoft.com/fwlink/?linkid=14202")]
         public virtual string GetIssuerName()
         {
-            return Issuer;
+            ThrowIfInvalid();
+            return Pal.LegacyIssuer;
         }
 
         public override string ToString()
@@ -560,7 +560,7 @@ namespace System.Security.Cryptography.X509Certificates
             throw new PlatformNotSupportedException(SR.NotSupported_ImmutableX509Certificate);
         }
 
-        internal ICertificatePal Pal { get; private set; }
+        internal ICertificatePalCore Pal { get; private set; }
 
         internal DateTime GetNotAfter()
         {

@@ -10,6 +10,6 @@ namespace System.Runtime.CompilerServices
 #endif
     public abstract class CustomConstantAttribute : Attribute
     {
-        public abstract Object Value { get; }
+        public abstract object Value { get; }
     }
 }

@@ -56,7 +56,7 @@ namespace System.Text
             return Encoding.GetEncoding(iCodePage);
         }
 
-        public override bool Equals(Object value)
+        public override bool Equals(object value)
         {
             EncodingInfo that = value as EncodingInfo;
             if (that != null)

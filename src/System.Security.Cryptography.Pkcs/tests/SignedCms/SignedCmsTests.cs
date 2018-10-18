@@ -4,12 +4,13 @@
 
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
+using System.Security.Cryptography.Xml;
 using Test.Cryptography;
 using Xunit;
 
 namespace System.Security.Cryptography.Pkcs.Tests
 {
-    public static class SignedCmsTests
+    public static partial class SignedCmsTests
     {
         [Fact]
         public static void DefaultStateBehavior()
@@ -426,9 +427,42 @@ namespace System.Security.Cryptography.Pkcs.Tests
             cms.CheckSignature(true);
         }
 
+        [Fact]
+        public static void AddSignerWithNegativeSerial()
+        {
+            const string expectedSerial = "FD319CB1514B06AF49E00522277E43C8";
+
+            ContentInfo contentInfo = new ContentInfo(new byte[] { 9, 8, 7, 6, 5 });
+            SignedCms cms = new SignedCms(contentInfo, false);
+
+            using (X509Certificate2 cert = Certificates.NegativeSerialNumber.TryGetCertificateWithPrivateKey())
+            {
+                Assert.Equal(expectedSerial, cert.SerialNumber);
+
+                CmsSigner signer = new CmsSigner(SubjectIdentifierType.IssuerAndSerialNumber, cert);
+                signer.IncludeOption = X509IncludeOption.EndCertOnly;
+
+                cms.ComputeSignature(signer);
+            }
+
+            SignerInfoCollection signers = cms.SignerInfos;
+            Assert.Equal(1, signers.Count);
+
+            SignerInfo signerInfo = signers[0];
+            Assert.Equal(SubjectIdentifierType.IssuerAndSerialNumber, signerInfo.SignerIdentifier.Type);
+
+            X509IssuerSerial issuerSerial = (X509IssuerSerial)signerInfo.SignerIdentifier.Value;
+            Assert.Equal(expectedSerial, issuerSerial.SerialNumber);
+
+            Assert.NotNull(signerInfo.Certificate);
+            // Assert.NoThrow
+            cms.CheckSignature(true);
+        }
+
         [Theory]
         [InlineData(SubjectIdentifierType.IssuerAndSerialNumber, false)]
         [InlineData(SubjectIdentifierType.IssuerAndSerialNumber, true)]
+        [ActiveIssue(31977, TargetFrameworkMonikers.Uap)]
         public static void AddFirstSigner_DSA(SubjectIdentifierType identifierType, bool detached)
         {
             ContentInfo contentInfo = new ContentInfo(new byte[] { 9, 8, 7, 6, 5 });
@@ -688,6 +722,7 @@ namespace System.Security.Cryptography.Pkcs.Tests
         [Theory]
         [InlineData(false)]
         [InlineData(true)]
+        [ActiveIssue(31977, TargetFrameworkMonikers.Uap)]
         public static void EnsureExtraCertsAdded(bool newDocument)
         {
             SignedCms cms;
@@ -975,6 +1010,66 @@ namespace System.Security.Cryptography.Pkcs.Tests
 
             Assert.Equal(oidValue, signedCms.ContentInfo.ContentType.Value);
             Assert.Equal(contentHex, signedCms.ContentInfo.Content.ByteArrayToHex());
+        }
+
+        [Fact]
+        public static void VerifyUnsortedAttributeSignature()
+        {
+            SignedCms cms = new SignedCms();
+            cms.Decode(SignedDocuments.DigiCertTimeStampToken);
+
+            // Assert.NoThrows
+            cms.CheckSignature(true);
+        }
+
+        [Fact]
+        public static void VerifyUnsortedAttributeSignature_ImportExportImport()
+        {
+            SignedCms cms = new SignedCms();
+            cms.Decode(SignedDocuments.DigiCertTimeStampToken);
+
+            // Assert.NoThrows
+            cms.CheckSignature(true);
+
+            byte[] exported = cms.Encode();
+            cms = new SignedCms();
+            cms.Decode(exported);
+
+            // Assert.NoThrows
+            cms.CheckSignature(true);
+        }
+
+        [Fact]
+        public static void AddSignerToUnsortedAttributeSignature()
+        {
+            SignedCms cms = new SignedCms();
+            cms.Decode(SignedDocuments.DigiCertTimeStampToken);
+
+            // Assert.NoThrows
+            cms.CheckSignature(true);
+
+            using (X509Certificate2 cert = Certificates.RSAKeyTransferCapi1.TryGetCertificateWithPrivateKey())
+            {
+                cms.ComputeSignature(
+                    new CmsSigner(
+                        SubjectIdentifierType.IssuerAndSerialNumber,
+                        cert));
+
+                cms.ComputeSignature(
+                    new CmsSigner(
+                        SubjectIdentifierType.SubjectKeyIdentifier,
+                        cert));
+            }
+
+            // Assert.NoThrows
+            cms.CheckSignature(true);
+
+            byte[] exported = cms.Encode();
+            cms = new SignedCms();
+            cms.Decode(exported);
+
+            // Assert.NoThrows
+            cms.CheckSignature(true);
         }
 
         [Theory]

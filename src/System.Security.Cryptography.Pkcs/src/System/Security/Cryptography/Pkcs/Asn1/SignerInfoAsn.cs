@@ -35,9 +35,9 @@ namespace System.Security.Cryptography.Pkcs.Asn1
         public AlgorithmIdentifierAsn DigestAlgorithm;
 
         [ExpectedTag(0)]
-        [SetOf]
         [OptionalValue]
-        public AttributeAsn[] SignedAttributes;
+        [AnyValue]
+        public ReadOnlyMemory<byte>? SignedAttributes;
 
         public AlgorithmIdentifierAsn SignatureAlgorithm;
 

@@ -155,7 +155,7 @@ namespace System.DirectoryServices.AccountManagement
         {
             base.GetObjectData(info, context);
             info.AddValue("errorCode", _errorCode);
-            info.AddValue("serverName", _serverName, typeof(String));
+            info.AddValue("serverName", _serverName, typeof(string));
         }
     }
 

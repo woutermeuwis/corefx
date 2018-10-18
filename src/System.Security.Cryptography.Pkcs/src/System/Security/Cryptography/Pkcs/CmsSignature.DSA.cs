@@ -17,7 +17,7 @@ namespace System.Security.Cryptography.Pkcs
             lookup.Add(Oids.DsaWithSha256, new DSACmsSignature(Oids.DsaWithSha256, HashAlgorithmName.SHA256));
             lookup.Add(Oids.DsaWithSha384, new DSACmsSignature(Oids.DsaWithSha384, HashAlgorithmName.SHA384));
             lookup.Add(Oids.DsaWithSha512, new DSACmsSignature(Oids.DsaWithSha512, HashAlgorithmName.SHA512));
-            lookup.Add(Oids.DsaPublicKey, new DSACmsSignature(null, default));
+            lookup.Add(Oids.Dsa, new DSACmsSignature(null, default));
         }
 
         private class DSACmsSignature : CmsSignature
@@ -29,6 +29,11 @@ namespace System.Security.Cryptography.Pkcs
             {
                 _signatureAlgorithm = signatureAlgorithm;
                 _expectedDigest = expectedDigest;
+            }
+
+            protected override bool VerifyKeyType(AsymmetricAlgorithm key)
+            {
+                return (key as DSA) != null;
             }
 
             internal override bool VerifySignature(
@@ -97,12 +102,13 @@ namespace System.Security.Cryptography.Pkcs
 #endif
                 HashAlgorithmName hashAlgorithmName,
                 X509Certificate2 certificate,
+                AsymmetricAlgorithm key,
                 bool silent,
                 out Oid signatureAlgorithm,
                 out byte[] signatureValue)
             {
                 // If there's no private key, fall back to the public key for a "no private key" exception.
-                DSA dsa =
+                DSA dsa = key as DSA ??
                     PkcsPal.Instance.GetPrivateKeyForSigning<DSA>(certificate, silent) ??
                     certificate.GetDSAPublicKey();
 
@@ -139,7 +145,16 @@ namespace System.Security.Cryptography.Pkcs
                 {
                     if (dsa.TryCreateSignature(dataHash, rented, out bytesWritten))
                     {
-                        signatureValue = DsaIeeeToDer(new ReadOnlySpan<byte>(rented, 0, bytesWritten));
+                        var signature = new ReadOnlySpan<byte>(rented, 0, bytesWritten);
+
+                        if (key != null && !certificate.GetDSAPublicKey().VerifySignature(dataHash, signature))
+                        {
+                            // key did not match certificate
+                            signatureValue = null;
+                            return false;
+                        }
+
+                        signatureValue = DsaIeeeToDer(signature);
                         return true;
                     }
                 }

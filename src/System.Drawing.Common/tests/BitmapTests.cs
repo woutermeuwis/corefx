@@ -24,6 +24,7 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
@@ -32,7 +33,7 @@ using Xunit;
 
 namespace System.Drawing.Tests
 {
-    public class BitmapTests
+    public class BitmapTests : RemoteExecutorTestBase
     {
         public static IEnumerable<object[]> Ctor_FilePath_TestData()
         {
@@ -955,6 +956,7 @@ namespace System.Drawing.Tests
 
         [ActiveIssue(20884, TestPlatforms.AnyUnix)]
         [ActiveIssue(21886, TargetFrameworkMonikers.NetFramework)]
+        [ActiveIssue(29858, TestPlatforms.Windows)]
         [ConditionalFact(Helpers.GdiplusIsAvailable)]
         public void MakeTransparent_GrayscalePixelFormat_ThrowsArgumentException()
         {
@@ -1700,6 +1702,47 @@ namespace System.Drawing.Tests
                     Assert.Equal(blue, bitmap.GetPixel(0, 0));
                 }
             }
+        }
+
+        [ConditionalFact(Helpers.GdiplusIsAvailable)]
+        public void FromNonSeekableStream()
+        {
+            string path = GetTestFilePath();
+            using (Bitmap bitmap = new Bitmap(100, 100))
+            {
+                bitmap.Save(path, ImageFormat.Png);
+            }
+
+            using (FileStream stream = new FileStream(path, FileMode.Open))
+            {
+                using (Bitmap bitmap = new Bitmap(new NonSeekableStream(stream)))
+                {
+                    Assert.Equal(100, bitmap.Height);
+                    Assert.Equal(100, bitmap.Width);
+                    Assert.Equal(ImageFormat.Png, bitmap.RawFormat);
+                }
+            }
+        }
+
+        private class NonSeekableStream : Stream
+        {
+            private Stream _stream;
+
+            public NonSeekableStream(Stream stream)
+            {
+                _stream = stream;
+            }
+
+            public override bool CanRead => _stream.CanRead;
+            public override bool CanSeek => false;
+            public override bool CanWrite => _stream.CanWrite;
+            public override long Length => _stream.Length;
+            public override long Position { get => _stream.Position; set => throw new InvalidOperationException(); }
+            public override void Flush() => _stream.Flush();
+            public override int Read(byte[] buffer, int offset, int count) => _stream.Read(buffer, offset, count);
+            public override long Seek(long offset, SeekOrigin origin) => _stream.Seek(offset, origin);
+            public override void SetLength(long value) => _stream.SetLength(value);
+            public override void Write(byte[] buffer, int offset, int count) => _stream.Write(buffer, offset, count);
         }
     }
 }

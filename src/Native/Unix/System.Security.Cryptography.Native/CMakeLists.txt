@@ -1,10 +1,11 @@
-
-project(System.Security.Cryptography.Native)
+project(System.Security.Cryptography.Native C)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 # These are happening inside of OpenSSL-defined macros out of our control
 add_compile_options(-Wno-cast-align)
+add_compile_options(-Wno-reserved-id-macro)
+add_compile_options(-Wno-documentation)
 
 add_definitions(-DPIC=1)
 
@@ -13,12 +14,11 @@ if(CMAKE_STATIC_LIB_LINK)
 endif(CMAKE_STATIC_LIB_LINK)
 
 find_package(OpenSSL REQUIRED)
-include_directories(SYSTEM ${OPENSSL_INCLUDE_DIR})
+include_directories(${OPENSSL_INCLUDE_DIR})
 
 set(NATIVECRYPTO_SOURCES
     openssl.c
     pal_asn1.c
-    pal_asn1_print.c
     pal_bignum.c
     pal_bio.c
     pal_dsa.c

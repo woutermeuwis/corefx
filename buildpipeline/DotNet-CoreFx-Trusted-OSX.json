@@ -100,9 +100,7 @@
       }
     },
     {
-      "environment": {
-        "PACKAGEVERSIONPROPSURL": "$(PB_PackageVersionPropsUrl)"
-      },
+      "environment": {},
       "enabled": true,
       "continueOnError": false,
       "alwaysRun": false,
@@ -275,6 +273,7 @@
       "continueOnError": true,
       "displayName": "run end.sh",
       "timeoutInMinutes": 0,
+      "condition": "always()",
       "alwaysRun": true,
       "task": {
         "id": "10f1f9a1-74b0-47ab-87bf-e3c9c68e8b0d",
@@ -395,16 +394,13 @@
       "allowOverride": true
     },
     "PB_PackageVersionPropsUrl": {
-      "value": "",
-      "isSecret": true
+      "value": ""
     },
-    "PB_RestoreSource": {
-      "value": "",
-      "isSecret": true
+    "PACKAGEVERSIONPROPSURL": {
+      "value": "$(PB_PackageVersionPropsUrl)"
     },
     "PB_AssetRootUrl": {
-      "value": "",
-      "isSecret": true
+      "value": ""
     }
   },
   "demands": [

@@ -33,13 +33,13 @@ namespace System
             HResult = HResults.COR_E_EXECUTIONENGINE;
         }
 
-        public ExecutionEngineException(String message)
+        public ExecutionEngineException(string message)
             : base(message)
         {
             HResult = HResults.COR_E_EXECUTIONENGINE;
         }
 
-        public ExecutionEngineException(String message, Exception innerException)
+        public ExecutionEngineException(string message, Exception innerException)
             : base(message, innerException)
         {
             HResult = HResults.COR_E_EXECUTIONENGINE;

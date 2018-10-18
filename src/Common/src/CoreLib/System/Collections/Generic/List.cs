@@ -947,7 +947,6 @@ namespace System.Collections.Generic
 
             if (count > 0)
             {
-                int i = _size;
                 _size -= count;
                 if (index < _size)
                 {
@@ -1126,9 +1125,9 @@ namespace System.Collections.Generic
 #endif
         public struct Enumerator : IEnumerator<T>, IEnumerator
         {
-            private List<T> _list;
+            private readonly List<T> _list;
             private int _index;
-            private int _version;
+            private readonly int _version;
             private T _current;
 
             internal Enumerator(List<T> list)

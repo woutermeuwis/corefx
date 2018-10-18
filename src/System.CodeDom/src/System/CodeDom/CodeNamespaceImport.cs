@@ -20,8 +20,8 @@ namespace System.CodeDom
 
         public string Namespace
         {
-            get { return _nameSpace ?? string.Empty; }
-            set { _nameSpace = value; }
+            get => _nameSpace ?? string.Empty;
+            set => _nameSpace = value;
         }
     }
 }

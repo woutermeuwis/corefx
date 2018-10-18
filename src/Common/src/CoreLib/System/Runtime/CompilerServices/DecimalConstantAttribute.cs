@@ -12,7 +12,7 @@ namespace System.Runtime.CompilerServices
 #endif
     public sealed class DecimalConstantAttribute : Attribute
     {
-        private Decimal _dec;
+        private decimal _dec;
 
         [CLSCompliant(false)]
         public DecimalConstantAttribute(
@@ -23,7 +23,7 @@ namespace System.Runtime.CompilerServices
             uint low
         )
         {
-            _dec = new Decimal((int)low, (int)mid, (int)hi, (sign != 0), scale);
+            _dec = new decimal((int)low, (int)mid, (int)hi, (sign != 0), scale);
         }
 
         public DecimalConstantAttribute(
@@ -34,9 +34,9 @@ namespace System.Runtime.CompilerServices
             int low
         )
         {
-            _dec = new Decimal(low, mid, hi, (sign != 0), scale);
+            _dec = new decimal(low, mid, hi, (sign != 0), scale);
         }
 
-        public Decimal Value => _dec;
+        public decimal Value => _dec;
     }
 }

@@ -5,7 +5,7 @@
 using System.Diagnostics;
 using System.Buffers.Text;
 
-#if !netstandard && !MONO
+#if !MONO
 using Internal.Runtime.CompilerServices;
 #else
 using System.Runtime.CompilerServices;

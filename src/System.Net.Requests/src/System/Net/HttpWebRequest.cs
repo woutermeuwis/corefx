@@ -30,7 +30,7 @@ namespace System.Net
         private Uri _requestUri;
         private string _originVerb = HttpMethod.Get.Method;
 
-        // We allow getting and setting this (to preserve app-compat). But we don't do anything with it 
+        // We allow getting and setting this (to preserve app-compat). But we don't do anything with it
         // as the underlying System.Net.Http API doesn't support it.
         private int _continueTimeout = DefaultContinueTimeout;
 
@@ -188,7 +188,7 @@ namespace System.Net
             }
         }
 
-        public override String ContentType
+        public override string ContentType
         {
             get
             {
@@ -422,7 +422,6 @@ namespace System.Net
             }
         }
 
-
         public bool KeepAlive { get; set; } = true;
 
         public bool UnsafeAuthenticatedConnectionSharing
@@ -443,7 +442,6 @@ namespace System.Net
                 }
             }
         }
-
 
         public DecompressionMethods AutomaticDecompression
         {
@@ -567,7 +565,6 @@ namespace System.Net
             }
         }
 
-
         /*
             Accessor:   Expect
 
@@ -653,7 +650,6 @@ namespace System.Net
         }
 
         public static new RequestCachePolicy DefaultCachePolicy { get; set; } = new RequestCachePolicy(RequestCacheLevel.BypassCache);
-
 
         public DateTime IfModifiedSince
         {
@@ -757,7 +753,6 @@ namespace System.Net
                 _clientCertificates = value;
             }
         }
-
 
         // HTTP Version
         /// <devdoc>
@@ -864,7 +859,7 @@ namespace System.Net
                 // Handle the case where their object tries to change
                 //  name, value pairs after they call set, so therefore,
                 //  we need to clone their headers.
-                foreach (String headerName in webHeaders.AllKeys)
+                foreach (string headerName in webHeaders.AllKeys)
                 {
                     newWebHeaders[headerName] = webHeaders[headerName];
                 }
@@ -1057,7 +1052,7 @@ namespace System.Net
             return GetRequestStream();
         }
 
-        public override IAsyncResult BeginGetRequestStream(AsyncCallback callback, Object state)
+        public override IAsyncResult BeginGetRequestStream(AsyncCallback callback, object state)
         {
             CheckAbort();
 
@@ -1139,11 +1134,22 @@ namespace System.Net
 
                 Debug.Assert(handler.UseProxy); // Default of handler.UseProxy is true.
                 Debug.Assert(handler.Proxy == null); // Default of handler.Proxy is null.
+
+                // HttpClientHandler default is to use a proxy which is the system proxy.
+                // This is indicated by the properties 'UseProxy == true' and 'Proxy == null'.
+                //
+                // However, HttpWebRequest doesn't have a separate 'UseProxy' property. Instead,
+                // the default of the 'Proxy' property is a non-null IWebProxy object which is the
+                // system default proxy object. If the 'Proxy' property were actually null, then
+                // that means don't use any proxy. 
+                //
+                // So, we need to map the desired HttpWebRequest proxy settings to equivalent
+                // HttpClientHandler settings.
                 if (_proxy == null)
                 {
                     handler.UseProxy = false;
                 }
-                else
+                else if (!object.ReferenceEquals(_proxy, WebRequest.GetSystemWebProxy()))
                 {
                     handler.Proxy = _proxy;
                 }
@@ -1322,7 +1328,6 @@ namespace System.Net
 
         public void AddRange(string rangeSpecifier, long from, long to)
         {
-
             //
             // Do some range checking before assembling the header
             //
@@ -1372,7 +1377,6 @@ namespace System.Net
 
         private bool AddRange(string rangeSpecifier, string from, string to)
         {
-
             string curRange = _webHeaderCollection[HttpKnownHeaderNames.Range];
 
             if ((curRange == null) || (curRange.Length == 0))
@@ -1381,7 +1385,7 @@ namespace System.Net
             }
             else
             {
-                if (String.Compare(curRange.Substring(0, curRange.IndexOf('=')), rangeSpecifier, StringComparison.OrdinalIgnoreCase) != 0)
+                if (!string.Equals(curRange.Substring(0, curRange.IndexOf('=')), rangeSpecifier, StringComparison.OrdinalIgnoreCase))
                 {
                     return false;
                 }
@@ -1395,7 +1399,6 @@ namespace System.Net
             _webHeaderCollection[HttpKnownHeaderNames.Range] = curRange;
             return true;
         }
-
 
         private bool RequestSubmitted
         {
@@ -1451,7 +1454,14 @@ namespace System.Net
                 {
                     return DateTime.MinValue; // MinValue means header is not present
                 }
-                return HttpDateParse.StringToDate(headerValue);
+                if (HttpDateParser.TryStringToDate(headerValue, out DateTimeOffset dateTimeOffset))
+                {
+                    return dateTimeOffset.LocalDateTime;
+                }
+                else
+                {
+                    throw new ProtocolViolationException(SR.net_baddate);
+                }
 #if DEBUG
             }
 #endif
@@ -1466,17 +1476,10 @@ namespace System.Net
                 if (dateTime == DateTime.MinValue)
                     SetSpecialHeaders(headerName, null); // remove header
                 else
-                    SetSpecialHeaders(headerName, DateToString(dateTime));
+                    SetSpecialHeaders(headerName, HttpDateParser.DateToString(dateTime.ToUniversalTime()));
 #if DEBUG
             }
 #endif
-        }
-
-        // convert Date to String using RFC 1123 pattern
-        private static string DateToString(DateTime D)
-        {
-            DateTimeFormatInfo dateFormat = new DateTimeFormatInfo();
-            return D.ToUniversalTime().ToString("R", dateFormat);
         }
 
         private bool TryGetHostUri(string hostName, out Uri hostUri)

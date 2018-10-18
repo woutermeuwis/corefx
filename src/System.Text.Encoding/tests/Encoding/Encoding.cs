@@ -64,7 +64,7 @@ namespace System.Text.Encodings.Tests
 #if !MONO // https://bugzilla.xamarin.com/show_bug.cgi?id=60202
                 Assert.Equal(encoding.WebName, info.Name);
 #endif
-                Assert.False(String.IsNullOrEmpty(info.DisplayName));
+                Assert.False(string.IsNullOrEmpty(info.DisplayName));
             }
         }
 

@@ -39,7 +39,7 @@ namespace System.Text
             }
         }
 
-        public override unsafe int GetByteCount(String s)
+        public override unsafe int GetByteCount(string s)
         {
             // Validate input
             if (s == null)
@@ -54,7 +54,7 @@ namespace System.Text
             }
         }
 
-        public override unsafe int GetBytes(String s, int charIndex, int charCount, byte[] bytes, int byteIndex)
+        public override unsafe int GetBytes(string s, int charIndex, int charCount, byte[] bytes, int byteIndex)
         {
             if (s == null || bytes == null)
                 throw new ArgumentNullException(s == null ? nameof(s) : nameof(bytes), SR.ArgumentNull_Array);
@@ -184,7 +184,7 @@ namespace System.Text
             return (int)charCount;
         }
 
-        public override String EncodingName
+        public override string EncodingName
         {
             get
             {
@@ -196,7 +196,7 @@ namespace System.Text
             }
         }
 
-        public override String WebName
+        public override string WebName
         {
             get
             {

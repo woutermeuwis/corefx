@@ -46,8 +46,16 @@ namespace System.Resources
         private const string ResSetTypeName = "System.Resources.RuntimeResourceSet";
         private const int ResSetVersion = 2;
 
+#if !MONO
         private SortedDictionary<string, object> _resourceList;
+#else
+        private Dictionary<string, object> _resourceList;
+#endif
+#if !MONO
         private Stream _output;
+#else
+        internal Stream _output;
+#endif
         private Dictionary<string, object> _caseInsensitiveDups;
         private Dictionary<string, PrecannedResource> _preserializedData;
 
@@ -60,7 +68,11 @@ namespace System.Resources
                 throw new ArgumentNullException(nameof(fileName));
 
             _output = new FileStream(fileName, FileMode.Create, FileAccess.Write, FileShare.None);
+#if !MONO
             _resourceList = new SortedDictionary<string, object>(FastResourceComparer.Default);
+#else
+            _resourceList = new Dictionary<string, object>(FastResourceComparer.Default);
+#endif
             _caseInsensitiveDups = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
         }
 
@@ -72,7 +84,11 @@ namespace System.Resources
                 throw new ArgumentException(SR.Argument_StreamNotWritable);
 
             _output = stream;
+#if !MONO
             _resourceList = new SortedDictionary<string, object>(FastResourceComparer.Default);
+#else
+            _resourceList = new Dictionary<string, object>(FastResourceComparer.Default);
+#endif
             _caseInsensitiveDups = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
         }
 

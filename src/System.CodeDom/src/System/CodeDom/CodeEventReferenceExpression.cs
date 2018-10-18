@@ -21,8 +21,8 @@ namespace System.CodeDom
 
         public string EventName
         {
-            get { return _eventName ?? string.Empty; }
-            set { _eventName = value; }
+            get => _eventName ?? string.Empty;
+            set => _eventName = value;
         }
     }
 }

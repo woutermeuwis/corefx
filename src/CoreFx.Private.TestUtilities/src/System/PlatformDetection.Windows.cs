@@ -49,6 +49,8 @@ namespace System
             GetWindowsVersion() == 10 && GetWindowsMinorVersion() == 0 && GetWindowsBuildNumber() >= 15063;
         public static bool IsWindows10Version1709OrGreater => 
             GetWindowsVersion() == 10 && GetWindowsMinorVersion() == 0 && GetWindowsBuildNumber() >= 16299;
+        public static bool IsWindows10Version1803OrGreater =>
+            GetWindowsVersion() == 10 && GetWindowsMinorVersion() == 0 && GetWindowsBuildNumber() >= 17134;
 
         // Windows OneCoreUAP SKU doesn't have httpapi.dll
         public static bool IsNotOneCoreUAP =>  
@@ -72,6 +74,9 @@ namespace System
         public static bool IsWindows7 => GetWindowsVersion() == 6 && GetWindowsMinorVersion() == 1;
         public static bool IsWindows8x => GetWindowsVersion() == 6 && (GetWindowsMinorVersion() == 2 || GetWindowsMinorVersion() == 3);
 
+        public static string LibcRelease => "glibc_not_found";
+        public static string LibcVersion => "glibc_not_found";
+
         public static string GetDistroVersionString() { return "WindowsProductType=" + GetWindowsProductType() + " WindowsInstallationType=" + GetInstallationType(); }
 
         private static int s_isInAppContainer = -1;
@@ -93,7 +98,7 @@ namespace System
                     return false;
                 }
 
-                byte[] buffer = new byte[0];
+                byte[] buffer = Array.Empty<byte>();
                 uint bufferSize = 0;
                 try
                 {
@@ -233,7 +238,7 @@ namespace System
             out int pdwReturnedProductType
         );
 
-        [DllImport("ntdll.dll")]
+        [DllImport("ntdll.dll", ExactSpelling=true)]
         private static extern int RtlGetVersion(out RTL_OSVERSIONINFOEX lpVersionInformation);
 
         [StructLayout(LayoutKind.Sequential)]

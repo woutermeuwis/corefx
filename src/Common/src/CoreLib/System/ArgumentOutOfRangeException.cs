@@ -24,7 +24,7 @@ namespace System
 #endif
     public class ArgumentOutOfRangeException : ArgumentException
     {
-        private Object _actualValue;
+        private object _actualValue;
 
         // Creates a new ArgumentOutOfRangeException with its message 
         // string set to a default message explaining an argument was out of range.
@@ -34,19 +34,19 @@ namespace System
             HResult = HResults.COR_E_ARGUMENTOUTOFRANGE;
         }
 
-        public ArgumentOutOfRangeException(String paramName)
+        public ArgumentOutOfRangeException(string paramName)
             : base(SR.Arg_ArgumentOutOfRangeException, paramName)
         {
             HResult = HResults.COR_E_ARGUMENTOUTOFRANGE;
         }
 
-        public ArgumentOutOfRangeException(String paramName, String message)
+        public ArgumentOutOfRangeException(string paramName, string message)
             : base(message, paramName)
         {
             HResult = HResults.COR_E_ARGUMENTOUTOFRANGE;
         }
 
-        public ArgumentOutOfRangeException(String message, Exception innerException)
+        public ArgumentOutOfRangeException(string message, Exception innerException)
             : base(message, innerException)
         {
             HResult = HResults.COR_E_ARGUMENTOUTOFRANGE;
@@ -55,7 +55,7 @@ namespace System
         // We will not use this in the classlibs, but we'll provide it for
         // anyone that's really interested so they don't have to stick a bunch
         // of printf's in their code.
-        public ArgumentOutOfRangeException(String paramName, Object actualValue, String message)
+        public ArgumentOutOfRangeException(string paramName, object actualValue, string message)
             : base(message, paramName)
         {
             _actualValue = actualValue;
@@ -74,14 +74,14 @@ namespace System
             info.AddValue("ActualValue", _actualValue, typeof(object));
         }
 
-        public override String Message
+        public override string Message
         {
             get
             {
-                String s = base.Message;
+                string s = base.Message;
                 if (_actualValue != null)
                 {
-                    String valueMessage = SR.Format(SR.ArgumentOutOfRange_ActualValue, _actualValue.ToString());
+                    string valueMessage = SR.Format(SR.ArgumentOutOfRange_ActualValue, _actualValue.ToString());
                     if (s == null)
                         return valueMessage;
                     return s + Environment.NewLine + valueMessage;
@@ -94,7 +94,7 @@ namespace System
         // Note - we don't set this anywhere in the class libraries in 
         // version 1, but it might come in handy for other developers who
         // want to avoid sticking printf's in their code.
-        public virtual Object ActualValue
+        public virtual object ActualValue
         {
             get { return _actualValue; }
         }

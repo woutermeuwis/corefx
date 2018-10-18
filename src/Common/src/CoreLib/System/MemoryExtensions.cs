@@ -6,19 +6,13 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
-#if !netstandard
 using Internal.Runtime.CompilerServices;
-#endif
 
-#if netstandard
-using nuint = System.NUInt;
-#else
 #if BIT64
 using nuint = System.UInt64;
 #else
 using nuint = System.UInt32;
 #endif // BIT64
-#endif // netstandard
 
 namespace System
 {
@@ -771,17 +765,21 @@ namespace System
         /// </summary>
         public static void Reverse<T>(this Span<T> span)
         {
-            ref T p = ref MemoryMarshal.GetReference(span);
-            int i = 0;
-            int j = span.Length - 1;
-            while (i < j)
+            if (span.Length <= 1)
             {
-                T temp = Unsafe.Add(ref p, i);
-                Unsafe.Add(ref p, i) = Unsafe.Add(ref p, j);
-                Unsafe.Add(ref p, j) = temp;
-                i++;
-                j--;
+                return;
             }
+
+            ref T first = ref MemoryMarshal.GetReference(span);
+            ref T last = ref Unsafe.Add(ref Unsafe.Add(ref first, span.Length), -1);
+            do
+            {
+                T temp = first;
+                first = last;
+                last = temp;
+                first = ref Unsafe.Add(ref first, 1);
+                last = ref Unsafe.Add(ref last, -1);
+            } while (Unsafe.IsAddressLessThan(ref first, ref last));
         }
 
         /// <summary>
@@ -1356,25 +1354,25 @@ namespace System
         {
             if (typeof(T) == typeof(byte) || typeof(T) == typeof(sbyte))
             {
-                size = (nuint)sizeof(byte);
+                size = sizeof(byte);
                 return true;
             }
 
             if (typeof(T) == typeof(char) || typeof(T) == typeof(short) || typeof(T) == typeof(ushort))
             {
-                size = (nuint)sizeof(char);
+                size = sizeof(char);
                 return true;
             }
 
             if (typeof(T) == typeof(int) || typeof(T) == typeof(uint))
             {
-                size = (nuint)sizeof(int);
+                size = sizeof(int);
                 return true;
             }
 
             if (typeof(T) == typeof(long) || typeof(T) == typeof(ulong))
             {
-                size = (nuint)sizeof(long);
+                size = sizeof(long);
                 return true;
             }
 

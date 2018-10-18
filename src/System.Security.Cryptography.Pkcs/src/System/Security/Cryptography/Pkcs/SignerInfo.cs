@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Security.Cryptography.Asn1;
 using System.Security.Cryptography.Pkcs.Asn1;
@@ -20,6 +21,7 @@ namespace System.Security.Cryptography.Pkcs
 
         private readonly Oid _digestAlgorithm;
         private readonly AttributeAsn[] _signedAttributes;
+        private readonly ReadOnlyMemory<byte>? _signedAttributesMemory;
         private readonly Oid _signatureAlgorithm;
         private readonly ReadOnlyMemory<byte>? _signatureAlgorithmParameters;
         private readonly ReadOnlyMemory<byte> _signature;
@@ -36,11 +38,21 @@ namespace System.Security.Cryptography.Pkcs
             Version = parsedData.Version;
             SignerIdentifier = new SubjectIdentifier(parsedData.Sid);
             _digestAlgorithm = parsedData.DigestAlgorithm.Algorithm;
-            _signedAttributes = parsedData.SignedAttributes;
+            _signedAttributesMemory = parsedData.SignedAttributes;
             _signatureAlgorithm = parsedData.SignatureAlgorithm.Algorithm;
             _signatureAlgorithmParameters = parsedData.SignatureAlgorithm.Parameters;
             _signature = parsedData.SignatureValue;
             _unsignedAttributes = parsedData.UnsignedAttributes;
+
+            if (_signedAttributesMemory.HasValue)
+            {
+                SignedAttributesSet signedSet = SignedAttributesSet.Decode(
+                    _signedAttributesMemory.Value,
+                    AsnEncodingRules.BER);
+
+                _signedAttributes = signedSet.SignedAttributes;
+                Debug.Assert(_signedAttributes != null);
+            }
 
             _document = ownerDocument;
         }
@@ -108,6 +120,115 @@ namespace System.Security.Cryptography.Pkcs
 
         public Oid SignatureAlgorithm => new Oid(_signatureAlgorithm);
 
+        public void AddUnsignedAttribute(AsnEncodedData unsignedAttribute)
+        {
+            int myIdx = _document.SignerInfos.FindIndexForSigner(this);
+
+            if (myIdx < 0)
+            {
+                throw new CryptographicException(SR.Cryptography_Cms_SignerNotFound);
+            }
+
+            ref SignedDataAsn signedData = ref _document.GetRawData();
+            ref SignerInfoAsn mySigner = ref signedData.SignerInfos[myIdx];
+
+            int existingAttribute = mySigner.UnsignedAttributes == null ? -1 : FindAttributeIndexByOid(mySigner.UnsignedAttributes, unsignedAttribute.Oid);
+
+            if (existingAttribute == -1)
+            {
+                // create a new attribute
+                AttributeAsn newUnsignedAttr;
+                using (AsnWriter writer = new AsnWriter(AsnEncodingRules.BER))
+                {
+                    writer.PushSetOf();
+                    writer.WriteEncodedValue(unsignedAttribute.RawData);
+                    writer.PopSetOf();
+
+                    newUnsignedAttr = new AttributeAsn
+                    {
+                        AttrType = new Oid(unsignedAttribute.Oid),
+                        AttrValues = writer.Encode(),
+                    };
+                }
+
+                int newAttributeIdx;
+
+                if (mySigner.UnsignedAttributes == null)
+                {
+                    newAttributeIdx = 0;
+                    mySigner.UnsignedAttributes = new AttributeAsn[1];
+                }
+                else
+                {
+                    newAttributeIdx = mySigner.UnsignedAttributes.Length;
+                    Array.Resize(ref mySigner.UnsignedAttributes, newAttributeIdx + 1);
+                }
+
+                mySigner.UnsignedAttributes[newAttributeIdx] = newUnsignedAttr;
+            }
+            else
+            {
+                // merge with existing attribute
+                ref AttributeAsn modifiedAttr = ref mySigner.UnsignedAttributes[existingAttribute];
+
+                using (AsnWriter writer = new AsnWriter(AsnEncodingRules.BER))
+                {
+                    writer.PushSetOf();
+
+                    AsnReader reader = new AsnReader(modifiedAttr.AttrValues, AsnEncodingRules.BER);
+                    AsnReader collReader = reader.ReadSetOf();
+
+                    reader.ThrowIfNotEmpty();
+
+                    // re-add old values
+                    while (collReader.HasData)
+                    {
+                        writer.WriteEncodedValue(collReader.GetEncodedValue());
+                    }
+
+                    writer.WriteEncodedValue(unsignedAttribute.RawData);
+
+                    writer.PopSetOf();
+                    modifiedAttr.AttrValues = writer.Encode();
+                }
+            }
+
+            // Re-normalize the document
+            _document.Reencode();
+        }
+
+        public void RemoveUnsignedAttribute(AsnEncodedData unsignedAttribute)
+        {
+            int myIdx = _document.SignerInfos.FindIndexForSigner(this);
+
+            if (myIdx < 0)
+            {
+                throw new CryptographicException(SR.Cryptography_Cms_SignerNotFound);
+            }
+
+            ref SignedDataAsn signedData = ref _document.GetRawData();
+            ref SignerInfoAsn mySigner = ref signedData.SignerInfos[myIdx];
+
+            (int outerIndex, int innerIndex) = FindAttributeLocation(mySigner.UnsignedAttributes, unsignedAttribute, out bool isOnlyValue);
+
+            if (outerIndex == -1 || innerIndex == -1)
+            {
+                throw new CryptographicException(SR.Cryptography_Cms_NoAttributeFound);
+            }
+
+            if (isOnlyValue)
+            {
+                PkcsHelpers.RemoveAt(ref mySigner.UnsignedAttributes, outerIndex);
+            }
+            else
+            {
+                RemoveAttributeValueWithoutIndexChecking(ref mySigner.UnsignedAttributes[outerIndex], innerIndex);
+            }
+
+            // Re-normalize the document
+            _document.Reencode();
+        }
+
         private SignerInfoCollection GetCounterSigners(AttributeAsn[] unsignedAttrs)
         {
             // Since each "attribute" can have multiple "attribute values" there's no real
@@ -121,10 +242,7 @@ namespace System.Security.Cryptography.Pkcs
                     AsnReader reader = new AsnReader(attributeAsn.AttrValues, AsnEncodingRules.BER);
                     AsnReader collReader = reader.ReadSetOf();
 
-                    if (reader.HasData)
-                    {
-                        throw new CryptographicException(SR.Cryptography_Der_Invalid_Encoding);
-                    }
+                    reader.ThrowIfNotEmpty();
 
                     while (collReader.HasData)
                     {
@@ -253,10 +371,7 @@ namespace System.Security.Cryptography.Pkcs
                     AsnReader reader = new AsnReader(attributeAsn.AttrValues, AsnEncodingRules.BER);
                     AsnReader collReader = reader.ReadSetOf();
 
-                    if (reader.HasData)
-                    {
-                        throw new CryptographicException(SR.Cryptography_Der_Invalid_Encoding);
-                    }
+                    reader.ThrowIfNotEmpty();
 
                     int j = 0;
 
@@ -301,38 +416,12 @@ namespace System.Security.Cryptography.Pkcs
                 }
                 else
                 {
-                    Helpers.RemoveAt(ref myData.UnsignedAttributes, removeAttrIdx);
+                    PkcsHelpers.RemoveAt(ref myData.UnsignedAttributes, removeAttrIdx);
                 }
             }
             else
             {
-                ref AttributeAsn modifiedAttr = ref unsignedAttrs[removeAttrIdx];
-
-                using (AsnWriter writer = new AsnWriter(AsnEncodingRules.BER))
-                {
-                    writer.PushSetOf();
-
-                    AsnReader outerReader = new AsnReader(modifiedAttr.AttrValues, writer.RuleSet);
-                    AsnReader reader = outerReader.ReadSetOf();
-                    outerReader.ThrowIfNotEmpty();
-
-                    int i = 0;
-
-                    while (reader.HasData)
-                    {
-                        ReadOnlyMemory<byte> encodedValue = reader.GetEncodedValue();
-
-                        if (i != removeValueIndex)
-                        {
-                            writer.WriteEncodedValue(encodedValue);
-                        }
-
-                        i++;
-                    }
-
-                    writer.PopSetOf();
-                    modifiedAttr.AttrValues = writer.Encode();
-                }
+                RemoveAttributeValueWithoutIndexChecking(ref unsignedAttrs[removeAttrIdx], removeValueIndex);
             }
         }
 
@@ -385,12 +474,24 @@ namespace System.Security.Cryptography.Pkcs
 
         public void CheckHash()
         {
-            IncrementalHash hasher = PrepareDigest();
-            byte[] expectedSignature = hasher.GetHashAndReset();
-
-            if (!_signature.Span.SequenceEqual(expectedSignature))
+            if (!CheckHash(compatMode: false) && !CheckHash(compatMode: true))
             {
                 throw new CryptographicException(SR.Cryptography_BadSignature);
+            }
+        }
+
+        private bool CheckHash(bool compatMode)
+        {
+            using (IncrementalHash hasher = PrepareDigest(compatMode))
+            {
+                if (hasher == null)
+                {
+                    Debug.Assert(compatMode, $"{nameof(PrepareDigest)} returned null for the primary check");
+                    return false;
+                }
+
+                byte[] expectedSignature = hasher.GetHashAndReset();
+                return _signature.Span.SequenceEqual(expectedSignature);
             }
         }
 
@@ -456,7 +557,7 @@ namespace System.Security.Cryptography.Pkcs
             return match;
         }
 
-        private IncrementalHash PrepareDigest()
+        private IncrementalHash PrepareDigest(bool compatMode)
         {
             HashAlgorithmName hashAlgorithmName = GetDigestAlgorithm();
 
@@ -500,7 +601,19 @@ namespace System.Security.Cryptography.Pkcs
 
                 using (AsnWriter writer = new AsnWriter(AsnEncodingRules.DER))
                 {
-                    writer.PushSetOf();
+                    // Some CMS implementations exist which do not sort the attributes prior to
+                    // generating the signature.  While they are not, technically, validly signed,
+                    // Windows and OpenSSL both support trying in the document order rather than
+                    // a sorted order.  To accomplish this we will build as a SEQUENCE OF, but feed
+                    // the SET OF into the hasher.
+                    if (compatMode)
+                    {
+                        writer.PushSequence();
+                    }
+                    else
+                    {
+                        writer.PushSetOf();
+                    }
 
                     foreach (AttributeAsn attr in _signedAttributes)
                     {
@@ -529,9 +642,38 @@ namespace System.Security.Cryptography.Pkcs
                         }
                     }
 
-                    writer.PopSetOf();
-                    Helpers.DigestWriter(hasher, writer);
+                    if (compatMode)
+                    {
+                        writer.PopSequence();
+
+#if netcoreapp
+                        Span<byte> setOfTag = stackalloc byte[1];
+                        setOfTag[0] = 0x31;
+
+                        hasher.AppendData(setOfTag);
+                        hasher.AppendData(writer.EncodeAsSpan().Slice(1));
+#else
+                        byte[] encoded = writer.Encode();
+                        encoded[0] = 0x31;
+                        hasher.AppendData(encoded);
+#endif
+                    }
+                    else
+                    {
+                        writer.PopSetOf();
+
+#if netcoreapp
+                        hasher.AppendData(writer.EncodeAsSpan());
+#else
+                        hasher.AppendData(writer.Encode());
+#endif
+                    }
                 }
+            }
+            else if (compatMode)
+            {
+                // If there were no signed attributes there's nothing to be compatible about.
+                return null;
             }
 
             if (invalid)
@@ -547,40 +689,16 @@ namespace System.Security.Cryptography.Pkcs
             X509Certificate2 certificate,
             bool verifySignatureOnly)
         {
-            IncrementalHash hasher = PrepareDigest();
-            CmsSignature signatureProcessor = CmsSignature.Resolve(SignatureAlgorithm.Value);
+            CmsSignature signatureProcessor = CmsSignature.ResolveAndVerifyKeyType(SignatureAlgorithm.Value, key: null);
 
             if (signatureProcessor == null)
             {
                 throw new CryptographicException(SR.Cryptography_Cms_UnknownAlgorithm, SignatureAlgorithm.Value);
             }
 
-#if netcoreapp
-            // SHA-2-512 is the biggest digest type we know about.
-            Span<byte> digestValue = stackalloc byte[512 / 8];
-            ReadOnlySpan<byte> digest = digestValue;
-            ReadOnlyMemory<byte> signature = _signature;
-
-            if (hasher.TryGetHashAndReset(digestValue, out int bytesWritten))
-            {
-                digest = digestValue.Slice(0, bytesWritten);
-            }
-            else
-            {
-                digest = hasher.GetHashAndReset();
-            }
-#else
-            byte[] digest = hasher.GetHashAndReset();
-            byte[] signature = _signature.ToArray();
-#endif
-
-            bool signatureValid = signatureProcessor.VerifySignature(
-                digest,
-                signature,
-                DigestAlgorithm.Value,
-                hasher.AlgorithmName,
-                _signatureAlgorithmParameters,
-                certificate);
+            bool signatureValid =
+                VerifySignature(signatureProcessor, certificate, compatMode: false) ||
+                VerifySignature(signatureProcessor, certificate, compatMode: true);
 
             if (!signatureValid)
             {
@@ -624,9 +742,51 @@ namespace System.Security.Cryptography.Pkcs
             }
         }
 
+        private bool VerifySignature(
+            CmsSignature signatureProcessor,
+            X509Certificate2 certificate,
+            bool compatMode)
+        {
+            using (IncrementalHash hasher = PrepareDigest(compatMode))
+            {
+                if (hasher == null)
+                {
+                    Debug.Assert(compatMode, $"{nameof(PrepareDigest)} returned null for the primary check");
+                    return false;
+                }
+
+#if netcoreapp
+                // SHA-2-512 is the biggest digest type we know about.
+                Span<byte> digestValue = stackalloc byte[512 / 8];
+                ReadOnlySpan<byte> digest = digestValue;
+                ReadOnlyMemory<byte> signature = _signature;
+
+                if (hasher.TryGetHashAndReset(digestValue, out int bytesWritten))
+                {
+                    digest = digestValue.Slice(0, bytesWritten);
+                }
+                else
+                {
+                    digest = hasher.GetHashAndReset();
+                }
+#else
+                byte[] digest = hasher.GetHashAndReset();
+                byte[] signature = _signature.ToArray();
+#endif
+
+                return signatureProcessor.VerifySignature(
+                    digest,
+                    signature,
+                    DigestAlgorithm.Value,
+                    hasher.AlgorithmName,
+                    _signatureAlgorithmParameters,
+                    certificate);
+            }
+        }
+
         private HashAlgorithmName GetDigestAlgorithm()
         {
-            return Helpers.GetDigestAlgorithm(DigestAlgorithm.Value);
+            return PkcsHelpers.GetDigestAlgorithm(DigestAlgorithm.Value);
         }
 
         internal static CryptographicAttributeObjectCollection MakeAttributeCollection(AttributeAsn[] attributes)
@@ -653,20 +813,104 @@ namespace System.Security.Cryptography.Pkcs
             AsnReader reader = new AsnReader(attrSetBytes, AsnEncodingRules.BER);
             AsnReader collReader = reader.ReadSetOf();
 
-            if (reader.HasData)
-            {
-                throw new CryptographicException(SR.Cryptography_Der_Invalid_Encoding);
-            }
+            reader.ThrowIfNotEmpty();
 
             AsnEncodedDataCollection valueColl = new AsnEncodedDataCollection();
 
             while (collReader.HasData)
             {
                 byte[] attrBytes = collReader.GetEncodedValue().ToArray();
-                valueColl.Add(Helpers.CreateBestPkcs9AttributeObjectAvailable(type, attrBytes));
+                valueColl.Add(PkcsHelpers.CreateBestPkcs9AttributeObjectAvailable(type, attrBytes));
             }
 
             return new CryptographicAttributeObject(type, valueColl);
+        }
+
+        private static int FindAttributeIndexByOid(AttributeAsn[] attributes, Oid oid, int startIndex = 0)
+        {
+            for (int i = startIndex; i < attributes.Length; i++)
+            {
+                if (attributes[i].AttrType.Value == oid.Value)
+                {
+                    return i;
+                }
+            }
+
+            return -1;
+        }
+
+        private static int FindAttributeValueIndexByEncodedData(ReadOnlyMemory<byte> attributeValues, ReadOnlySpan<byte> asnEncodedData, out bool isOnlyValue)
+        {
+            AsnReader reader = new AsnReader(attributeValues, AsnEncodingRules.BER);
+            AsnReader collReader = reader.ReadSetOf();
+
+            reader.ThrowIfNotEmpty();
+
+            for (int i = 0; collReader.HasData; i++)
+            {
+                ReadOnlySpan<byte> data = collReader.GetEncodedValue().Span;
+                if (data.SequenceEqual(asnEncodedData))
+                {
+                    isOnlyValue = i == 0 && !collReader.HasData;
+                    return i;
+                }
+            }
+
+            isOnlyValue = false;
+            return -1;
+        }
+
+        private static (int, int) FindAttributeLocation(AttributeAsn[] attributes, AsnEncodedData attribute, out bool isOnlyValue)
+        {
+            for (int outerIndex = 0; ; outerIndex++)
+            {
+                outerIndex = FindAttributeIndexByOid(attributes, attribute.Oid, outerIndex);
+
+                if (outerIndex == -1)
+                {
+                    break;
+                }
+
+                int innerIndex = FindAttributeValueIndexByEncodedData(attributes[outerIndex].AttrValues, attribute.RawData, out isOnlyValue);
+                if (innerIndex != -1)
+                {
+                    return (outerIndex, innerIndex);
+                }
+            }
+
+            isOnlyValue = false;
+            return (-1, -1);
+        }
+
+        private static void RemoveAttributeValueWithoutIndexChecking(ref AttributeAsn modifiedAttr, int removeValueIndex)
+        {
+            // Using BER rules to avoid resorting
+            using (AsnWriter writer = new AsnWriter(AsnEncodingRules.BER))
+            {
+                writer.PushSetOf();
+
+                AsnReader reader = new AsnReader(modifiedAttr.AttrValues, writer.RuleSet);
+                AsnReader collReader = reader.ReadSetOf();
+
+                reader.ThrowIfNotEmpty();
+
+                int i = 0;
+
+                while (collReader.HasData)
+                {
+                    ReadOnlyMemory<byte> encodedValue = collReader.GetEncodedValue();
+
+                    if (i != removeValueIndex)
+                    {
+                        writer.WriteEncodedValue(encodedValue);
+                    }
+
+                    i++;
+                }
+
+                writer.PopSetOf();
+                modifiedAttr.AttrValues = writer.Encode();
+            }
         }
     }
 }

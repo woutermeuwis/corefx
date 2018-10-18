@@ -76,7 +76,7 @@ namespace System.Globalization
             FinishInitialization();
         }
 
-        void IDeserializationCallback.OnDeserialization(Object sender)
+        void IDeserializationCallback.OnDeserialization(object sender)
         {
             throw new PlatformNotSupportedException();
         }
@@ -302,7 +302,7 @@ namespace System.Globalization
                                     source.AsSpan(0, sourcePos).CopyTo(new Span<char>(pResult, sourcePos));
                                 }
 
-                                // And store the current character, upper-cased.
+                                // And store the current character, lower-cased.
                                 char* d = pResult + sourcePos;
                                 *d++ = (char)(c | 0x20);
                                 sourcePos++;
@@ -419,7 +419,7 @@ namespace System.Globalization
             }
         }
 
-        private unsafe string ToLowerAsciiInvariant(string s)
+        private static unsafe string ToLowerAsciiInvariant(string s)
         {
             if (s.Length == 0)
             {
@@ -465,7 +465,7 @@ namespace System.Globalization
             }
         }
 
-        internal void ToLowerAsciiInvariant(ReadOnlySpan<char> source, Span<char> destination)
+        internal static void ToLowerAsciiInvariant(ReadOnlySpan<char> source, Span<char> destination)
         {
             Debug.Assert(destination.Length >= source.Length);
 
@@ -475,7 +475,7 @@ namespace System.Globalization
             }
         }
 
-        private unsafe string ToUpperAsciiInvariant(string s)
+        private static unsafe string ToUpperAsciiInvariant(string s)
         {
             if (s.Length == 0)
             {
@@ -521,7 +521,7 @@ namespace System.Globalization
             }
         }
 
-        internal void ToUpperAsciiInvariant(ReadOnlySpan<char> source, Span<char> destination)
+        internal static void ToUpperAsciiInvariant(ReadOnlySpan<char> source, Span<char> destination)
         {
             Debug.Assert(destination.Length >= source.Length);
 
@@ -612,7 +612,7 @@ namespace System.Globalization
         //  or not object refers to the same CultureInfo as the current instance.
         //
         ////////////////////////////////////////////////////////////////////////
-        public override bool Equals(Object obj)
+        public override bool Equals(object obj)
         {
             TextInfo that = obj as TextInfo;
 
@@ -809,11 +809,20 @@ namespace System.Globalization
         {
             Debug.Assert(charLen == 1 || charLen == 2, "[TextInfo.AddTitlecaseLetter] CharUnicodeInfo.InternalGetUnicodeCategory returned an unexpected charLen!");
 
-            // for surrogate pairs do a simple ToUpper operation on the substring
             if (charLen == 2)
             {
-                // Surrogate pair
-                result.Append(ToUpper(input.Substring(inputIndex, charLen)));
+                // for surrogate pairs do a ToUpper operation on the substring
+                ReadOnlySpan<char> src = input.AsSpan(inputIndex, 2);
+                if (_invariantMode)
+                {
+                    result.Append(src); // surrogate pair in invariant mode, so changing case is a nop
+                }
+                else
+                {
+                    Span<char> dst = stackalloc char[2];
+                    ChangeCase(src, dst, toUpper: true);
+                    result.Append(dst);
+                }
                 inputIndex++;
             }
             else

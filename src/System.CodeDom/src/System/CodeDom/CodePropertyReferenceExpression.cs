@@ -21,8 +21,8 @@ namespace System.CodeDom
 
         public string PropertyName
         {
-            get { return _propertyName ?? string.Empty; }
-            set { _propertyName = value; }
+            get => _propertyName ?? string.Empty;
+            set => _propertyName = value;
         }
     }
 }

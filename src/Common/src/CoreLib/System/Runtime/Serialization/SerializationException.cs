@@ -12,7 +12,7 @@ namespace System.Runtime.Serialization
 #endif
     public class SerializationException : SystemException
     {
-        private static String s_nullMessage = SR.SerializationException;
+        private static string s_nullMessage = SR.SerializationException;
 
         // Creates a new SerializationException with its message 
         // string set to a default message.
@@ -22,13 +22,13 @@ namespace System.Runtime.Serialization
             HResult = HResults.COR_E_SERIALIZATION;
         }
 
-        public SerializationException(String message)
+        public SerializationException(string message)
             : base(message)
         {
             HResult = HResults.COR_E_SERIALIZATION;
         }
 
-        public SerializationException(String message, Exception innerException)
+        public SerializationException(string message, Exception innerException)
             : base(message, innerException)
         {
             HResult = HResults.COR_E_SERIALIZATION;

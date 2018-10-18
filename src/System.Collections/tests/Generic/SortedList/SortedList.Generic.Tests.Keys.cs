@@ -14,7 +14,7 @@ namespace System.Collections.Tests
         protected override bool DuplicateValuesAllowed => false;
         protected override bool IsReadOnly => true;
         protected override bool DefaultValueWhenNotAllowed_Throws => true;
-        protected override IEnumerable<ModifyEnumerable> ModifyEnumerables => new List<ModifyEnumerable>();
+        protected override IEnumerable<ModifyEnumerable> GetModifyEnumerables(ModifyOperation operations) => new List<ModifyEnumerable>();
 
         protected override IList<string> GenericIListFactory()
         {
@@ -91,6 +91,6 @@ namespace System.Collections.Tests
             Debug.Assert(false);
         }
 
-        protected override IEnumerable<ModifyEnumerable> ModifyEnumerables => new List<ModifyEnumerable>();
+        protected override IEnumerable<ModifyEnumerable> GetModifyEnumerables(ModifyOperation operations) => new List<ModifyEnumerable>();
     }
 }

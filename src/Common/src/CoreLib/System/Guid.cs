@@ -281,7 +281,7 @@ namespace System
         {
             if (input == null)
             {
-                result = default(Guid);
+                result = default;
                 return false;
             }
 
@@ -299,7 +299,7 @@ namespace System
             }
             else
             {
-                result = default(Guid);
+                result = default;
                 return false;
             }
         }
@@ -360,7 +360,7 @@ namespace System
         {
             if (input == null)
             {
-                result = default(Guid);
+                result = default;
                 return false;
             }
 
@@ -371,7 +371,7 @@ namespace System
         {
             if (format.Length != 1)
             {
-                result = default(Guid);
+                result = default;
                 return false;
             }
 
@@ -400,7 +400,7 @@ namespace System
                     break;
                 default:
                     // invalid guid format specification
-                    result = default(Guid);
+                    result = default;
                     return false;
             }
 
@@ -413,7 +413,7 @@ namespace System
             }
             else
             {
-                result = default(Guid);
+                result = default;
                 return false;
             }
         }

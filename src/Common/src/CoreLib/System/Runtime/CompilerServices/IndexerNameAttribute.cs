@@ -10,7 +10,7 @@ namespace System.Runtime.CompilerServices
 #endif
     public sealed class IndexerNameAttribute : Attribute
     {
-        public IndexerNameAttribute(String indexerName)
+        public IndexerNameAttribute(string indexerName)
         {
         }
     }

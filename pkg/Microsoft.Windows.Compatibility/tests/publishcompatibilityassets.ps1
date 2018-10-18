@@ -1,7 +1,7 @@
 param (
-$targetFramework = "netcoreapp2.1",
-$runtimeVersion = "2.1.0-*",
-$refDirName = "netcoreapp21_compat",
+$frameworkVersion = "3.0",
+$runtimeVersion = "3.0.0-*",
+$refDirName = "netcoreapp30_compat",
 $rid = "win7-x64"
 )
 
@@ -23,11 +23,14 @@ function _getPackageVersion($packageName)
 	return $matches[0]
 }
 
-$repoRoot = ((get-item $PSScriptRoot).parent.parent.parent.FullName);
+$env:DOTNET_SKIP_FIRST_TIME_EXPERIENCE = 1
+
+$repoRoot = ((get-item $PSScriptRoot).parent.parent.parent.FullName)
 $dotnetPath = -join($repoRoot, "\Tools\dotnetcli\dotnet.exe")
 $csprojPath = -join($PSScriptRoot, "\", (Get-ChildItem $PSScriptRoot"\*.csproj" | Select-Object -ExpandProperty Name))
 $packagesCachePath = -join($repoRoot, "\packages")
 $localPackageSourcePath = -join($repoRoot, "\bin\packages\Debug\")
+$targetFramework = -join("netcoreapp", $frameworkVersion)
 
 if (!(Test-Path $localPackageSourcePath))
 {
@@ -44,11 +47,13 @@ $restoreSources = -join("https://dotnet.myget.org/F/aspnetcore-dev/api/v3/index.
 $compatPackageVersion = _getPackageVersion "Microsoft.Windows.Compatibility"
 $privatePackageVersion = _getPackageVersion "Microsoft.Private.CoreFx.NETCoreApp"
 
-& $dotnetPath restore --packages $packagesCachePath /p:RestoreSources="$restoreSources" /p:TargetFramework=$targetFramework /p:CompatibilityPackageVersion=$compatPackageVersion /p:PrivateCorefxPackageVersion=$privatePackageVersion /p:RID=$rid $csprojPath
-
-& $dotnetPath publish -r $rid /p:RestoreSources="$restoreSources" /p:TargetFramework=$targetFramework /p:CompatibilityPackageVersion=$compatPackageVersion /p:RuntimeFrameworkVersion=$runtimeFramework /p:PrivateCorefxPackageVersion=$privatePackageVersion /p:RID=$rid $csprojPath
+Write-Output "Calling dotnet restore"
+& $dotnetPath restore --packages $packagesCachePath /p:RestoreSources="$restoreSources" /p:TargetFramework=$targetFramework /p:CompatibilityPackageVersion=$compatPackageVersion /p:PrivateCorefxPackageVersion=$privatePackageVersion /p:RuntimeIdentifiers=$rid $csprojPath
 
 $outputPath = -join($PSScriptRoot, "\bin\Debug\", $targetFramework, "\", $rid, "\publish\refs\")
+
+Write-Output "Calling dotnet publish"
+& $dotnetPath publish -r $rid -o $outputPath /p:NugetMonikerVersion=$frameworkVersion /p:RestoreSources="$restoreSources" /p:TargetFramework=$targetFramework /p:CompatibilityPackageVersion=$compatPackageVersion /p:RuntimeFrameworkVersion=$runtimeFramework /p:PrivateCorefxPackageVersion=$privatePackageVersion /p:RuntimeIdentifiers=$rid $csprojPath
 
 if (!(Test-Path $outputPath))
 {
@@ -66,4 +71,5 @@ if (Test-Path $refPath)
 }
 
 New-Item $refPath -ItemType directory
-Copy-Item (-join($outputPath, "*")) $refPath
+Remove-Item (-join($outputPath, "Microsoft.Windows.Compatibility.Validation.dll")) -force
+Copy-Item (-join($outputPath, "*.dll")) $refPath

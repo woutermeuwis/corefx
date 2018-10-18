@@ -229,7 +229,9 @@ namespace System.Security.Cryptography.X509Certificates.Tests
                     "CN=Microsoft Code Signing PCA, O=Microsoft Corporation, L=Redmond, S=Washington, C=US",
                     issuer);
 #pragma warning disable 0618
-                Assert.Equal(c.Issuer, c.GetIssuerName());
+                Assert.Equal(
+                    "C=US, S=Washington, L=Redmond, O=Microsoft Corporation, CN=Microsoft Code Signing PCA",
+                    c.GetIssuerName());
 #pragma warning restore 0618
 
                 string subject = c.Subject;
@@ -237,7 +239,9 @@ namespace System.Security.Cryptography.X509Certificates.Tests
                     "CN=Microsoft Corporation, OU=MOPR, O=Microsoft Corporation, L=Redmond, S=Washington, C=US",
                     subject);
 #pragma warning disable 0618
-                Assert.Equal(subject, c.GetName());
+                Assert.Equal(
+                    "C=US, S=Washington, L=Redmond, O=Microsoft Corporation, OU=MOPR, CN=Microsoft Corporation",
+                    c.GetName());
 #pragma warning restore 0618
 
                 string expectedThumbprintHash = "67B1757863E3EFF760EA9EBB02849AF07D3A8080";

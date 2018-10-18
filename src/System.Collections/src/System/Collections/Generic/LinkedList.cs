@@ -356,7 +356,7 @@ namespace System.Collections.Generic
             }
         }
 
-        public virtual void OnDeserialization(Object sender)
+        public virtual void OnDeserialization(object sender)
         {
             if (_siInfo == null)
             {
@@ -630,7 +630,7 @@ namespace System.Collections.Generic
                 throw new PlatformNotSupportedException();
             }
 
-            void IDeserializationCallback.OnDeserialization(Object sender)
+            void IDeserializationCallback.OnDeserialization(object sender)
             {
                 throw new PlatformNotSupportedException();
             }

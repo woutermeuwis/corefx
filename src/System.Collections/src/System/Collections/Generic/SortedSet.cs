@@ -283,7 +283,7 @@ namespace System.Collections.Generic
         {
             get
             {
-                VersionCheck();
+                VersionCheck(updateCount: true);
                 return count;
             }
         }
@@ -312,7 +312,9 @@ namespace System.Collections.Generic
         #region Subclass helpers
 
         // Virtual function for TreeSubSet, which may need to update its count.
-        internal virtual void VersionCheck() { }
+        internal virtual void VersionCheck(bool updateCount = false) { }
+        // Virtual function for TreeSubSet, which may need the count variable of the parent set.
+        internal virtual int TotalCount() { return Count; }
 
         // Virtual function for TreeSubSet, which may need to do range checks.
         internal virtual bool IsWithinRange(T item) => true;
@@ -897,7 +899,7 @@ namespace System.Collections.Generic
             if (treeSubset != null)
                 VersionCheck();
 
-            if (asSorted != null && treeSubset == null && count == 0)
+            if (asSorted != null && treeSubset == null && Count == 0)
             {
                 SortedSet<T> dummy = new SortedSet<T>(asSorted, comparer);
                 root = dummy.root;
@@ -1954,7 +1956,7 @@ namespace System.Collections.Generic
                 _version = set.version;
 
                 // 2 log(n + 1) is the maximum height.
-                _stack = new Stack<Node>(2 * (int)Log2(set.Count + 1));
+                _stack = new Stack<Node>(2 * (int)Log2(set.TotalCount() + 1));
                 _current = null;
                 _reverse = reverse;
 

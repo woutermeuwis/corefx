@@ -18,8 +18,8 @@ namespace System.CodeDom
 
         public string Text
         {
-            get { return _text ?? string.Empty; }
-            set { _text = value; }
+            get => _text ?? string.Empty;
+            set => _text = value;
         }
     }
 }

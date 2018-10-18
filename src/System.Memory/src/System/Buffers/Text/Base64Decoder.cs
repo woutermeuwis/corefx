@@ -4,10 +4,7 @@
 
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-
-#if !netstandard
 using Internal.Runtime.CompilerServices;
-#endif
 
 namespace System.Buffers.Text
 {
@@ -147,7 +144,7 @@ namespace System.Buffers.Text
             if (srcLength != utf8.Length)
                 goto InvalidExit;
 
-        DoneExit:
+            DoneExit:
             bytesConsumed = sourceIndex;
             bytesWritten = destIndex;
             return OperationStatus.Done;

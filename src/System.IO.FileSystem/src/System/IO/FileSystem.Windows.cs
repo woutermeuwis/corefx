@@ -3,11 +3,18 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Win32.SafeHandles;
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
+using System.IO;
 using System.Text;
 
+#if MS_IO_REDIST
+namespace Microsoft.IO
+#else
 namespace System.IO
+#endif
 {
     internal static partial class FileSystem
     {
@@ -75,10 +82,10 @@ namespace System.IO
             int length = fullPath.Length;
 
             // We need to trim the trailing slash or the code will try to create 2 directories of the same name.
-            if (length >= 2 && PathInternal.EndsInDirectorySeparator(fullPath))
+            if (length >= 2 && PathInternal.EndsInDirectorySeparator(fullPath.AsSpan()))
                 length--;
 
-            int lengthRoot = PathInternal.GetRootLength(fullPath);
+            int lengthRoot = PathInternal.GetRootLength(fullPath.AsSpan());
 
             if (length > lengthRoot)
             {
@@ -200,12 +207,35 @@ namespace System.IO
                 if (!Interop.Kernel32.GetFileAttributesEx(path, Interop.Kernel32.GET_FILEEX_INFO_LEVELS.GetFileExInfoStandard, ref data))
                 {
                     errorCode = Marshal.GetLastWin32Error();
-                    if (errorCode == Interop.Errors.ERROR_ACCESS_DENIED)
+                    if (errorCode != Interop.Errors.ERROR_FILE_NOT_FOUND
+                        && errorCode != Interop.Errors.ERROR_PATH_NOT_FOUND
+                        && errorCode != Interop.Errors.ERROR_NOT_READY
+                        && errorCode != Interop.Errors.ERROR_INVALID_NAME
+                        && errorCode != Interop.Errors.ERROR_BAD_PATHNAME
+                        && errorCode != Interop.Errors.ERROR_BAD_NETPATH
+                        && errorCode != Interop.Errors.ERROR_BAD_NET_NAME
+                        && errorCode != Interop.Errors.ERROR_INVALID_PARAMETER
+                        && errorCode != Interop.Errors.ERROR_NETWORK_UNREACHABLE
+                        && errorCode != Interop.Errors.ERROR_NETWORK_ACCESS_DENIED
+                        && errorCode != Interop.Errors.ERROR_INVALID_HANDLE  // eg from \\.\CON
+                        )
                     {
+                        // Assert so we can track down other cases (if any) to add to our test suite
+                        Debug.Assert(errorCode == Interop.Errors.ERROR_ACCESS_DENIED || errorCode == Interop.Errors.ERROR_SHARING_VIOLATION,
+                            $"Unexpected error code getting attributes {errorCode}");
+
                         // Files that are marked for deletion will not let you GetFileAttributes,
                         // ERROR_ACCESS_DENIED is given back without filling out the data struct.
                         // FindFirstFile, however, will. Historically we always gave back attributes
                         // for marked-for-deletion files.
+                        //
+                        // Another case where enumeration works is with special system files such as
+                        // pagefile.sys that give back ERROR_SHARING_VIOLATION on GetAttributes.
+                        //
+                        // Ideally we'd only try again for known cases due to the potential performance
+                        // hit. The last attempt to do so baked for nearly a year before we found the
+                        // pagefile.sys case. As such we're probably stuck filtering out specific 
+                        // cases that we know we don't want to retry on.
 
                         var findData = new Interop.Kernel32.WIN32_FIND_DATA();
                         using (SafeFindHandle handle = Interop.Kernel32.FindFirstFile(path, ref findData))
@@ -323,7 +353,7 @@ namespace System.IO
 
         private static SafeFileHandle OpenHandle(string fullPath, bool asDirectory)
         {
-            string root = fullPath.Substring(0, PathInternal.GetRootLength(fullPath));
+            string root = fullPath.Substring(0, PathInternal.GetRootLength(fullPath.AsSpan()));
             if (root == fullPath && root[1] == Path.VolumeSeparatorChar)
             {
                 // intentionally not fullpath, most upstack public APIs expose this as path.

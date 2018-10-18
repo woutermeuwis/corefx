@@ -375,7 +375,7 @@ namespace System.Text
                 // We may have a left over character from last time, try and process it.
                 if (charLeftOver > 0)
                 {
-                    Debug.Assert(Char.IsHighSurrogate(charLeftOver), "[ISO2022Encoding.GetBytesCP5022xJP]leftover character should be high surrogate");
+                    Debug.Assert(char.IsHighSurrogate(charLeftOver), "[ISO2022Encoding.GetBytesCP5022xJP]leftover character should be high surrogate");
 
                     // It has to be a high surrogate, which we don't support, so it has to be a fallback
                     buffer.Fallback(charLeftOver);
@@ -616,7 +616,7 @@ namespace System.Text
                 // We may have a l left over character from last time, try and process it.
                 if (charLeftOver > 0)
                 {
-                    Debug.Assert(Char.IsHighSurrogate(charLeftOver), "[ISO2022Encoding.GetBytesCP50225KR]leftover character should be high surrogate");
+                    Debug.Assert(char.IsHighSurrogate(charLeftOver), "[ISO2022Encoding.GetBytesCP50225KR]leftover character should be high surrogate");
 
                     // It has to be a high surrogate, which we don't support, so it has to be a fallback
                     buffer.Fallback(charLeftOver);
@@ -762,7 +762,7 @@ namespace System.Text
                 // We may have a left over character from last time, try and process it.
                 if (charLeftOver > 0)
                 {
-                    Debug.Assert(Char.IsHighSurrogate(charLeftOver), "[ISO2022Encoding.GetBytesCP52936]leftover character should be high surrogate");
+                    Debug.Assert(char.IsHighSurrogate(charLeftOver), "[ISO2022Encoding.GetBytesCP52936]leftover character should be high surrogate");
 
                     // It has to be a high surrogate, which we don't support, so it has to be a fallback
                     buffer.Fallback(charLeftOver);

@@ -48,7 +48,7 @@ namespace Internal.Cryptography.Pal.AnyOS
             }
 
             Debug.Fail("Unknown SubjectIdentifierOrKey state");
-            return new SubjectIdentifierOrKey(SubjectIdentifierOrKeyType.Unknown, String.Empty);
+            return new SubjectIdentifierOrKey(SubjectIdentifierOrKeyType.Unknown, string.Empty);
         }
 
         internal static AlgorithmIdentifier ToPresentationObject(this AlgorithmIdentifierAsn asn)
@@ -65,7 +65,7 @@ namespace Internal.Cryptography.Pal.AnyOS
                             break;
                         }
 
-                        Rc2CbcParameters rc2Params = AsnSerializer.Deserialize<Rc2CbcParameters>(
+                        Rc2CbcParameters rc2Params = Rc2CbcParameters.Decode(
                             asn.Parameters.Value,
                             AsnEncodingRules.BER);
 

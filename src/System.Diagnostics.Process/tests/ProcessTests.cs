@@ -16,6 +16,7 @@ using Xunit;
 
 namespace System.Diagnostics.Tests
 {
+    [ActiveIssue(31908, TargetFrameworkMonikers.Uap)]
     public partial class ProcessTests : ProcessTestBase
     {
         private class FinalizingProcess : Process
@@ -65,9 +66,7 @@ namespace System.Diagnostics.Tests
             CreateDefaultProcess();
 
             ProcessPriorityClass originalPriority = _process.PriorityClass;
-
-            var expected = PlatformDetection.IsWindowsNanoServer ? ProcessPriorityClass.BelowNormal : ProcessPriorityClass.Normal; // For some reason we're BelowNormal initially on Nano
-            Assert.Equal(expected, originalPriority);
+            Assert.Equal(ProcessPriorityClass.Normal, originalPriority);
 
             try
             {
@@ -953,6 +952,10 @@ namespace System.Diagnostics.Tests
             catch (ActiveDirectoryObjectNotFoundException)
             {
                 //This will be thrown when the executing machine is not domain-joined, i.e. in CI
+            }
+            catch (TypeInitializationException tie) when (tie.InnerException is ActiveDirectoryOperationException)
+            {
+                //Thrown if the ActiveDirectory module is unavailable
             }
             catch (PlatformNotSupportedException)
             {

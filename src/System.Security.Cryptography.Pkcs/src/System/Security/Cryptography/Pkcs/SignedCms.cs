@@ -104,7 +104,7 @@ namespace System.Security.Cryptography.Pkcs
                 throw new InvalidOperationException(SR.Cryptography_Cms_MessageNotSigned);
             }
 
-            return Helpers.EncodeContentInfo(_signedData, Oids.Pkcs7Signed);
+            return PkcsHelpers.EncodeContentInfo(_signedData, Oids.Pkcs7Signed);
         }
 
         public void Decode(byte[] encodedMessage)
@@ -310,7 +310,7 @@ namespace System.Security.Cryptography.Pkcs
             }
 
             AlgorithmIdentifierAsn signerAlgorithm = _signedData.SignerInfos[index].DigestAlgorithm;
-            Helpers.RemoveAt(ref _signedData.SignerInfos, index);
+            PkcsHelpers.RemoveAt(ref _signedData.SignerInfos, index);
 
             ConsiderDigestRemoval(signerAlgorithm);
             UpdateMetadata();
@@ -443,7 +443,7 @@ namespace System.Security.Cryptography.Pkcs
 
                 if (candidate.Equals(ref alg))
                 {
-                    Helpers.RemoveAt(ref _signedData.DigestAlgorithms, i);
+                    PkcsHelpers.RemoveAt(ref _signedData.DigestAlgorithms, i);
                     break;
                 }
             }
@@ -560,6 +560,65 @@ namespace System.Security.Cryptography.Pkcs
         internal ref SignedDataAsn GetRawData()
         {
             return ref _signedData;
+        }
+
+        public void AddCertificate(X509Certificate2 certificate)
+        {
+            int existingLength = _signedData.CertificateSet?.Length ?? 0;
+
+            byte[] rawData = certificate.RawData;
+
+            if (existingLength > 0)
+            {
+                foreach (CertificateChoiceAsn cert in _signedData.CertificateSet)
+                {
+                    if (cert.Certificate.Value.Span.SequenceEqual(rawData))
+                    {
+                        throw new CryptographicException(SR.Cryptography_Cms_CertificateAlreadyInCollection);
+                    }
+                }
+            }
+
+            if (_signedData.CertificateSet == null)
+            {
+                _signedData.CertificateSet = new CertificateChoiceAsn[1];
+            }
+            else
+            {
+                Array.Resize(ref _signedData.CertificateSet, existingLength + 1);
+            }
+
+            _signedData.CertificateSet[existingLength] = new CertificateChoiceAsn
+            {
+                Certificate = rawData
+            };
+
+            Reencode();
+        }
+
+        public void RemoveCertificate(X509Certificate2 certificate)
+        {
+            int existingLength = _signedData.CertificateSet?.Length ?? 0;
+
+            if (existingLength != 0)
+            {
+                int idx = 0;
+                byte[] rawData = certificate.RawData;
+
+                foreach (CertificateChoiceAsn cert in _signedData.CertificateSet)
+                {
+                    if (cert.Certificate.Value.Span.SequenceEqual(rawData))
+                    {
+                        PkcsHelpers.RemoveAt(ref _signedData.CertificateSet, idx);
+                        Reencode();
+                        return;
+                    }
+
+                    idx++;
+                }
+            }
+
+            throw new CryptographicException(SR.Cryptography_Cms_NoCertificateFound);
         }
     }
 }

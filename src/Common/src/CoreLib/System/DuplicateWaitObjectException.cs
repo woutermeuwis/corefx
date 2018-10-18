@@ -23,9 +23,9 @@ namespace System
 #endif
     public class DuplicateWaitObjectException : ArgumentException
     {
-        private static volatile String s_duplicateWaitObjectMessage = null;
+        private static volatile string s_duplicateWaitObjectMessage = null;
 
-        private static String DuplicateWaitObjectMessage
+        private static string DuplicateWaitObjectMessage
         {
             get
             {
@@ -43,19 +43,19 @@ namespace System
             HResult = HResults.COR_E_DUPLICATEWAITOBJECT;
         }
 
-        public DuplicateWaitObjectException(String parameterName)
+        public DuplicateWaitObjectException(string parameterName)
             : base(DuplicateWaitObjectMessage, parameterName)
         {
             HResult = HResults.COR_E_DUPLICATEWAITOBJECT;
         }
 
-        public DuplicateWaitObjectException(String parameterName, String message)
+        public DuplicateWaitObjectException(string parameterName, string message)
             : base(message, parameterName)
         {
             HResult = HResults.COR_E_DUPLICATEWAITOBJECT;
         }
 
-        public DuplicateWaitObjectException(String message, Exception innerException)
+        public DuplicateWaitObjectException(string message, Exception innerException)
             : base(message, innerException)
         {
             HResult = HResults.COR_E_DUPLICATEWAITOBJECT;

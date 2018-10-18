@@ -125,7 +125,7 @@ namespace System.Net
 
         public CookieContainer(int capacity, int perDomainCapacity, int maxCookieSize) : this(capacity)
         {
-            if (perDomainCapacity != Int32.MaxValue && (perDomainCapacity <= 0 || perDomainCapacity > capacity))
+            if (perDomainCapacity != int.MaxValue && (perDomainCapacity <= 0 || perDomainCapacity > capacity))
             {
                 throw new ArgumentOutOfRangeException(nameof(perDomainCapacity), SR.Format(SR.net_cookie_capacity_range, "PerDomainCapacity", 0, capacity));
             }
@@ -154,7 +154,7 @@ namespace System.Net
             }
             set
             {
-                if (value <= 0 || (value < m_maxCookiesPerDomain && m_maxCookiesPerDomain != Int32.MaxValue))
+                if (value <= 0 || (value < m_maxCookiesPerDomain && m_maxCookiesPerDomain != int.MaxValue))
                 {
                     throw new ArgumentOutOfRangeException(nameof(value), SR.Format(SR.net_cookie_capacity_range, "Capacity", 0, m_maxCookiesPerDomain));
                 }
@@ -205,7 +205,7 @@ namespace System.Net
             }
             set
             {
-                if (value <= 0 || (value > m_maxCookies && value != Int32.MaxValue))
+                if (value <= 0 || (value > m_maxCookies && value != int.MaxValue))
                 {
                     throw new ArgumentOutOfRangeException(nameof(value));
                 }
@@ -662,7 +662,7 @@ namespace System.Net
             {
                 for (int i = 0; i < s_headerInfo.Length; ++i)
                 {
-                    if ((String.Compare(headerName, s_headerInfo[i].Name, StringComparison.OrdinalIgnoreCase) == 0))
+                    if ((string.Equals(headerName, s_headerInfo[i].Name, StringComparison.OrdinalIgnoreCase)))
                     {
                         variant = s_headerInfo[i].Variant;
                     }
@@ -688,7 +688,7 @@ namespace System.Net
                     }
 
                     // Parser marks invalid cookies this way
-                    if (String.IsNullOrEmpty(cookie.Name))
+                    if (string.IsNullOrEmpty(cookie.Name))
                     {
                         if (isThrow)
                         {

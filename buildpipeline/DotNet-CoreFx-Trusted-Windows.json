@@ -128,9 +128,7 @@
       }
     },
     {
-      "environment": {
-        "PACKAGEVERSIONPROPSURL": "$(PB_PackageVersionPropsUrl)"
-      },
+      "environment": {},
       "enabled": true,
       "continueOnError": false,
       "alwaysRun": false,
@@ -350,6 +348,7 @@
       "alwaysRun": true,
       "displayName": "run end.ps1",
       "timeoutInMinutes": 0,
+      "condition": "always()",
       "task": {
         "id": "e213ff0f-5d5c-4791-802d-52ea3e7be1f1",
         "versionSpec": "2.*",
@@ -523,16 +522,13 @@
       "allowOverride": true
     },
     "PB_PackageVersionPropsUrl": {
-      "value": "",
-      "isSecret": true
+      "value": ""
     },
-    "PB_RestoreSource": {
-      "value": "",
-      "isSecret": true
+    "PACKAGEVERSIONPROPSURL": {
+      "value": "$(PB_PackageVersionPropsUrl)"
     },
     "PB_AssetRootUrl": {
-      "value": "",
-      "isSecret": true
+      "value": ""
     },
     "PB_UseEsrpSigning": {
       "value": "false",

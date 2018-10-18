@@ -107,9 +107,9 @@ namespace System.Text
                 while ((ch = GetNextChar()) != 0)
                 {
                     // Make sure no mixed up surrogates
-                    if (Char.IsSurrogate(ch))
+                    if (char.IsSurrogate(ch))
                     {
-                        if (Char.IsHighSurrogate(ch))
+                        if (char.IsHighSurrogate(ch))
                         {
                             // High Surrogate
                             if (bHighSurrogate)
@@ -162,9 +162,9 @@ namespace System.Text
                 while ((ch = GetNextChar()) != 0)
                 {
                     // Make sure no mixed up surrogates
-                    if (Char.IsSurrogate(ch))
+                    if (char.IsSurrogate(ch))
                     {
-                        if (Char.IsHighSurrogate(ch))
+                        if (char.IsHighSurrogate(ch))
                         {
                             // High Surrogate
                             if (bHighSurrogate)

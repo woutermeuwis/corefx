@@ -25,7 +25,7 @@ namespace System
 #endif
     public class ArgumentException : SystemException
     {
-        private String _paramName;
+        private string _paramName;
 
         // Creates a new ArgumentException with its message 
         // string set to the empty string. 
@@ -38,26 +38,26 @@ namespace System
         // Creates a new ArgumentException with its message 
         // string set to message. 
         // 
-        public ArgumentException(String message)
+        public ArgumentException(string message)
             : base(message)
         {
             HResult = HResults.COR_E_ARGUMENT;
         }
 
-        public ArgumentException(String message, Exception innerException)
+        public ArgumentException(string message, Exception innerException)
             : base(message, innerException)
         {
             HResult = HResults.COR_E_ARGUMENT;
         }
 
-        public ArgumentException(String message, String paramName, Exception innerException)
+        public ArgumentException(string message, string paramName, Exception innerException)
             : base(message, innerException)
         {
             _paramName = paramName;
             HResult = HResults.COR_E_ARGUMENT;
         }
 
-        public ArgumentException(String message, String paramName)
+        public ArgumentException(string message, string paramName)
             : base(message)
         {
             _paramName = paramName;
@@ -76,14 +76,14 @@ namespace System
             info.AddValue("ParamName", _paramName, typeof(string));
         }
 
-        public override String Message
+        public override string Message
         {
             get
             {
-                String s = base.Message;
-                if (!String.IsNullOrEmpty(_paramName))
+                string s = base.Message;
+                if (!string.IsNullOrEmpty(_paramName))
                 {
-                    String resourceString = SR.Format(SR.Arg_ParamName_Name, _paramName);
+                    string resourceString = SR.Format(SR.Arg_ParamName_Name, _paramName);
                     return s + Environment.NewLine + resourceString;
                 }
                 else
@@ -91,7 +91,7 @@ namespace System
             }
         }
 
-        public virtual String ParamName
+        public virtual string ParamName
         {
             get { return _paramName; }
         }
