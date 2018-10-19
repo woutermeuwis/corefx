@@ -296,6 +296,11 @@ namespace System.Text
                 case CodePageNoSymbol:                           // 42 CP_SYMBOL
                     throw new ArgumentException(SR.Format(SR.Argument_CodepageNotSupported, codepage), nameof(codepage));
             }
+#if MONO_HYBRID_ENCODING_SUPPORT
+            result = (Encoding)(EncodingHelper.InvokeI18N ("GetEncoding", codepage));
+            if (result != null)
+                return result;
+#endif
 
             // Is it a valid code page?
             if (EncodingTable.GetCodePageDataItem(codepage) == null)
@@ -304,14 +309,7 @@ namespace System.Text
                     SR.Format(SR.NotSupported_NoCodepageData, codepage));
             }
 
-#if MONO_HYBRID_ENCODING_SUPPORT
-            result = (Encoding)(EncodingHelper.InvokeI18N ("GetEncoding", codepage));
-            if (result == null)
-                throw new NotSupportedException(string.Format("Encoding {0} data could not be found. Make sure you have correct international codeset assembly installed and enabled.", codepage));
-            return result;
-#else
             return UTF8;
-#endif
         }
 
         public static Encoding GetEncoding(int codepage,
@@ -373,6 +371,30 @@ namespace System.Text
         {
             return EncodingTable.GetEncodings();
         }
+
+#if MONO
+        // Serialization Helper
+        internal void SerializeEncoding(SerializationInfo info, StreamingContext context)
+        {
+            // Any Info?
+            if (info==null) throw new ArgumentNullException("info");
+
+            // These are new V2.0 Whidbey stuff
+            info.AddValue("m_isReadOnly", this._isReadOnly);
+            info.AddValue("encoderFallback", this.encoderFallback);
+            info.AddValue("decoderFallback", this.decoderFallback);
+
+            // These were in Everett V1.1 as well
+            info.AddValue("m_codePage", this._codePage);
+
+            // This was unique to Everett V1.1
+            info.AddValue("dataItem", null);
+
+            // Everett duplicated these fields, so these are needed for portability
+            info.AddValue("Encoding+m_codePage", this._codePage);
+            info.AddValue("Encoding+dataItem", null);
+        }
+#endif
 
         public virtual byte[] GetPreamble()
         {
