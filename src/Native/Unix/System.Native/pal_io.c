@@ -1107,6 +1107,8 @@ int32_t SystemNative_PosixFAdvise(intptr_t fd, int64_t offset, int64_t length, i
 #endif
 }
 
+#ifndef TARGET_ANDROID
+
 char* SystemNative_GetLine(FILE* stream)
 {
     assert(stream != NULL);
@@ -1117,6 +1119,8 @@ char* SystemNative_GetLine(FILE* stream)
     
     return length >= 0 ? lineptr : NULL;
 }
+
+#endif
 
 int32_t SystemNative_Read(intptr_t fd, void* buffer, int32_t bufferSize)
 {
