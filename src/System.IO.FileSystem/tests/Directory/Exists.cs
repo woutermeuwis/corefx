@@ -315,7 +315,7 @@ namespace System.IO.Tests
             Assert.False(Exists(component));
         }
 
-#if MONODROID
+#if !MONODROID
         [Theory,
             MemberData(nameof(UncPathsWithoutShareName))]
         public void UncPathWithoutShareNameAsPath_ReturnsFalse(string component)
