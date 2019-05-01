@@ -16,7 +16,7 @@ using FSEventStreamEventId = System.UInt64;
 using CFRunLoopRef = System.IntPtr;
 using Microsoft.Win32.SafeHandles;
 
-#if MONO && !MOBILE
+#if MONO && (!MOBILE || MONODROID_DESIGNER)
 
 using System;
 using System.IO;

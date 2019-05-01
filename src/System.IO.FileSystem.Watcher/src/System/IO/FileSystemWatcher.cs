@@ -12,7 +12,7 @@ using System.IO.Enumeration;
 using System.Threading;
 using System.Threading.Tasks;
 
-#if MONO && !MOBILE
+#if MONO && (!MOBILE || MONODROID_DESIGNER)
 
 using System;
 using System.IO;

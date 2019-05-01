@@ -14,7 +14,9 @@ using System.IO;
 namespace System.IO.CoreFX
 #else
 
-namespace System.IO
+using System;
+using System.IO;
+namespace System.IO.CoreFX;
 #endif
 {
     public partial class FileSystemWatcher

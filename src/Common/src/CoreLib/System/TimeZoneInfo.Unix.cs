@@ -650,7 +650,7 @@ namespace System
 
         private static string GetTimeZoneDirectory()
         {
-#if MONO && MOBILE
+#if MONO && (MOBILE && !MONODROID_DESIGNER)
             return GetTimeZoneDirectoryMobile();
 #else
             string tzDirectory = Environment.GetEnvironmentVariable(TimeZoneDirectoryEnvironmentVariable);
